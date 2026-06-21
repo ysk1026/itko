@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Itko — Korea Food Map (Web)</title>
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* Korea Food Map — shared data (index.html의 동일 블록과 함께 유지) */
+window.KFM = (function(){
+ var SP=['#7BB662','#7BB662','#C9C24A','#E8A33A','#E2702C','#CF3A2A'];
+ function purl(kw,seed,w,h){return 'https://loremflickr.com/'+w+'/'+h+'/'+kw+'?lock='+seed;}
+ function vid(creator,views,q){return {creator:creator,views:views,q:q};}
+ var UI={
+  app:{en:'Itko',ko:'Itko'},
+  tagline:{en:'No more bad food choices in Korea',ko:'한국에서 실패 없는 맛집 찾기'},
+  hype:{en:'HYPE NOW',ko:'지금 핫한'},browse:{en:'BROWSE BY TYPE',ko:'종류별 보기'},local:{en:'EAT LIKE A LOCAL',ko:'로컬처럼'},
+  tips:{en:'LOCAL TIPS',ko:'로컬 팁'},watch:{en:'WATCH',ko:'영상으로 보기'},
+  seeAll:{en:'See all lenses',ko:'렌즈 전체 보기'},less:{en:'Show less',ko:'접기'},all:{en:'All',ko:'전체'},
+  places:{en:'places',ko:'곳'},why:{en:'WHY GO',ko:'왜 가야 하나'},ctx:{en:'KOREAN CONTEXT',ko:'한국식 맥락'},
+  spice:{en:'SPICE LEVEL',ko:'맵기'},menu:{en:'BEST MENU',ko:'추천 메뉴'},near:{en:'NEARBY SPOTS',ko:'주변 명소'},
+  reviews:{en:'REVIEWS',ko:'리뷰'},writeRev:{en:'Write a review',ko:'리뷰 쓰기'},
+  solo:{en:'Solo ok',ko:'혼밥 가능'},open:{en:'Open',ko:'영업중'},closed:{en:'Closed',ko:'영업종료'},halal:{en:'Halal',ko:'할랄'},
+  maps:{en:'Open in Google Maps',ko:'구글맵으로 길찾기'},
+  noSaved:{en:'No saved places yet',ko:'저장한 곳이 없어요'},noSavedS:{en:'Tap the bookmark to keep a place for your trip.',ko:'북마크를 눌러 여행 리스트에 담아보세요.'},
+  explore:{en:'Explore feed',ko:'피드 둘러보기'},savedT:{en:'Saved',ko:'저장한 곳'},forTrip:{en:'for your trip',ko:'내 여행 리스트'},
+  results:{en:'results',ko:'결과'},none:{en:'No spots here yet',ko:'아직 등록된 곳이 없어요'},
+  searchPh:{en:'Search food, places, areas…',ko:'음식·맛집·지역 검색…'},
+  spiceW:{en:['','Mild','Mild+','Medium','Hot','Fire'],ko:['','순함','약간','보통','매움','불맛']}
+ };
+ var FIL={trending:{en:'Trending',ko:'인기'},open:{en:'Open now',ko:'영업중'},solo:{en:'Solo',ko:'혼밥'},halal:{en:'Halal',ko:'할랄'}};
+ var DIFF={Easy:{en:'Easy',ko:'쉬움'},Medium:{en:'Medium',ko:'보통'},Adventurous:{en:'Adventurous',ko:'도전'}};
+ var AREA=[
+  {id:'hongdae',t:{en:'Hongdae',ko:'홍대'},c:[37.5566,126.9240],z:15},
+  {id:'seongsu',t:{en:'Seongsu',ko:'성수'},c:[37.5446,127.0560],z:15},
+  {id:'gangnam',t:{en:'Gangnam',ko:'강남'},c:[37.4990,127.0276],z:14},
+  {id:'myeongdong',t:{en:'Myeongdong',ko:'명동'},c:[37.5636,126.9860],z:16},
+  {id:'itaewon',t:{en:'Itaewon',ko:'이태원'},c:[37.5346,126.9946],z:16}
+ ];
+ var CAT=[{id:'all',t:{en:'All',ko:'전체'},i:''},{id:'bbq',t:{en:'BBQ',ko:'고기'},i:'ti-meat'},{id:'noodle',t:{en:'Noodles',ko:'면'},i:'ti-bowl-chopsticks'},{id:'chicken',t:{en:'Chicken',ko:'치킨'},i:'ti-pepper'},{id:'stew',t:{en:'Soup',ko:'국밥'},i:'ti-soup'},{id:'street',t:{en:'Street',ko:'분식'},i:'ti-flame'},{id:'cafe',t:{en:'Cafe',ko:'카페'},i:'ti-cup'},{id:'vegan',t:{en:'Vegan',ko:'비건'},i:'ti-salad'}];
+ var HYPE=[
+  {t:{en:'Dubai-choco cookie',ko:'두바이초콜릿 쿠키'},s:{en:'The TikTok dessert everyone lines up for',ko:'다들 줄 서는 그 틱톡 디저트'},k:'dubai,chocolate,dessert',seed:31,ic:'ti-cookie',v:'2.4M',ids:['hc1','hc2'],videos:[vid('Tzuyang 쯔양','5.1M','두바이초콜릿 쿠키 먹방'),vid('Hamzy 햄지','2.3M','dubai chocolate cookie mukbang')]},
+  {t:{en:'Tanghulu',ko:'탕후루'},s:{en:'Glazed fruit skewers — crunchy, sweet, everywhere',ko:'겉바속촉 과일꼬치, 요즘 길거리 점령'},k:'tanghulu,candied,fruit',seed:32,ic:'ti-candy',v:'1.1M',ids:['hc3','hc4'],videos:[vid('SIO ASMR','8.4M','탕후루 asmr')]},
+  {t:{en:'Cup bingsu',ko:'컵빙수'},s:{en:'Portable shaved ice blowing up this summer',ko:'올여름 터진 들고 다니는 빙수'},k:'bingsu,shaved,ice',seed:33,ic:'ti-ice-cream',v:'860K',ids:['hc5','hc6'],videos:[vid('Sunnam 순남','1.2M','컵빙수 먹방')]}
+ ];
+ var LENS=[
+  {id:'soju',t:{en:'Perfect with soju',ko:'소주 안주'},kw:'안주',s:{en:'Dishes locals pair with a bottle',ko:'한 병 부르는 안주 맛집'},i:'ti-bottle',c:'#7A8B3D',fg:'#fff',feat:true},
+  {id:'haejang',t:{en:'Hangover cure',ko:'해장'},kw:'해장',s:{en:'What Koreans eat the morning after',ko:'술 다음날 찾는 음식'},i:'ti-mug',c:'#C75E0C',fg:'#fff',feat:true},
+  {id:'locals',t:{en:"Locals' real favorites",ko:'로컬 찐맛집'},kw:'',s:{en:'No tourist traps — where Koreans actually go',ko:'관광지 말고 진짜 동네 맛집'},i:'ti-heart',c:'#2A2A33',fg:'#fff',feat:true},
+  {id:'2am',t:{en:'2AM eats',ko:'새벽 2시 야식'},kw:'야식',s:{en:'Late-night spots locals swear by',ko:'로컬이 인정한 새벽 맛집'},i:'ti-moon-stars',c:'#243049',fg:'#fff',feat:true},
+  {id:'solo',t:{en:'Best solo meals',ko:'혼밥하기 좋은'},kw:'혼밥',s:{en:'No awkward tables for one',ko:'혼자 가도 편한 곳'},i:'ti-user',c:'#534AB7',fg:'#fff',feat:false},
+  {id:'halal',t:{en:'Halal-friendly',ko:'할랄 가능'},kw:'',s:{en:'Muslim-friendly kitchens, verified',ko:'무슬림 친화 검증 맛집'},i:'ti-moon',c:'#178A6E',fg:'#fff',feat:false},
+  {id:'rainy',t:{en:'Rainy-day comfort',ko:'비 오는 날'},kw:'',s:{en:'Warm bowls for grey, rainy days',ko:'궂은 날 생각나는 따뜻한 한 그릇'},i:'ti-cloud-rain',c:'#3A6EA5',fg:'#fff',feat:false},
+  {id:'spicy',t:{en:'Spice challenge',ko:'매운맛 도전'},kw:'',s:{en:'For those who dare — bring tissues',ko:'도전자만. 휴지 챙기세요'},i:'ti-flame',c:'#CF3A2A',fg:'#fff',feat:false},
+  {id:'kdrama',t:{en:'As seen on K-drama',ko:'K-드라마 맛집'},kw:'',s:{en:'Eat where your favorite scenes were filmed',ko:'그 장면 속 바로 그 맛집'},i:'ti-device-tv',c:'#B23A6E',fg:'#fff',feat:false},
+  {id:'insta',t:{en:'Instagrammable',ko:'인스타 감성'},kw:'',s:{en:'Too pretty not to post',ko:'안 올리면 섭섭한 비주얼'},i:'ti-camera',c:'#C2569B',fg:'#fff',feat:false},
+  {id:'budget',t:{en:'Budget eats',ko:'가성비'},kw:'',s:{en:'Big satisfaction under ₩10,000',ko:'1만원 아래로 든든하게'},i:'ti-coin',c:'#7A6A2E',fg:'#fff',feat:false},
+  {id:'pocha',t:{en:'Pocha vibes',ko:'포차 감성'},kw:'',s:{en:'Plastic stools, soju, street snacks',ko:'플라스틱 의자에 소주, 길거리 안주'},i:'ti-tent',c:'#6B4A8A',fg:'#fff',feat:false}
+ ];
+ var TIPS={
+  hongdae:[{i:'ti-train',t:{en:'Take subway, not bus, at rush hour (8–9am, 6–7pm).',ko:'출퇴근(오전8–9·저녁6–7) 땐 버스보다 지하철.'}},{i:'ti-users-group',t:{en:'Walking Street is packed Fri/Sat nights — go earlier.',ko:'걷고싶은거리는 금·토 밤 매우 붐벼요. 일찍 가세요.'}},{i:'ti-walk',t:{en:'Yeonnam-dong (north exit) is calmer & more local.',ko:'연남동(북쪽)은 더 한적하고 로컬 감성.'}}],
+  seongsu:[{i:'ti-coffee',t:{en:'Weekday mornings are calmest for cafe-hopping.',ko:'카페 투어는 평일 오전이 가장 한적.'}},{i:'ti-camera',t:{en:'Old factory facades = best photo spots.',ko:'옛 공장 외관이 사진 명소.'}},{i:'ti-tree',t:{en:'Seoul Forest is a 10-min walk for a green break.',ko:'서울숲까지 도보 10분, 초록 휴식.'}}],
+  gangnam:[{i:'ti-map-pin',t:{en:'Huge area — navigate by subway exit numbers.',ko:'넓어요. 지하철 출구 번호로 길찾기.'}},{i:'ti-moon',t:{en:'Best after dark — nightlife & late eats.',ko:'밤이 진짜. 야간 유흥·야식 강세.'}},{i:'ti-businessplan',t:{en:'Pricier on average than Hongdae.',ko:'평균 물가가 홍대보다 높아요.'}}],
+  myeongdong:[{i:'ti-clock',t:{en:'Very touristy — come before 6pm to beat crowds.',ko:'관광객 밀집. 저녁 6시 전에 오면 한산.'}},{i:'ti-moon',t:{en:'Strong for halal & street food.',ko:'할랄·길거리 음식이 강점.'}},{i:'ti-shopping-bag',t:{en:'Pair food with cosmetics shopping.',ko:'먹으면서 화장품 쇼핑 코스로.'}}],
+  itaewon:[{i:'ti-world',t:{en:'Most foreigner-friendly area — many halal options.',ko:'가장 외국인 친화적, 할랄 옵션 많음.'}},{i:'ti-mountain',t:{en:'Hilly streets — wear comfy shoes.',ko:'언덕길이 많아요. 편한 신발 추천.'}},{i:'ti-glass',t:{en:'Great for global food & nightlife.',ko:'세계 음식·나이트라이프에 강함.'}}]
+ };
+ var R={
+  r1:{id:'r1',areaId:'hongdae',name:'Ganghwa Tongtong Pork',ko:'강화통통생고기',cat:{en:'Korean BBQ',ko:'생고기'},catId:'bbq',i:'ti-meat',seed:1,lat:37.5556,lng:126.9238,spice:2,solo:false,halal:false,diff:'Easy',open:true,trend:88,price:'$$$',lenses:['soju','locals'],videos:[vid('Wassup Man','1.4M','홍대 생고기 먹방')],
+   why:{en:'A Hongdae institution for thick-cut fresh pork grilled over charcoal.',ko:'숯불에 굽는 두툼한 생고기로 유명한 홍대 노포.'},
+   ctx:{en:'Grill-it-yourself with soju — the classic Korean meat dinner.',ko:'직접 구워 소주 한잔. 한국식 고기 회식의 정석.'},
+   menu:[{n:'Fresh pork belly',ko:'생삼겹살',p:'₩14,000'},{n:'Doenjang stew',ko:'된장찌개',p:'₩6,000'}],near:[{t:{en:'Hongdae Walking St.',ko:'홍대 걷고싶은거리'},m:4}]},
+  r2:{id:'r2',areaId:'hongdae',name:'Yeonhui Kalguksu',ko:'연희칼국수',cat:{en:'Noodles',ko:'칼국수'},catId:'noodle',i:'ti-bowl-chopsticks',seed:2,lat:37.5605,lng:126.9250,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:80,price:'$$',lenses:['haejang','solo','rainy','budget'],
+   why:{en:'Hand-cut knife noodles in a deep, warming broth — a Yeonhui classic.',ko:'깊고 따뜻한 육수의 손칼국수. 연희동 터줏대감.'},
+   ctx:{en:'Rainy-day comfort; locals slurp it solo without a second thought.',ko:'비 오는 날 위로. 혼자 후루룩 국룰.'},
+   menu:[{n:'Kalguksu',ko:'칼국수',p:'₩9,000'},{n:'Mandu',ko:'만두',p:'₩6,000'}],near:[{t:{en:'Yeonnam-dong',ko:'연남동'},m:4}]},
+  r3:{id:'r3',areaId:'hongdae',name:'Jangin Dakgalbi',ko:'장인닭갈비',cat:{en:'Spicy Chicken',ko:'닭갈비'},catId:'chicken',i:'ti-pepper',seed:3,lat:37.5550,lng:126.9225,spice:4,solo:false,halal:false,diff:'Medium',open:true,trend:86,price:'$$',lenses:['soju','2am','spicy'],videos:[vid('Tzuyang 쯔양','6.2M','홍대 닭갈비 먹방')],
+   why:{en:'Sizzling spicy stir-fried chicken (dakgalbi) on a hot plate.',ko:'철판 위 매콤 닭갈비. 다같이 볶아 먹는 맛.'},
+   ctx:{en:'Order the fried-rice finish (bokkeumbap) — and pair with soju.',ko:'마무리 볶음밥은 필수, 소주랑 찰떡.'},
+   menu:[{n:'Dakgalbi (2p)',ko:'닭갈비 2인',p:'₩24,000'},{n:'Fried rice',ko:'볶음밥',p:'₩3,000'}],near:[{t:{en:'Hongik Univ. Stn',ko:'홍대입구역'},m:4}]},
+  r4:{id:'r4',areaId:'hongdae',name:'Ttobogetji Tteokbokki',ko:'또보겠지떡볶이',cat:{en:'Street food',ko:'분식'},catId:'street',i:'ti-flame',seed:4,lat:37.5612,lng:126.9258,spice:3,solo:true,halal:false,diff:'Medium',open:true,trend:79,price:'$',lenses:['2am','solo','budget','spicy'],
+   why:{en:'A Yeonnam bunsik spot famous for its full snack-course tteokbokki.',ko:'분식 코스요리로 유명한 연남 떡볶이집.'},
+   ctx:{en:'After-school / late-night snack run — dip the fried sides.',ko:'하교길·야식 분식 코스. 튀김은 양념에 콕.'},
+   menu:[{n:'Tteokbokki',ko:'떡볶이',p:'₩4,500'},{n:'Course set',ko:'코스 세트',p:'₩13,000'}],near:[{t:{en:'Yeonnam-dong',ko:'연남동'},m:3}]},
+  r5:{id:'r5',areaId:'hongdae',name:'Solsot Sotbap',ko:'솥앤(솥밥)',cat:{en:'Pot rice',ko:'솥밥'},catId:'stew',i:'ti-bowl',seed:5,lat:37.5548,lng:126.9242,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:82,price:'$$',lenses:['locals','solo'],
+   why:{en:'Korean clay-pot rice topped with meat or seafood — cozy.',ko:'고기·해산물 올린 솥밥. 정갈하고 든든한 한 끼.'},
+   ctx:{en:'A calm sit-down meal; great solo or for a quiet lunch.',ko:'차분한 한 상. 혼밥이나 조용한 점심에 딱.'},
+   menu:[{n:'Steak pot rice',ko:'스테이크 솥밥',p:'₩15,000'},{n:'Sea bream pot rice',ko:'도미 솥밥',p:'₩16,000'}],near:[{t:{en:'Hongik Univ. Stn',ko:'홍대입구역'},m:6}]},
+  r6:{id:'r6',areaId:'hongdae',name:'Oreno Ramen',ko:'오레노라멘',cat:{en:'Ramen',ko:'라멘'},catId:'noodle',i:'ti-bowl-chopsticks',seed:6,lat:37.5559,lng:126.9229,spice:2,solo:true,halal:false,diff:'Easy',open:true,trend:90,price:'$$',lenses:['locals','solo','rainy'],videos:[vid('Hamzy 햄지','3.0M','오레노라멘 먹방')],
+   why:{en:'Michelin Bib Gourmand ramen with rich chicken broth.',ko:'미쉐린 빕구르망 라멘. 진한 닭육수에 매일 뽑는 면.'},
+   ctx:{en:'Expect a short wait; come solo and sit at the counter.',ko:'웨이팅은 기본. 혼자 카운터석 추천.'},
+   menu:[{n:'Chicken ramen',ko:'토리라멘',p:'₩10,000'},{n:'Char siu don',ko:'차슈동',p:'₩7,000'}],near:[{t:{en:'Hongik Univ. Stn',ko:'홍대입구역'},m:5}]},
+  r7:{id:'r7',areaId:'hongdae',name:'Cheongsong Naengmyeon',ko:'청송냉면',cat:{en:'Cold noodles',ko:'냉면'},catId:'noodle',i:'ti-bowl-chopsticks',seed:7,lat:37.5601,lng:126.9246,spice:3,solo:true,halal:false,diff:'Easy',open:true,trend:76,price:'$$',lenses:['solo','budget','spicy'],
+   why:{en:'Hamhung-style chewy cold noodles with a punchy spicy sauce.',ko:'쫄깃한 함흥식 비빔냉면, 매콤한 양념이 매력.'},
+   ctx:{en:'A summer go-to; add the broth on the side to cool down.',ko:'여름 단골. 육수 곁들여 시원하게.'},
+   menu:[{n:'Bibim naengmyeon',ko:'비빔냉면',p:'₩10,000'},{n:'Mul naengmyeon',ko:'물냉면',p:'₩10,000'}],near:[{t:{en:'Yeonnam-dong',ko:'연남동'},m:4}]},
+  r8:{id:'r8',areaId:'hongdae',name:'Kkanbu Chicken',ko:'깐부치킨 홍대',cat:{en:'Fried chicken & beer',ko:'치킨·맥주'},catId:'chicken',i:'ti-meat',seed:8,lat:37.5544,lng:126.9252,spice:2,solo:false,halal:false,diff:'Easy',open:true,trend:84,price:'$$',lenses:['soju','2am','kdrama','locals'],videos:[vid('Zach Choi ASMR','9.8M','korean fried chicken asmr')],
+   why:{en:'Crispy Korean fried chicken & draft beer — the chimaek night out.',ko:'바삭 치킨에 생맥주, 바로 치맥.'},
+   ctx:{en:'Seen in countless K-dramas; order half-and-half to share.',ko:'드라마 단골 메뉴. 반반으로 나눠 먹어요.'},
+   menu:[{n:'Fried chicken',ko:'후라이드',p:'₩20,000'},{n:'Soy-garlic chicken',ko:'간장치킨',p:'₩21,000'}],near:[{t:{en:'Hongik Univ. Stn',ko:'홍대입구역'},m:5}]},
+  r9:{id:'r9',areaId:'hongdae',name:'The Halal Guys Hongdae',ko:'할랄가이즈 홍대',cat:{en:'Halal · global',ko:'할랄·세계'},catId:'street',i:'ti-flame',seed:9,lat:37.5552,lng:126.9240,spice:2,solo:true,halal:true,diff:'Easy',open:true,trend:78,price:'$$',lenses:['halal','budget','solo','2am'],
+   why:{en:'The famous NYC halal chain — gyro & chicken over rice.',ko:'뉴욕발 유명 할랄 체인. 자이로·치킨 오버라이스.'},
+   ctx:{en:'A reliable halal option in a Korean-food district.',ko:'한식 거리 속 든든한 할랄 선택지.'},
+   menu:[{n:'Chicken over rice',ko:'치킨 오버라이스',p:'₩11,000'},{n:'Gyro',ko:'자이로',p:'₩10,000'}],near:[{t:{en:'Hongik Univ. Stn',ko:'홍대입구역'},m:5}]},
+  s1:{id:'s1',areaId:'seongsu',name:'Daelim Changgo',ko:'대림창고',cat:{en:'Gallery cafe',ko:'갤러리 카페'},catId:'cafe',i:'ti-cup',seed:51,lat:37.5447,lng:127.0556,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:93,price:'$$',lenses:['insta','kdrama','locals'],videos:[vid('Seoul Vibes','1.1M','대림창고 카페 vlog')],
+   why:{en:'A 1970s factory turned vast gallery cafe — Seongsu icon, geisha coffee.',ko:'1970년대 공장을 개조한 거대 갤러리 카페. 성수 상징, 게이샤 커피.'},
+   ctx:{en:'The cafe that defined Seongsu industrial-chic.',ko:'성수 인더스트리얼 감성을 정의한 카페.'},
+   menu:[{n:'Geisha coffee',ko:'게이샤 커피',p:'₩9,000'},{n:'Cream latte',ko:'크림라떼',p:'₩7,000'}],near:[{t:{en:'Seongsu Stn',ko:'성수역'},m:3}]},
+  s2:{id:'s2',areaId:'seongsu',name:'Onion Seongsu',ko:'어니언 성수',cat:{en:'Bakery cafe',ko:'베이커리 카페'},catId:'cafe',i:'ti-cup',seed:52,lat:37.5440,lng:127.0548,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:92,price:'$$',lenses:['insta','solo','locals'],
+   why:{en:'Cult bakery-cafe in a raw concrete space — pandoro is the star.',ko:'노출 콘크리트의 인기 베이커리 카페. 판도로가 시그니처.'},
+   ctx:{en:'A Seongsu must — go early before pastries sell out.',ko:'성수 필수 코스. 빵 떨어지기 전에 일찍.'},
+   menu:[{n:'Pandoro',ko:'판도로',p:'₩6,500'},{n:'Latte',ko:'라떼',p:'₩5,500'}],near:[{t:{en:'Seoul Forest',ko:'서울숲'},m:4}]},
+  s3:{id:'s3',areaId:'seongsu',name:'Seongsu Pocha',ko:'성수포차',cat:{en:'Street food',ko:'분식'},catId:'street',i:'ti-flame',seed:53,lat:37.5452,lng:127.0549,spice:3,solo:false,halal:false,diff:'Medium',open:true,trend:78,price:'$$',lenses:['soju','pocha','2am'],
+   why:{en:'A street-tent bar serving sizzling anju late into the night.',ko:'밤늦게까지 지글지글 안주를 내는 길거리 포차.'},
+   ctx:{en:'The pojangmacha experience — plastic stools, soju, grilled snacks.',ko:'포장마차의 정수. 플라스틱 의자에 소주, 그리고 안주.'},
+   menu:[{n:'Grilled intestines',ko:'곱창',p:'₩16,000'},{n:'Egg roll',ko:'계란말이',p:'₩8,000'}],near:[{t:{en:'Seongsu Stn',ko:'성수역'},m:3}]},
+  s4:{id:'s4',areaId:'seongsu',name:'Betong Seongsu',ko:'베통 성수',cat:{en:'Bakery cafe',ko:'베이커리 카페'},catId:'cafe',i:'ti-cup',seed:54,lat:37.5435,lng:127.0560,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:84,price:'$$',lenses:['insta','budget','solo'],
+   why:{en:'Vintage European-style bakery famous for salt bread.',ko:'빈티지 유럽 감성, 소금빵으로 유명한 베이커리.'},
+   ctx:{en:'Grab a salt bread and a flat white for the walk.',ko:'소금빵에 플랫화이트 들고 산책 코스.'},
+   menu:[{n:'Salt bread',ko:'소금빵',p:'₩3,800'},{n:'Flat white',ko:'플랫화이트',p:'₩5,500'}],near:[{t:{en:'Seongsu Cafe St.',ko:'성수 카페거리'},m:2}]},
+  s5:{id:'s5',areaId:'seongsu',name:'Seongsu Gukbap',ko:'성수국밥',cat:{en:'Soup & rice',ko:'국밥'},catId:'stew',i:'ti-soup',seed:55,lat:37.5460,lng:127.0540,spice:2,solo:true,halal:false,diff:'Easy',open:true,trend:73,price:'$$',lenses:['haejang','solo','2am'],
+   why:{en:'Steaming pork soup-rice open late — the local hangover fix.',ko:'밤늦게까지 김 나는 돼지국밥. 동네 해장 성지.'},
+   ctx:{en:'After a night at the pocha, this is where Seongsu recovers.',ko:'포차 다음날, 성수가 해장하러 오는 곳.'},
+   menu:[{n:'Gukbap',ko:'국밥',p:'₩9,000'},{n:'Suyuk',ko:'수육',p:'₩15,000'}],near:[{t:{en:'Seongsu Stn',ko:'성수역'},m:4}]},
+  s6:{id:'s6',areaId:'seongsu',name:'Cheese Industry',ko:'치즈인더스트리',cat:{en:'Cafe · brunch',ko:'카페·브런치'},catId:'cafe',i:'ti-cup',seed:56,lat:37.5444,lng:127.0571,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:81,price:'$$',lenses:['insta','kdrama','solo'],
+   why:{en:'A dairy-farm-themed cafe with a giant cow statue out front.',ko:'젖소 조형물이 반기는 목장 컨셉 카페.'},
+   ctx:{en:'Theme-park vibes; great for groups and photos.',ko:'테마파크 같은 분위기. 단체·사진에 좋아요.'},
+   menu:[{n:'Cheese latte',ko:'치즈라떼',p:'₩7,500'},{n:'Cheese cake',ko:'치즈케이크',p:'₩8,000'}],near:[{t:{en:'Seoul Forest',ko:'서울숲'},m:5}]},
+  s7:{id:'s7',areaId:'seongsu',name:'Hey Bowl',ko:'헤이보울',cat:{en:'Smoothie bowls',ko:'스무디볼'},catId:'cafe',i:'ti-salad',seed:57,lat:37.5451,lng:127.0538,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:75,price:'$$',lenses:['insta','solo'],
+   why:{en:'Bright fruit smoothie bowls — the healthy Seongsu pick.',ko:'알록달록 과일 스무디볼. 건강한 성수 픽.'},
+   ctx:{en:'Light, photogenic, and great between cafe stops.',ko:'가볍고 예쁜, 카페 사이 충전용.'},
+   menu:[{n:'Purple bowl',ko:'퍼플 보울',p:'₩11,000'},{n:'Green bowl',ko:'그린 보울',p:'₩11,000'}],near:[{t:{en:'Seongsu Cafe St.',ko:'성수 카페거리'},m:3}]},
+  g1:{id:'g1',areaId:'gangnam',name:'Kkubdang',ko:'꿉당',cat:{en:'Korean BBQ',ko:'한식 고기'},catId:'bbq',i:'ti-meat',seed:61,lat:37.4985,lng:127.0282,spice:2,solo:false,halal:false,diff:'Easy',open:true,trend:89,price:'$$$',lenses:['soju','locals'],videos:[vid('Mukbang King','2.0M','꿉당 목살 먹방')],
+   why:{en:'15-day-aged pork neck grilled over charcoal — a Gangnam cult.',ko:'15일 숙성 목살을 숯불에. 강남 컬트 고깃집.'},
+   ctx:{en:'Aged pork is the star — go medium, dip in salt.',ko:'숙성 목살이 주인공. 소금에 살짝.'},
+   menu:[{n:'Aged pork neck',ko:'숙성목살',p:'₩17,000'},{n:'Kimchi stew',ko:'김치찌개',p:'₩8,000'}],near:[{t:{en:'Gangnam Stn',ko:'강남역'},m:5}]},
+  g2:{id:'g2',areaId:'gangnam',name:'Oegojip Seolleongtang',ko:'외고집설렁탕',cat:{en:'Soup & rice',ko:'설렁탕'},catId:'stew',i:'ti-soup',seed:62,lat:37.4972,lng:127.0265,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:85,price:'$$',lenses:['haejang','solo','rainy','locals'],
+   why:{en:'Michelin-recommended milky beef-bone soup — maybe Seoul best.',ko:'미쉐린 추천 뽀얀 설렁탕. 서울 최고급으로 꼽혀요.'},
+   ctx:{en:'Season with salt & scallions; the classic hangover cure.',ko:'소금·파로 간. 해장의 정석.'},
+   menu:[{n:'Seolleongtang',ko:'설렁탕',p:'₩12,000'},{n:'Suyuk',ko:'수육',p:'₩28,000'}],near:[{t:{en:'Gangnam Stn',ko:'강남역'},m:4}]},
+  g3:{id:'g3',areaId:'gangnam',name:'Gangnam Mandujip',ko:'강남만두집',cat:{en:'Dumplings',ko:'만두'},catId:'noodle',i:'ti-bowl-chopsticks',seed:63,lat:37.5000,lng:127.0290,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:77,price:'$$',lenses:['locals','solo','rainy'],
+   why:{en:'30+ years of Pyeongan-style dumpling soup.',ko:'30년 넘은 평안도식 만둣국 노포.'},
+   ctx:{en:'Hand-folded mandu in a clear, comforting broth.',ko:'손으로 빚은 만두에 맑고 따뜻한 국물.'},
+   menu:[{n:'Manduguk',ko:'만둣국',p:'₩10,000'},{n:'Steamed mandu',ko:'찐만두',p:'₩9,000'}],near:[{t:{en:'Sinnonhyeon Stn',ko:'신논현역'},m:5}]},
+  g4:{id:'g4',areaId:'gangnam',name:'Apgujeong Vegan',ko:'압구정 비건',cat:{en:'Vegan',ko:'비건'},catId:'vegan',i:'ti-salad',seed:64,lat:37.5270,lng:127.0290,spice:1,solo:true,halal:true,diff:'Easy',open:true,trend:72,price:'$$$',lenses:['halal','insta','solo'],
+   why:{en:'Upscale plant-based plates, beautifully styled.',ko:'고급스럽고 예쁜 플레이팅의 비건 다이닝.'},
+   ctx:{en:'Seoul wellness-dining wave, Apgujeong edition.',ko:'서울 웰니스 다이닝, 압구정 버전.'},
+   menu:[{n:'Vegan course',ko:'비건 코스',p:'₩28,000'},{n:'Tofu steak',ko:'두부스테이크',p:'₩16,000'}],near:[{t:{en:'Apgujeong Rodeo',ko:'압구정 로데오'},m:5}]},
+  g5:{id:'g5',areaId:'gangnam',name:'Gangnam Chimaek',ko:'강남치맥',cat:{en:'Fried chicken & beer',ko:'치킨·맥주'},catId:'chicken',i:'ti-meat',seed:65,lat:37.4968,lng:127.0305,spice:2,solo:false,halal:false,diff:'Easy',open:true,trend:86,price:'$$',lenses:['soju','2am','kdrama'],
+   why:{en:'Crispy chicken and beer, a Gangnam night-out classic.',ko:'바삭 치킨에 맥주. 강남 밤의 클래식.'},
+   ctx:{en:'Seen in countless K-dramas — the chimaek night out.',ko:'수많은 K-드라마 속 그 치맥 장면.'},
+   menu:[{n:'Fried chicken',ko:'후라이드',p:'₩21,000'},{n:'Yangnyeom chicken',ko:'양념치킨',p:'₩22,000'}],near:[{t:{en:'Gangnam Stn',ko:'강남역'},m:4}]},
+  g6:{id:'g6',areaId:'gangnam',name:'Garosu-gil Cafe',ko:'가로수길 카페',cat:{en:'Cafe',ko:'카페'},catId:'cafe',i:'ti-cup',seed:66,lat:37.5205,lng:127.0230,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:74,price:'$$$',lenses:['insta','solo'],
+   why:{en:'A stylish flagship cafe on trendy Garosu-gil.',ko:'세련된 가로수길의 플래그십 카페.'},
+   ctx:{en:'Window-shop the boutiques, then refuel here.',ko:'편집숍 구경하다 잠시 충전.'},
+   menu:[{n:'Specialty drip',ko:'스페셜티 드립',p:'₩8,000'},{n:'Tiramisu',ko:'티라미수',p:'₩9,500'}],near:[{t:{en:'Sinsa Garosu-gil',ko:'신사 가로수길'},m:2}]},
+  m1:{id:'m1',areaId:'myeongdong',name:'Myeongdong Kyoja',ko:'명동교자',cat:{en:'Noodles',ko:'칼국수'},catId:'noodle',i:'ti-bowl-chopsticks',seed:71,lat:37.5633,lng:126.9855,spice:2,solo:true,halal:false,diff:'Easy',open:true,trend:91,price:'$$',lenses:['locals','solo','rainy'],videos:[vid('Mark Wiens','3.7M','myeongdong kalguksu')],
+   why:{en:'Legendary kalguksu & mandu — Michelin Bib, always a line.',ko:'전설의 칼국수·만두. 미쉐린 빕구르망, 늘 줄.'},
+   ctx:{en:'One menu done perfectly; the garlic kimchi is fierce.',ko:'한 메뉴를 완벽히. 마늘 김치가 아주 매워요.'},
+   menu:[{n:'Kalguksu',ko:'칼국수',p:'₩11,000'},{n:'Mandu',ko:'만두',p:'₩12,000'}],near:[{t:{en:'Myeongdong Stn',ko:'명동역'},m:3}]},
+  m2:{id:'m2',areaId:'myeongdong',name:'Hadongkwan',ko:'하동관',cat:{en:'Beef soup',ko:'곰탕'},catId:'stew',i:'ti-soup',seed:72,lat:37.5640,lng:126.9850,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:88,price:'$$$',lenses:['haejang','locals','solo'],videos:[vid('Futtieadventures','1.6M','hadongkwan gomtang')],
+   why:{en:'Gomtang since 1939 — Michelin Bib, a Myeongdong landmark.',ko:'1939년부터의 곰탕. 미쉐린 빕, 명동 터줏대감.'},
+   ctx:{en:'Clean beef broth; lunch-only, go early.',ko:'깔끔한 소고기 국물. 점심만, 일찍 가세요.'},
+   menu:[{n:'Gomtang',ko:'곰탕',p:'₩15,000'},{n:'Special gomtang',ko:'특곰탕',p:'₩18,000'}],near:[{t:{en:'Euljiro 1-ga Stn',ko:'을지로입구역'},m:4}]},
+  m3:{id:'m3',areaId:'myeongdong',name:'Myeongdong Mandu',ko:'명동만두',cat:{en:'Dumplings',ko:'만두'},catId:'noodle',i:'ti-bowl-chopsticks',seed:73,lat:37.5630,lng:126.9866,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:78,price:'$$',lenses:['locals','budget','solo'],
+   why:{en:'40+ year noodle & dumpling house, Michelin Bib recommended.',ko:'40년 넘은 국수·만두 노포, 미쉐린 빕 추천.'},
+   ctx:{en:'Old-school, cheap, and consistent.',ko:'노포 감성, 저렴하고 한결같음.'},
+   menu:[{n:'Mandu',ko:'만두',p:'₩8,000'},{n:'Janchi guksu',ko:'잔치국수',p:'₩7,000'}],near:[{t:{en:'Myeongdong Stn',ko:'명동역'},m:3}]},
+  m4:{id:'m4',areaId:'myeongdong',name:'Myeongdong Street Food',ko:'명동 길거리',cat:{en:'Street food',ko:'분식'},catId:'street',i:'ti-flame',seed:74,lat:37.5638,lng:126.9852,spice:2,solo:true,halal:false,diff:'Easy',open:true,trend:85,price:'$',lenses:['insta','budget','2am'],videos:[vid('Strictly Dumpling','4.1M','myeongdong street food tour')],
+   why:{en:'The famous night-market alley — tornado potato, egg bread, more.',ko:'명동 야시장 골목. 회오리감자·계란빵 등.'},
+   ctx:{en:'Graze your way through; cash & small bills help.',ko:'걸으며 골라 먹기. 현금·잔돈이 편해요.'},
+   menu:[{n:'Tornado potato',ko:'회오리감자',p:'₩4,000'},{n:'Egg bread',ko:'계란빵',p:'₩2,000'}],near:[{t:{en:'Myeongdong Cathedral',ko:'명동성당'},m:5}]},
+  m5:{id:'m5',areaId:'myeongdong',name:'Misungok',ko:'미성옥',cat:{en:'Soup & rice',ko:'설렁탕'},catId:'stew',i:'ti-soup',seed:75,lat:37.5642,lng:126.9847,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:76,price:'$$',lenses:['haejang','locals','solo'],
+   why:{en:'A 44-year retro spot loved by locals & travelers alike.',ko:'44년 레트로 노포, 현지인·여행객 모두 사랑.'},
+   ctx:{en:'Comforting beef soup-rice with old-Seoul charm.',ko:'옛 서울 감성의 든든한 소고기 국밥.'},
+   menu:[{n:'Seolleongtang',ko:'설렁탕',p:'₩11,000'},{n:'Suyuk',ko:'수육',p:'₩25,000'}],near:[{t:{en:'Myeongdong Stn',ko:'명동역'},m:5}]},
+  m6:{id:'m6',areaId:'myeongdong',name:'Kervan',ko:'케르반',cat:{en:'Halal · Turkish',ko:'할랄·터키'},catId:'street',i:'ti-flame',seed:76,lat:37.5628,lng:126.9875,spice:2,solo:true,halal:true,diff:'Easy',open:true,trend:80,price:'$$',lenses:['halal','insta','solo'],
+   why:{en:'Popular Turkish halal spot — kebabs, pide, baklava.',ko:'인기 터키 할랄 식당. 케밥·피데·바클라바.'},
+   ctx:{en:'A reliable halal break from Korean food.',ko:'한식 사이 든든한 할랄 한 끼.'},
+   menu:[{n:'Doner kebab',ko:'되네르 케밥',p:'₩12,000'},{n:'Pide',ko:'피데',p:'₩15,000'}],near:[{t:{en:'Myeongdong Stn',ko:'명동역'},m:6}]},
+  i1:{id:'i1',areaId:'itaewon',name:'EID',ko:'이드',cat:{en:'Halal Korean',ko:'할랄 한식'},catId:'bbq',i:'ti-meat',seed:81,lat:37.5343,lng:126.9942,spice:2,solo:false,halal:true,diff:'Easy',open:true,trend:87,price:'$$$',lenses:['halal','locals','solo'],videos:[vid('Halal Trip','1.3M','EID itaewon halal korean')],
+   why:{en:'Beloved halal Korean BBQ run by a Korean Muslim family.',ko:'한국 무슬림 가족이 운영하는 인기 할랄 한식 BBQ.'},
+   ctx:{en:'Many travelers first halal Korean meal in Seoul.',ko:'서울에서의 첫 할랄 한식으로 꼽히는 곳.'},
+   menu:[{n:'Halal bulgogi',ko:'할랄 불고기',p:'₩18,000'},{n:'Bibimbap',ko:'비빔밥',p:'₩13,000'}],near:[{t:{en:'Seoul Central Mosque',ko:'서울중앙성원'},m:3}]},
+  i2:{id:'i2',areaId:'itaewon',name:'Makan Halal',ko:'마칸 할랄',cat:{en:'Halal · Malaysian',ko:'할랄·말레이'},catId:'bbq',i:'ti-meat',seed:82,lat:37.5340,lng:126.9935,spice:2,solo:true,halal:true,diff:'Easy',open:true,trend:80,price:'$$',lenses:['halal','budget','solo'],
+   why:{en:'Muslim-owned spot near the mosque — Korean & Malaysian dishes.',ko:'성원 근처 무슬림 운영. 한식·말레이 요리.'},
+   ctx:{en:'Friendly, casual, and dependable halal.',ko:'친절하고 캐주얼한 믿음직한 할랄.'},
+   menu:[{n:'Nasi goreng',ko:'나시고렝',p:'₩11,000'},{n:'Bulgogi rice',ko:'불고기 덮밥',p:'₩12,000'}],near:[{t:{en:'Seoul Central Mosque',ko:'서울중앙성원'},m:2}]},
+  i3:{id:'i3',areaId:'itaewon',name:'Vatos Urban Tacos',ko:'바토스 어반 타코',cat:{en:'Mexican',ko:'멕시칸'},catId:'street',i:'ti-flame',seed:83,lat:37.5347,lng:126.9952,spice:2,solo:false,halal:false,diff:'Easy',open:true,trend:88,price:'$$',lenses:['insta','2am','locals','kdrama'],videos:[vid('Eat Your Kimchi','2.4M','vatos tacos itaewon')],
+   why:{en:'Famous Korean-Mexican fusion — kimchi carnitas fries, soju sangria.',ko:'유명 코리안-멕시칸 퓨전. 김치 카르니타스, 소주 상그리아.'},
+   ctx:{en:'An Itaewon institution; lively and great for groups.',ko:'이태원 명소. 활기차고 단체에 좋아요.'},
+   menu:[{n:'Kimchi carnitas fries',ko:'김치 카르니타스 프라이',p:'₩14,000'},{n:'Tacos (3)',ko:'타코 3개',p:'₩13,000'}],near:[{t:{en:'Itaewon Stn',ko:'이태원역'},m:3}]},
+  i4:{id:'i4',areaId:'itaewon',name:'Plant Cafe & Kitchen',ko:'플랜트 카페',cat:{en:'Vegan',ko:'비건'},catId:'vegan',i:'ti-salad',seed:84,lat:37.5356,lng:126.9938,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:79,price:'$$',lenses:['insta','solo'],
+   why:{en:'Seoul beloved fully-vegan cafe — bowls, bakes, brunch.',ko:'서울 대표 비건 카페. 보울·베이커리·브런치.'},
+   ctx:{en:'Bright, cozy, and 100% plant-based.',ko:'밝고 아늑한 100% 식물성.'},
+   menu:[{n:'Buddha bowl',ko:'부다볼',p:'₩15,000'},{n:'Vegan cake',ko:'비건 케이크',p:'₩8,000'}],near:[{t:{en:'Noksapyeong Stn',ko:'녹사평역'},m:5}]},
+  i5:{id:'i5',areaId:'itaewon',name:"Linus' Bama BBQ",ko:'라이너스 바베큐',cat:{en:'American BBQ',ko:'아메리칸 BBQ'},catId:'bbq',i:'ti-meat',seed:85,lat:37.5350,lng:126.9958,spice:1,solo:false,halal:false,diff:'Easy',open:true,trend:82,price:'$$$',lenses:['soju','locals','insta'],
+   why:{en:'Cult Southern-style smoked BBQ — pulled pork & brisket.',ko:'남부식 훈제 BBQ 컬트. 풀드포크·브리스킷.'},
+   ctx:{en:'A taste of home for expats; big portions.',ko:'외국인들의 고향 맛집. 푸짐한 양.'},
+   menu:[{n:'Pulled pork plate',ko:'풀드포크 플레이트',p:'₩19,000'},{n:'Brisket',ko:'브리스킷',p:'₩24,000'}],near:[{t:{en:'Itaewon Stn',ko:'이태원역'},m:4}]},
+  i6:{id:'i6',areaId:'itaewon',name:'Itaewon Gukbap',ko:'이태원국밥',cat:{en:'Soup & rice',ko:'국밥'},catId:'stew',i:'ti-soup',seed:86,lat:37.5339,lng:126.9930,spice:2,solo:true,halal:false,diff:'Easy',open:true,trend:73,price:'$$',lenses:['haejang','2am','solo'],
+   why:{en:'Hearty soup-rice that revives you after a night out.',ko:'밤놀이 후 살려주는 든든한 국밥.'},
+   ctx:{en:'The classic Itaewon nightlife recovery meal.',ko:'이태원 밤문화 해장의 정석.'},
+   menu:[{n:'Gukbap',ko:'국밥',p:'₩9,500'},{n:'Suyuk',ko:'수육',p:'₩16,000'}],near:[{t:{en:'Itaewon Stn',ko:'이태원역'},m:5}]},
+  hc1:{id:'hc1',areaId:'hongdae',name:'Dujjonku Bakery',ko:'두쫀쿠 베이커리',cat:{en:'Dessert cafe',ko:'디저트 카페'},catId:'cafe',i:'ti-cookie',seed:101,lat:37.5560,lng:126.9233,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:95,price:'$',lenses:['insta'],
+   why:{en:'The viral Dubai-chocolate cookie — gooey pistachio-kataifi.',ko:'바이럴 두바이초콜릿 쿠키. 피스타치오 카다이프가 쭉.'},
+   ctx:{en:'Expect a queue — for the photo as much as the taste.',ko:'줄은 기본. 맛만큼 인증샷 때문에 줄 서요.'},
+   menu:[{n:'Dubai cookie',ko:'두바이 쿠키',p:'₩6,500'},{n:'Iced latte',ko:'아이스라떼',p:'₩5,000'}],near:[{t:{en:'Hongdae Walking St.',ko:'홍대 걷고싶은거리'},m:3}]},
+  hc2:{id:'hc2',areaId:'seongsu',name:'Seongsu Cookie Lab',ko:'성수 쿠키랩',cat:{en:'Dessert cafe',ko:'디저트 카페'},catId:'cafe',i:'ti-cookie',seed:102,lat:37.5450,lng:127.0552,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:90,price:'$$',lenses:['insta'],
+   why:{en:'A dessert lab spinning the Dubai-choco trend into new flavors.',ko:'두바이초콜릿 트렌드를 변주하는 디저트 연구소.'},
+   ctx:{en:'Seongsu cafe scene moves fast — new drops weekly.',ko:'성수 카페 신은 빠릅니다. 매주 신메뉴.'},
+   menu:[{n:'Choco cookie',ko:'초코 쿠키',p:'₩7,000'},{n:'Cream latte',ko:'크림라떼',p:'₩6,500'}],near:[{t:{en:'Seongsu Cafe St.',ko:'성수 카페거리'},m:2}]},
+  hc3:{id:'hc3',areaId:'hongdae',name:'Hongdae Tanghulu',ko:'홍대 탕후루',cat:{en:'Street food',ko:'분식'},catId:'street',i:'ti-candy',seed:103,lat:37.5549,lng:126.9250,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:88,price:'$',lenses:['insta'],
+   why:{en:'Glassy sugar-coated fruit on a stick — the crunch everyone films.',ko:'유리알 같은 설탕 코팅 과일꼬치. 그 바삭 소리.'},
+   ctx:{en:'A street-snack craze that swept Korea teens.',ko:'한국 10대를 휩쓴 길거리 간식 열풍.'},
+   menu:[{n:'Strawberry tanghulu',ko:'딸기 탕후루',p:'₩4,000'},{n:'Grape tanghulu',ko:'포도 탕후루',p:'₩4,000'}],near:[{t:{en:'Hongik Univ. Stn',ko:'홍대입구역'},m:4}]},
+  hc4:{id:'hc4',areaId:'gangnam',name:'Gangnam Tanghulu Bar',ko:'강남 탕후루바',cat:{en:'Street food',ko:'분식'},catId:'street',i:'ti-candy',seed:104,lat:37.4982,lng:127.0288,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:84,price:'$',lenses:['insta'],
+   why:{en:'A sit-down tanghulu bar with premium fruit picks.',ko:'프리미엄 과일을 고르는, 앉아서 먹는 탕후루 바.'},
+   ctx:{en:'The trend, upgraded for Gangnam tastes.',ko:'강남 취향으로 업그레이드된 탕후루.'},
+   menu:[{n:'Mix tanghulu',ko:'모둠 탕후루',p:'₩5,500'},{n:'Shine muscat',ko:'샤인머스캣',p:'₩6,000'}],near:[{t:{en:'Gangnam Stn',ko:'강남역'},m:5}]},
+  hc5:{id:'hc5',areaId:'hongdae',name:'Yeonnam Bingsu Cup',ko:'연남 빙수컵',cat:{en:'Dessert cafe',ko:'디저트 카페'},catId:'cafe',i:'ti-ice-cream',seed:105,lat:37.5615,lng:126.9252,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:86,price:'$$',lenses:['insta'],
+   why:{en:'Shaved-ice bingsu in a portable cup — eat it while you walk.',ko:'들고 다니며 먹는 컵 빙수. 걸으면서 한 입.'},
+   ctx:{en:'Summer grab-and-go take on the classic bowl bingsu.',ko:'그릇 빙수의 여름용 테이크아웃 버전.'},
+   menu:[{n:'Injeolmi bingsu',ko:'인절미 빙수',p:'₩7,500'},{n:'Mango bingsu',ko:'망고 빙수',p:'₩8,500'}],near:[{t:{en:'Yeonnam-dong',ko:'연남동'},m:3}]},
+  hc6:{id:'hc6',areaId:'seongsu',name:'Seongsu Ice Studio',ko:'성수 아이스스튜디오',cat:{en:'Dessert cafe',ko:'디저트 카페'},catId:'cafe',i:'ti-ice-cream',seed:106,lat:37.5443,lng:127.0563,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:83,price:'$$',lenses:['insta'],
+   why:{en:'A photogenic bingsu studio styled for the feed.',ko:'피드용으로 꾸민 포토제닉 빙수 스튜디오.'},
+   ctx:{en:'Seongsu does dessert for the camera as much as the spoon.',ko:'성수는 숟가락만큼 카메라를 위한 디저트.'},
+   menu:[{n:'Matcha bingsu',ko:'말차 빙수',p:'₩9,000'},{n:'Berry bingsu',ko:'베리 빙수',p:'₩9,500'}],near:[{t:{en:'Seongsu Cafe St.',ko:'성수 카페거리'},m:2}]},
+  r10:{id:'r10',areaId:'hongdae',name:'Jopok Tteokbokki',ko:'조폭떡볶이',cat:{en:'Street food',ko:'분식'},catId:'street',i:'ti-flame',seed:201,lat:37.5535,lng:126.9256,spice:3,solo:true,halal:false,diff:'Medium',open:true,trend:83,price:'$',lenses:['2am','budget','spicy','solo'],
+   why:{en:'A Hongdae street-tteokbokki legend — cheap, spicy, always busy.',ko:'홍대 길거리 떡볶이 전설. 싸고 맵고 늘 북적.'},ctx:{en:'Grab-and-go on the main strip; great late-night.',ko:'메인 거리 테이크아웃, 야식으로 최고.'},
+   menu:[{n:'Tteokbokki',ko:'떡볶이',p:'₩4,000'},{n:'Sundae',ko:'순대',p:'₩4,000'}],near:[{t:{en:'Hongik Univ. Stn',ko:'홍대입구역'},m:3}]},
+  r11:{id:'r11',areaId:'hongdae',name:'Teddy Beurre House',ko:'테디뵈르하우스',cat:{en:'Bakery cafe',ko:'베이커리 카페'},catId:'cafe',i:'ti-cup',seed:202,lat:37.5618,lng:126.9243,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:88,price:'$$',lenses:['insta','solo','locals'],
+   why:{en:'Yeonnam croissant darling — buttery, flaky, photogenic.',ko:'연남 크루아상 성지. 버터 향 가득, 비주얼 최고.'},ctx:{en:'Expect a wait on weekends; come early.',ko:'주말엔 웨이팅. 일찍 가세요.'},
+   menu:[{n:'Croissant',ko:'크루아상',p:'₩5,000'},{n:'Latte',ko:'라떼',p:'₩5,500'}],near:[{t:{en:'Yeonnam-dong',ko:'연남동'},m:2}]},
+  r12:{id:'r12',areaId:'hongdae',name:'Richemont Bakery',ko:'리치몬드 과자점',cat:{en:'Bakery',ko:'베이커리'},catId:'cafe',i:'ti-cup',seed:203,lat:37.5620,lng:126.9237,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:78,price:'$',lenses:['locals','budget','solo'],
+   why:{en:'A decades-old neighborhood bakery locals grew up on.',ko:'동네가 함께 자란 수십 년 노포 빵집.'},ctx:{en:'Old-school cakes & breads, no frills.',ko:'정통 케이크·빵, 꾸밈 없는 맛.'},
+   menu:[{n:'Mont Blanc',ko:'몽블랑',p:'₩6,000'},{n:'Soboro bun',ko:'소보로빵',p:'₩2,500'}],near:[{t:{en:'Yeonnam-dong',ko:'연남동'},m:3}]},
+  s8:{id:'s8',areaId:'seongsu',name:'Center Coffee',ko:'센터커피',cat:{en:'Roastery cafe',ko:'로스터리 카페'},catId:'cafe',i:'ti-cup',seed:204,lat:37.5448,lng:127.0566,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:89,price:'$$',lenses:['insta','solo','locals'],
+   why:{en:'A specialty roastery beloved for clean, bright coffee.',ko:'깔끔하고 산뜻한 커피로 사랑받는 스페셜티 로스터리.'},ctx:{en:'Serious coffee in a minimal Seongsu space.',ko:'미니멀한 성수 공간의 진지한 커피.'},
+   menu:[{n:'Pour-over',ko:'푸어오버',p:'₩6,500'},{n:'Flat white',ko:'플랫화이트',p:'₩5,500'}],near:[{t:{en:'Seoul Forest',ko:'서울숲'},m:4}]},
+  s9:{id:'s9',areaId:'seongsu',name:'Mesh Coffee',ko:'메쉬커피',cat:{en:'Roastery cafe',ko:'로스터리 카페'},catId:'cafe',i:'ti-cup',seed:205,lat:37.5442,lng:127.0552,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:82,price:'$$',lenses:['insta','solo'],
+   why:{en:'Skilled baristas, sleek bar, single-origin focus.',ko:'수준급 바리스타, 세련된 바, 싱글오리진 중심.'},ctx:{en:'A coffee-nerd favorite in Seongsu.',ko:'성수 커피 마니아들의 단골.'},
+   menu:[{n:'Espresso',ko:'에스프레소',p:'₩4,500'},{n:'Iced latte',ko:'아이스라떼',p:'₩5,500'}],near:[{t:{en:'Seongsu Stn',ko:'성수역'},m:3}]},
+  s10:{id:'s10',areaId:'seongsu',name:'Nudake Seongsu',ko:'누데이크 성수',cat:{en:'Dessert cafe',ko:'디저트 카페'},catId:'cafe',i:'ti-cup',seed:206,lat:37.5446,lng:127.0575,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:90,price:'$$$',lenses:['insta','kdrama'],
+   why:{en:'Art-piece pastries — the famous peak croissant.',ko:'예술 작품 같은 디저트. 피크 크루아상으로 유명.'},ctx:{en:'Dramatic, dark, and made for the feed.',ko:'어둡고 드라마틱한, 피드용 비주얼.'},
+   menu:[{n:'Peak croissant',ko:'피크 크루아상',p:'₩9,000'},{n:'Cube cake',ko:'큐브 케이크',p:'₩11,000'}],near:[{t:{en:'Seoul Forest',ko:'서울숲'},m:5}]},
+  s11:{id:'s11',areaId:'seongsu',name:'Sogeumjip Deli',ko:'소금집델리',cat:{en:'Deli sandwich',ko:'델리 샌드위치'},catId:'cafe',i:'ti-cup',seed:207,lat:37.5439,lng:127.0544,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:80,price:'$$',lenses:['insta','solo','budget'],
+   why:{en:'Hearty pastrami & deli sandwiches, NYC vibes.',ko:'든든한 파스트라미·델리 샌드위치, 뉴욕 감성.'},ctx:{en:'Casual lunch between cafe stops.',ko:'카페 사이 캐주얼 점심.'},
+   menu:[{n:'Pastrami sandwich',ko:'파스트라미 샌드위치',p:'₩12,000'},{n:'Soda',ko:'소다',p:'₩4,000'}],near:[{t:{en:'Seongsu Stn',ko:'성수역'},m:3}]},
+  s12:{id:'s12',areaId:'seongsu',name:'LCDC Seoul',ko:'엘씨디씨 서울',cat:{en:'Cafe complex',ko:'카페 복합공간'},catId:'cafe',i:'ti-cup',seed:208,lat:37.5433,lng:127.0568,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:85,price:'$$',lenses:['insta','kdrama','solo'],
+   why:{en:'A design-forward retail-and-cafe complex to wander.',ko:'둘러보기 좋은 디자인 편집·카페 복합공간.'},ctx:{en:'Shop, sip, and photograph the courtyard.',ko:'쇼핑하고 커피 마시며 중정 사진까지.'},
+   menu:[{n:'Drip coffee',ko:'드립커피',p:'₩6,000'},{n:'Signature dessert',ko:'시그니처 디저트',p:'₩8,500'}],near:[{t:{en:'Seongsu Stn',ko:'성수역'},m:4}]},
+  s13:{id:'s13',areaId:'seongsu',name:'Grandpa Factory',ko:'할아버지공장',cat:{en:'Gallery cafe',ko:'갤러리 카페'},catId:'cafe',i:'ti-cup',seed:209,lat:37.5455,lng:127.0561,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:83,price:'$$',lenses:['insta','kdrama','locals'],
+   why:{en:'An early Seongsu warehouse-cafe with industrial charm.',ko:'초기 성수 창고형 카페, 인더스트리얼 매력.'},ctx:{en:'High ceilings, plants, and big windows.',ko:'높은 천장, 식물, 큰 창.'},
+   menu:[{n:'Americano',ko:'아메리카노',p:'₩5,500'},{n:'Carrot cake',ko:'당근케이크',p:'₩7,500'}],near:[{t:{en:'Seoul Forest',ko:'서울숲'},m:5}]},
+  g7:{id:'g7',areaId:'gangnam',name:'Saebyeokjip',ko:'새벽집',cat:{en:'Korean BBQ',ko:'한우'},catId:'bbq',i:'ti-meat',seed:210,lat:37.5240,lng:127.0480,spice:1,solo:false,halal:false,diff:'Easy',open:true,trend:86,price:'$$$$',lenses:['soju','2am','locals'],
+   why:{en:'24-hour Cheongdam hanwoo institution — yukhoe & soup too.',ko:'청담 24시 한우 노포. 육회·해장국까지.'},ctx:{en:'Where night owls get premium beef at any hour.',ko:'밤샘족이 아무 때나 프리미엄 한우.'},
+   menu:[{n:'Hanwoo galbi',ko:'한우갈비',p:'₩45,000'},{n:'Yukhoe',ko:'육회',p:'₩28,000'}],near:[{t:{en:'Cheongdam',ko:'청담'},m:5}]},
+  g8:{id:'g8',areaId:'gangnam',name:'Knotted Dosan',ko:'노티드 도산',cat:{en:'Dessert cafe',ko:'디저트 카페'},catId:'cafe',i:'ti-cup',seed:211,lat:37.5235,lng:127.0360,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:88,price:'$$',lenses:['insta','solo'],
+   why:{en:'Korea cult cream-doughnuts in a bright flagship.',ko:'크림 도넛 열풍의 본진, 밝은 플래그십.'},ctx:{en:'Sugar-rush central; great for photos.',ko:'당 충전 성지, 사진도 예쁨.'},
+   menu:[{n:'Cream doughnut',ko:'크림 도넛',p:'₩4,200'},{n:'Milk latte',ko:'우유라떼',p:'₩6,000'}],near:[{t:{en:'Dosan Park',ko:'도산공원'},m:4}]},
+  g9:{id:'g9',areaId:'gangnam',name:'Downtowner Apgujeong',ko:'다운타우너 압구정',cat:{en:'Burgers',ko:'수제버거'},catId:'street',i:'ti-flame',seed:212,lat:37.5268,lng:127.0388,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:84,price:'$$',lenses:['insta','budget','solo'],
+   why:{en:'Avocado burgers in a sleek, design-led space.',ko:'아보카도 버거로 유명한 세련된 버거집.'},ctx:{en:'Casual, fast, and very Instagram.',ko:'캐주얼하고 빠른, 인스타 단골.'},
+   menu:[{n:'Avocado burger',ko:'아보카도 버거',p:'₩11,500'},{n:'Fries',ko:'감자튀김',p:'₩4,500'}],near:[{t:{en:'Apgujeong Rodeo',ko:'압구정 로데오'},m:4}]},
+  g10:{id:'g10',areaId:'gangnam',name:'Dosan Bunsik',ko:'도산분식',cat:{en:'Street food',ko:'분식'},catId:'street',i:'ti-flame',seed:213,lat:37.5230,lng:127.0370,spice:3,solo:true,halal:false,diff:'Medium',open:true,trend:82,price:'$',lenses:['insta','budget','spicy','solo'],
+   why:{en:'Retro-styled bunsik — tteokbokki & gimbap, done cute.',ko:'레트로 감성 분식. 떡볶이·김밥을 예쁘게.'},ctx:{en:'Nostalgic snacks for the social-media age.',ko:'추억의 분식, 요즘 감성으로.'},
+   menu:[{n:'Tteokbokki',ko:'떡볶이',p:'₩5,500'},{n:'Gimbap',ko:'김밥',p:'₩4,000'}],near:[{t:{en:'Dosan Park',ko:'도산공원'},m:3}]},
+  g11:{id:'g11',areaId:'gangnam',name:'Hojokban',ko:'호족반',cat:{en:'Korean dining',ko:'한식 주안상'},catId:'bbq',i:'ti-meat',seed:214,lat:37.5210,lng:127.0220,spice:2,solo:false,halal:false,diff:'Easy',open:true,trend:81,price:'$$$',lenses:['soju','locals'],
+   why:{en:'Modern Korean tavern — bossam & makgeolli pairings.',ko:'모던 한식 주점. 보쌈·막걸리 페어링.'},ctx:{en:'A trendy take on a Korean drinking table.',ko:'트렌디하게 풀어낸 한국식 주안상.'},
+   menu:[{n:'Bossam',ko:'보쌈',p:'₩29,000'},{n:'Makgeolli',ko:'막걸리',p:'₩9,000'}],near:[{t:{en:'Sinsa Garosu-gil',ko:'신사 가로수길'},m:5}]},
+  g12:{id:'g12',areaId:'gangnam',name:'Buccella Cheongdam',ko:'부첼라 청담',cat:{en:'Bakery cafe',ko:'베이커리 카페'},catId:'cafe',i:'ti-cup',seed:215,lat:37.5245,lng:127.0470,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:80,price:'$$$',lenses:['insta','solo'],
+   why:{en:'Upscale Cheongdam bakery — pretzels & pastries.',ko:'청담 고급 베이커리. 프레첼·페이스트리.'},ctx:{en:'A refined coffee-and-bread break.',ko:'우아한 커피·빵 한 템포.'},
+   menu:[{n:'Pretzel',ko:'프레첼',p:'₩6,500'},{n:'Cappuccino',ko:'카푸치노',p:'₩6,500'}],near:[{t:{en:'Cheongdam',ko:'청담'},m:4}]},
+  g13:{id:'g13',areaId:'gangnam',name:'Gangnam Gyoja',ko:'강남교자',cat:{en:'Noodles',ko:'칼국수'},catId:'noodle',i:'ti-bowl-chopsticks',seed:216,lat:37.4995,lng:127.0285,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:75,price:'$$',lenses:['locals','solo','rainy'],
+   why:{en:'Comforting kalguksu & mandu near Gangnam Station.',ko:'강남역 근처 든든한 칼국수·만두.'},ctx:{en:'A reliable warm bowl in busy Gangnam.',ko:'번잡한 강남 속 믿음직한 한 그릇.'},
+   menu:[{n:'Kalguksu',ko:'칼국수',p:'₩9,500'},{n:'Mandu',ko:'만두',p:'₩7,000'}],near:[{t:{en:'Gangnam Stn',ko:'강남역'},m:3}]},
+  g14:{id:'g14',areaId:'gangnam',name:'Bongchu Jjimdak',ko:'봉추찜닭',cat:{en:'Braised chicken',ko:'찜닭'},catId:'chicken',i:'ti-pepper',seed:217,lat:37.4978,lng:127.0300,spice:3,solo:false,halal:false,diff:'Medium',open:true,trend:77,price:'$$',lenses:['spicy','locals','2am'],
+   why:{en:'Andong-style braised chicken with glass noodles.',ko:'안동식 찜닭에 당면 듬뿍.'},ctx:{en:'Sweet-spicy, shareable, soju-friendly.',ko:'매콤달콤, 나눠 먹기 좋고 소주랑.'},
+   menu:[{n:'Jjimdak',ko:'찜닭',p:'₩26,000'},{n:'Rice',ko:'공기밥',p:'₩1,000'}],near:[{t:{en:'Gangnam Stn',ko:'강남역'},m:4}]},
+  m7:{id:'m7',areaId:'myeongdong',name:'Goryeo Samgyetang',ko:'고려삼계탕',cat:{en:'Ginseng chicken soup',ko:'삼계탕'},catId:'stew',i:'ti-soup',seed:218,lat:37.5630,lng:126.9858,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:86,price:'$$$',lenses:['locals','solo','rainy'],
+   why:{en:'Famous ginseng chicken soup — a Myeongdong classic.',ko:'명동 대표 삼계탕 노포.'},ctx:{en:'Whole chicken stuffed with rice & ginseng; restorative.',ko:'찹쌀·인삼 채운 백숙, 보양식.'},
+   menu:[{n:'Samgyetang',ko:'삼계탕',p:'₩19,000'},{n:'Insam-ju',ko:'인삼주',p:'₩4,000'}],near:[{t:{en:'Myeongdong Stn',ko:'명동역'},m:4}]},
+  m8:{id:'m8',areaId:'myeongdong',name:'Baekje Samgyetang',ko:'백제삼계탕',cat:{en:'Ginseng chicken soup',ko:'삼계탕'},catId:'stew',i:'ti-soup',seed:219,lat:37.5645,lng:126.9850,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:84,price:'$$$',lenses:['locals','solo','rainy'],
+   why:{en:'A long-loved samgyetang spot popular with travelers.',ko:'오래 사랑받은 삼계탕집, 여행객에게 인기.'},ctx:{en:'Hearty and clean — perfect on a cold day.',ko:'든든하고 깔끔, 추운 날 딱.'},
+   menu:[{n:'Samgyetang',ko:'삼계탕',p:'₩18,000'},{n:'Jeonbok samgyetang',ko:'전복삼계탕',p:'₩25,000'}],near:[{t:{en:'Myeongdong Stn',ko:'명동역'},m:4}]},
+  m9:{id:'m9',areaId:'myeongdong',name:'Myeongdong Donkatsu',ko:'명동돈가스',cat:{en:'Pork cutlet',ko:'돈가스'},catId:'street',i:'ti-flame',seed:220,lat:37.5639,lng:126.9863,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:79,price:'$$',lenses:['locals','budget','solo'],
+   why:{en:'Old-school Korean-style pork cutlet, crispy and huge.',ko:'옛날식 왕돈가스, 바삭하고 큼직.'},ctx:{en:'Cheap, filling, foreigner-friendly.',ko:'싸고 든든, 외국인 입문용.'},
+   menu:[{n:'Donkatsu',ko:'돈가스',p:'₩9,000'},{n:'Cheese katsu',ko:'치즈가스',p:'₩11,000'}],near:[{t:{en:'Myeongdong Stn',ko:'명동역'},m:3}]},
+  m10:{id:'m10',areaId:'myeongdong',name:'Eunhaenggol',ko:'은행골',cat:{en:'Korean BBQ',ko:'불고기'},catId:'bbq',i:'ti-meat',seed:221,lat:37.5632,lng:126.9870,spice:1,solo:false,halal:false,diff:'Easy',open:true,trend:78,price:'$$$',lenses:['soju','locals'],
+   why:{en:'Bulgogi & galbi house popular for group dinners.',ko:'단체 회식으로 인기인 불고기·갈비집.'},ctx:{en:'Sweet marinated beef, grill at the table.',ko:'달짝 양념 소고기, 테이블 구이.'},
+   menu:[{n:'Bulgogi',ko:'불고기',p:'₩18,000'},{n:'Galbi',ko:'갈비',p:'₩22,000'}],near:[{t:{en:'Myeongdong Stn',ko:'명동역'},m:5}]},
+  m11:{id:'m11',areaId:'myeongdong',name:'Yeongyang Center',ko:'명동영양센타',cat:{en:'Rotisserie chicken',ko:'전기구이 통닭'},catId:'chicken',i:'ti-meat',seed:222,lat:37.5641,lng:126.9845,spice:1,solo:false,halal:false,diff:'Easy',open:true,trend:80,price:'$$',lenses:['locals','soju'],
+   why:{en:'Electric-grilled whole chicken since 1960 — retro icon.',ko:'1960년부터의 전기구이 통닭, 레트로 명물.'},ctx:{en:'Crispy skin, with a classic samgye broth.',ko:'바삭한 껍질에 삼계 국물까지.'},
+   menu:[{n:'Roast chicken',ko:'전기구이 통닭',p:'₩22,000'},{n:'Samgyetang',ko:'삼계탕',p:'₩17,000'}],near:[{t:{en:'Myeongdong Stn',ko:'명동역'},m:4}]},
+  m12:{id:'m12',areaId:'myeongdong',name:'Sinseon Seolnongtang',ko:'신선설농탕',cat:{en:'Soup & rice',ko:'설농탕'},catId:'stew',i:'ti-soup',seed:223,lat:37.5628,lng:126.9868,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:74,price:'$$',lenses:['haejang','solo','rainy'],
+   why:{en:'Milky beef soup chain trusted for a quick clean meal.',ko:'뽀얀 설농탕, 빠르고 깔끔한 한 끼.'},ctx:{en:'Open early; great solo breakfast.',ko:'일찍 열어 혼밥 아침으로 좋음.'},
+   menu:[{n:'Seolnongtang',ko:'설농탕',p:'₩10,000'},{n:'Suyuk',ko:'수육',p:'₩20,000'}],near:[{t:{en:'Myeongdong Stn',ko:'명동역'},m:3}]},
+  m13:{id:'m13',areaId:'myeongdong',name:'Sulbing Myeongdong',ko:'설빙 명동',cat:{en:'Bingsu cafe',ko:'빙수 카페'},catId:'cafe',i:'ti-ice-cream',seed:224,lat:37.5636,lng:126.9857,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:81,price:'$$',lenses:['insta','solo','budget'],
+   why:{en:'Korea bingsu chain — injeolmi & fruit mountains of ice.',ko:'국민 빙수 체인. 인절미·과일 빙수.'},ctx:{en:'Share a giant bowl after shopping.',ko:'쇼핑 후 큰 그릇 나눠 먹기.'},
+   menu:[{n:'Injeolmi bingsu',ko:'인절미 빙수',p:'₩11,000'},{n:'Mango bingsu',ko:'망고 빙수',p:'₩13,000'}],near:[{t:{en:'Myeongdong Stn',ko:'명동역'},m:2}]},
+  m14:{id:'m14',areaId:'myeongdong',name:'Pildong Myeonok',ko:'필동면옥',cat:{en:'Cold noodles',ko:'평양냉면'},catId:'noodle',i:'ti-bowl-chopsticks',seed:225,lat:37.5615,lng:126.9938,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:79,price:'$$',lenses:['locals','solo'],
+   why:{en:'Revered Pyongyang-style cold noodles — subtle, clean broth.',ko:'평양냉면 명가. 슴슴하고 맑은 육수.'},ctx:{en:'An acquired taste locals are devoted to.',ko:'마니아층 두터운 슴슴한 맛.'},
+   menu:[{n:'Pyeongyang naengmyeon',ko:'평양냉면',p:'₩13,000'},{n:'Pyeonyuk',ko:'편육',p:'₩25,000'}],near:[{t:{en:'Chungmuro Stn',ko:'충무로역'},m:4}]},
+  m15:{id:'m15',areaId:'myeongdong',name:'Mr. Kebab Myeongdong',ko:'미스터 케밥 명동',cat:{en:'Halal kebab',ko:'할랄 케밥'},catId:'street',i:'ti-flame',seed:226,lat:37.5633,lng:126.9872,spice:2,solo:true,halal:true,diff:'Easy',open:true,trend:76,price:'$',lenses:['halal','budget','solo'],
+   why:{en:'Quick halal kebabs in the heart of Myeongdong.',ko:'명동 한복판의 빠른 할랄 케밥.'},ctx:{en:'Handy halal bite between sights.',ko:'관광 사이 든든한 할랄 한입.'},
+   menu:[{n:'Chicken kebab',ko:'치킨 케밥',p:'₩6,500'},{n:'Lamb wrap',ko:'양고기 랩',p:'₩8,500'}],near:[{t:{en:'Myeongdong Stn',ko:'명동역'},m:3}]},
+  i7:{id:'i7',areaId:'itaewon',name:'The Halal Guys Itaewon',ko:'할랄가이즈 이태원',cat:{en:'Halal global',ko:'할랄 세계'},catId:'street',i:'ti-flame',seed:227,lat:37.5345,lng:126.9945,spice:2,solo:true,halal:true,diff:'Easy',open:true,trend:84,price:'$$',lenses:['halal','budget','2am','solo'],
+   why:{en:'NYC halal chain flagship — gyro & chicken over rice.',ko:'뉴욕 할랄 체인 본점, 자이로·치킨 오버라이스.'},ctx:{en:'Reliable, generous portions near the mosque.',ko:'성원 근처, 푸짐하고 믿음직.'},
+   menu:[{n:'Combo over rice',ko:'콤보 오버라이스',p:'₩12,000'},{n:'Gyro',ko:'자이로',p:'₩10,000'}],near:[{t:{en:'Itaewon Stn',ko:'이태원역'},m:2}]},
+  i8:{id:'i8',areaId:'itaewon',name:'Hajj Korea',ko:'하즈 코리아',cat:{en:'Halal Korean',ko:'할랄 한식'},catId:'bbq',i:'ti-meat',seed:228,lat:37.5342,lng:126.9938,spice:2,solo:false,halal:true,diff:'Easy',open:true,trend:82,price:'$$$',lenses:['halal','locals','solo'],
+   why:{en:'One of the few halal Korean BBQ houses — Korean & Malaysian.',ko:'드문 할랄 한식 BBQ, 한식·말레이 메뉴.'},ctx:{en:'Bring the family for a halal grill.',ko:'가족과 함께 할랄 구이.'},
+   menu:[{n:'Halal galbi',ko:'할랄 갈비',p:'₩20,000'},{n:'Nasi lemak',ko:'나시르막',p:'₩12,000'}],near:[{t:{en:'Seoul Central Mosque',ko:'서울중앙성원'},m:3}]},
+  i9:{id:'i9',areaId:'itaewon',name:'Taj Palace',ko:'타지 팰리스',cat:{en:'Indian halal',ko:'인도 할랄'},catId:'street',i:'ti-flame',seed:229,lat:37.5350,lng:126.9950,spice:3,solo:false,halal:true,diff:'Medium',open:true,trend:81,price:'$$',lenses:['halal','insta','solo'],
+   why:{en:'Long-running Indian halal — curries, tikka, naan.',ko:'오래된 인도 할랄. 커리·티카·난.'},ctx:{en:'Vegetarian & vegan options too.',ko:'채식·비건 옵션도 있음.'},
+   menu:[{n:'Butter chicken',ko:'버터 치킨',p:'₩16,000'},{n:'Garlic naan',ko:'갈릭 난',p:'₩4,000'}],near:[{t:{en:'Itaewon Stn',ko:'이태원역'},m:4}]},
+  i10:{id:'i10',areaId:'itaewon',name:'Petra Palace',ko:'페트라 팰리스',cat:{en:'Middle Eastern halal',ko:'중동 할랄'},catId:'street',i:'ti-flame',seed:230,lat:37.5341,lng:126.9933,spice:2,solo:true,halal:true,diff:'Easy',open:true,trend:78,price:'$$',lenses:['halal','solo','budget'],
+   why:{en:'Halal Middle Eastern — shawarma, hummus, falafel.',ko:'할랄 중동 요리. 샤와르마·후무스·팔라펠.'},ctx:{en:'Casual, generous, vegetarian-friendly.',ko:'캐주얼하고 푸짐, 채식도 가능.'},
+   menu:[{n:'Shawarma',ko:'샤와르마',p:'₩9,000'},{n:'Hummus plate',ko:'후무스 플레이트',p:'₩10,000'}],near:[{t:{en:'Seoul Central Mosque',ko:'서울중앙성원'},m:3}]},
+  i11:{id:'i11',areaId:'itaewon',name:'Casablanca Sandwicherie',ko:'카사블랑카',cat:{en:'Moroccan',ko:'모로코'},catId:'cafe',i:'ti-cup',seed:231,lat:37.5355,lng:126.9942,spice:1,solo:true,halal:true,diff:'Easy',open:true,trend:83,price:'$$',lenses:['halal','insta','solo','budget'],
+   why:{en:'Cult Moroccan sandwiches — the Bocadillo is a must.',ko:'컬트 모로코 샌드위치. 보카디요가 시그니처.'},ctx:{en:'Tiny, beloved, often a line.',ko:'작지만 인기, 종종 줄.'},
+   menu:[{n:'Bocadillo',ko:'보카디요',p:'₩9,500'},{n:'Mint tea',ko:'민트티',p:'₩4,500'}],near:[{t:{en:'Itaewon Stn',ko:'이태원역'},m:4}]},
+  i12:{id:'i12',areaId:'itaewon',name:'Hieu Tu',ko:'효뜨',cat:{en:'Vietnamese',ko:'베트남'},catId:'noodle',i:'ti-bowl-chopsticks',seed:232,lat:37.5360,lng:126.9930,spice:2,solo:true,halal:false,diff:'Easy',open:true,trend:87,price:'$$',lenses:['insta','locals','solo'],
+   why:{en:'Trendy Vietnamese — pho, bun, and bold flavors.',ko:'트렌디한 베트남. 쌀국수·분, 진한 맛.'},ctx:{en:'A Hannam favorite that draws long lines.',ko:'줄 서는 한남 인기 베트남.'},
+   menu:[{n:'Pho',ko:'쌀국수',p:'₩12,000'},{n:'Bun cha',ko:'분짜',p:'₩14,000'}],near:[{t:{en:'Hangangjin Stn',ko:'한강진역'},m:5}]},
+  i13:{id:'i13',areaId:'itaewon',name:'Braai Republic',ko:'브라이 리퍼블릭',cat:{en:'South African BBQ',ko:'남아공 BBQ'},catId:'bbq',i:'ti-meat',seed:233,lat:37.5348,lng:126.9958,spice:1,solo:false,halal:false,diff:'Easy',open:true,trend:79,price:'$$$',lenses:['soju','locals','insta'],
+   why:{en:'South African-style grill — ribs, boerewors, beer.',ko:'남아공식 그릴. 립·소시지·맥주.'},ctx:{en:'Patio vibes for a meaty night.',ko:'테라스 감성의 고기 밤.'},
+   menu:[{n:'Pork ribs',ko:'폭립',p:'₩26,000'},{n:'Boerewors',ko:'보어보어스',p:'₩16,000'}],near:[{t:{en:'Itaewon Stn',ko:'이태원역'},m:4}]},
+  i14:{id:'i14',areaId:'itaewon',name:'Buja Pizza',ko:'부자피자',cat:{en:'Pizza',ko:'피자'},catId:'street',i:'ti-flame',seed:234,lat:37.5352,lng:126.9948,spice:1,solo:true,halal:false,diff:'Easy',open:true,trend:76,price:'$$',lenses:['budget','2am','solo'],
+   why:{en:'Big NY-style slices late into the night.',ko:'밤늦게까지 뉴욕식 큰 조각 피자.'},ctx:{en:'Cheap, fast, perfect after drinks.',ko:'싸고 빠른, 술 후 딱.'},
+   menu:[{n:'Pepperoni slice',ko:'페퍼로니 조각',p:'₩5,000'},{n:'Whole pizza',ko:'피자 한 판',p:'₩22,000'}],near:[{t:{en:'Itaewon Stn',ko:'이태원역'},m:3}]},
+  i15:{id:'i15',areaId:'itaewon',name:'Salam Restaurant',ko:'살람',cat:{en:'Pakistani halal',ko:'파키스탄 할랄'},catId:'street',i:'ti-flame',seed:235,lat:37.5339,lng:126.9936,spice:3,solo:true,halal:true,diff:'Medium',open:true,trend:75,price:'$$',lenses:['halal','budget','2am','solo'],
+   why:{en:'Authentic Pakistani halal — biryani & grilled meats.',ko:'정통 파키스탄 할랄. 비리야니·구이.'},ctx:{en:'Spicy, hearty, open late near the mosque.',ko:'맵고 든든, 성원 근처 늦게까지.'},
+   menu:[{n:'Chicken biryani',ko:'치킨 비리야니',p:'₩13,000'},{n:'Seekh kebab',ko:'시크 케밥',p:'₩11,000'}],near:[{t:{en:'Seoul Central Mosque',ko:'서울중앙성원'},m:2}]}
+ };
+ return {SP:SP,purl:purl,UI:UI,FIL:FIL,DIFF:DIFF,AREA:AREA,CAT:CAT,HYPE:HYPE,LENS:LENS,TIPS:TIPS,R:R};
+})();
+</script>
+<style>
+:root{--font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+--pri:#F47B20;--prid:#C75E0C;--pri50:#FDEAD6;--ink:#1A1A1A;--ink2:#3A3A3A;--gray:#8A8A8A;--line:rgba(0,0,0,0.10);--sand:#F0EEE8;--paper:#FBFAF7;--teal:#178A6E;--teal50:#E1F2ED;--blue:#2E6FB0;--blue50:#E7EEF7;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:var(--font-sans);background:var(--paper);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+header{height:60px;flex:0 0 auto;display:flex;align-items:center;gap:12px;padding:0 22px;border-bottom:1px solid var(--line);background:var(--paper);z-index:1000;}
+header .logo{display:flex;align-items:center;gap:9px;}
+header .logo i{color:var(--pri);font-size:24px;}
+header .logo .nm{font-size:17px;font-weight:500;}
+header .logo .tg{font-size:12px;color:var(--gray);margin-left:6px;border-left:1px solid var(--line);padding-left:12px;}
+.a-sel{font-size:13px;font-family:inherit;border:1px solid var(--line);border-radius:9px;padding:7px 10px;background:#fff;color:var(--ink);cursor:pointer;}
+.lang{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+.lang span{font-size:12px;font-weight:500;padding:6px 12px;cursor:pointer;color:var(--gray);}
+.lang span.on{background:var(--pri);color:#fff;}
+.fbar{flex:0 0 auto;border-bottom:1px solid var(--line);background:var(--paper);padding:10px 22px;display:flex;flex-direction:column;gap:8px;}
+.frow{display:flex;align-items:center;gap:8px;overflow-x:auto;}
+.frow .flbl{font-size:11px;font-weight:500;color:#a8a49a;letter-spacing:.03em;flex:0 0 auto;width:80px;}
+.chip{font-size:12.5px;font-weight:500;padding:7px 13px;border-radius:20px;white-space:nowrap;cursor:pointer;border:1px solid var(--line);background:#fff;color:#555;display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;}
+.chip.on{background:var(--pri);color:#fff;border-color:var(--pri);}
+.chip.lens.on{background:var(--ink);border-color:var(--ink);}
+main{flex:1 1 auto;display:flex;min-height:0;}
+.list{width:440px;flex:0 0 auto;overflow-y:auto;border-right:1px solid var(--line);padding:16px;background:var(--paper);}
+.mapwrap{flex:1 1 auto;position:relative;}
+#webmap{position:absolute;inset:0;background:#E9ECE4;}
+.kfm-pin{width:36px;height:36px;border-radius:50% 50% 50% 2px;background:var(--pri);display:flex;align-items:center;justify-content:center;color:#fff;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.35);}
+.kfm-pin.sel{background:var(--ink);transform:scale(1.12);}
+.hstrip{display:flex;gap:10px;overflow-x:auto;margin-bottom:16px;padding-bottom:2px;}
+.hcard{flex:0 0 auto;width:150px;border-radius:13px;overflow:hidden;border:1px solid var(--line);background:#2A2A33;}
+.hcard .ph{height:78px;}
+.hcard .cap{padding:8px 9px;color:#fff;}
+.pill{font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;}
+.ph{position:relative;background:var(--sand);overflow:hidden;}
+.ph .ico{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#b8b4a8;}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+.rcard{display:flex;gap:13px;padding:11px;background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:11px;align-items:center;cursor:pointer;transition:border-color .12s;}
+.rcard:hover{border-color:var(--pri);}
+.rcard.sel{border-color:var(--pri);box-shadow:0 0 0 1px var(--pri);}
+.kbtn{cursor:pointer;border:none;font-family:inherit;}
+.sect{font-size:11px;font-weight:500;color:#a8a49a;letter-spacing:.04em;margin-bottom:5px;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:2000;padding:24px;}
+.overlay.show{display:flex;}
+.modal{width:460px;max-width:100%;max-height:88vh;overflow-y:auto;background:#fff;border-radius:18px;position:relative;}
+.modal .x{position:absolute;top:12px;left:12px;z-index:3;width:38px;height:38px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.2);font-size:20px;}
+.leaflet-container{font-family:var(--font-sans);}
+</style>
+</head>
+<body>
+<header>
+ <div class="logo"><i class="ti ti-tools-kitchen-2"></i><span class="nm" id="appnm"></span><span class="tg" id="tagline"></span></div>
+ <div style="flex:1"></div>
+ <select class="a-sel" id="areasel" onchange="kfm.setArea(this.value)"></select>
+ <div class="lang" id="lang"></div>
+</header>
+<div class="fbar">
+ <div class="frow" id="lensrow"></div>
+ <div class="frow" id="catrow"></div>
+</div>
+<main>
+ <div class="list" id="list"></div>
+ <div class="mapwrap"><div id="webmap"></div></div>
+</main>
+<div class="overlay" id="overlay" onclick="if(event.target===this)kfm.close()"><div class="modal" id="modal"></div></div>
+<script>
+(function(){
+window.openLink=function(u){window.open(u,'_blank');};
+var K=window.KFM,SP=K.SP,purl=K.purl,UI=K.UI,FIL=K.FIL,DIFF=K.DIFF,AREA=K.AREA,CAT=K.CAT,HYPE=K.HYPE,LENS=K.LENS,R=K.R;
+var CATPIC={bbq:'galbi',noodle:'noodle',chicken:'chicken',stew:'soup',street:'streetfood',cafe:'cafe',vegan:'salad'};
+var PICOVR={r5:'bibimbap',r6:'ramen',r7:'coldnoodle',r8:'beer',r9:'chicken',r11:'cookie',r12:'dessert',s2:'dessert',s4:'cookie',s7:'salad',s10:'dessert',s11:'food',g3:'noodle',g5:'beer',g8:'dessert',g9:'food',g12:'cookie',i3:'streetfood',i5:'beer',i9:'food',i11:'food',i13:'beer',i14:'food',m6:'streetfood',m9:'food',m13:'bingsu',m14:'coldnoodle',hc1:'cookie',hc2:'cookie',hc3:'dessert',hc4:'dessert',hc5:'bingsu',hc6:'bingsu'};
+function picFor(r){return 'img/'+(PICOVR[r.id]||CATPIC[r.catId]||'food')+'.jpg';}
+function hpic(hy){var m={'ti-cookie':'cookie','ti-candy':'dessert','ti-ice-cream':'bingsu'};return 'img/'+(m[hy.ic]||'dessert')+'.jpg';}
+var L_lang='en',area='hongdae',flt={type:'all',id:null},sel=null,saved={},wmap=null,markers={};
+function T(o){return o==null?'':(typeof o==='string'?o:(o[L_lang]!=null?o[L_lang]:o.en));}
+function nm(r){return L_lang==='ko'?r.ko:r.name;}
+function nsub(r){return (L_lang==='ko'?r.name:r.ko)+' · '+T(r.cat)+' · '+r.price;}
+function aName(r){var a=AREA.filter(function(x){return x.id===r.areaId;})[0];return a?T(a.t):'';}
+function curArea(){return AREA.filter(function(a){return a.id===area;})[0];}
+function dots(n){var s='';for(var i=1;i<=5;i++)s+='<span style="width:9px;height:9px;border-radius:50%;display:inline-block;background:'+(i<=n?SP[n]:'#E2E0D8')+';"></span>';return s;}
+function areaList(){return Object.keys(R).map(function(k){return R[k];}).filter(function(r){return r.areaId===area;});}
+function lensCount(id){return areaList().filter(function(r){return r.lenses.indexOf(id)>-1;}).length;}
+function catCount(id){return areaList().filter(function(r){return r.catId===id;}).length;}
+function listData(){
+ if(flt.type==='hype')return HYPE[flt.id].ids.map(function(id){return R[id];}).filter(Boolean);
+ var arr=areaList();
+ if(flt.type==='cat')return arr.filter(function(r){return r.catId===flt.id;});
+ if(flt.type==='lens')return arr.filter(function(r){return r.lenses.indexOf(flt.id)>-1;});
+ return arr.sort(function(a,b){return b.trend-a.trend;});
+}
+window.kfm={
+ setLang:function(l){L_lang=l;renderAll();},
+ setArea:function(a){area=a;flt={type:'all',id:null};sel=null;if(wmap){wmap.setView(curArea().c,curArea().z);}renderAll();},
+ setFilter:function(type,id){flt={type:type,id:id};sel=null;renderAll();},
+ hype:function(i){flt={type:'hype',id:i};sel=null;renderAll();},
+ save:function(id,e){if(e)e.stopPropagation();saved[id]?delete saved[id]:saved[id]=1;renderList();if(document.getElementById('overlay').classList.contains('show'))openDetail(id);},
+ select:function(id){sel=id;renderList();if(wmap&&markers[id]){wmap.panTo([R[id].lat,R[id].lng]);}updatePins();},
+ open:function(id){openDetail(id);},close:function(){document.getElementById('overlay').classList.remove('show');},
+ maps:function(id){openLink('https://www.google.com/maps/search/?api=1&query='+R[id].lat+','+R[id].lng);}
+};
+function rcard(r){var sv=saved[r.id];
+ return '<div class="rcard'+(sel===r.id?' sel':'')+'" onclick="kfm.open(\''+r.id+'\')" onmouseenter="kfm.select(\''+r.id+'\')">'
+ +'<div class="ph" style="width:74px;height:74px;flex:0 0 auto;border-radius:11px;"><div class="ico"><i class="ti '+r.i+'" style="font-size:26px;"></i></div><img src="'+picFor(r)+'" loading="lazy" onerror="this.style.display=\'none\'"></div>'
+ +'<div style="flex:1;min-width:0;"><div style="font-size:15px;font-weight:500;">'+nm(r)+'</div>'
+ +'<div style="font-size:12px;color:var(--gray);margin:1px 0 7px;">'+nsub(r)+'</div>'
+ +'<div style="display:flex;gap:5px;flex-wrap:wrap;">'
+ +'<span class="pill" style="background:'+SP[r.spice]+'22;color:'+SP[r.spice]+';"><i class="ti ti-flame" style="font-size:11px;"></i>'+r.spice+'/5</span>'
+ +(r.solo?'<span class="pill" style="background:var(--teal50);color:var(--teal);">'+T(UI.solo)+'</span>':'')
+ +(r.halal?'<span class="pill" style="background:#EAF3DE;color:#3B6D11;">'+T(UI.halal)+'</span>':'')
+ +(r.open?'<span class="pill" style="background:var(--blue50);color:var(--blue);">'+T(UI.open)+'</span>':'<span class="pill" style="background:#F2F1ED;color:#999;">'+T(UI.closed)+'</span>')
+ +'</div></div>'
+ +'<button class="kbtn" onclick="kfm.save(\''+r.id+'\',event)" aria-label="save" style="background:transparent;width:34px;height:34px;flex:0 0 auto;color:'+(sv?'var(--pri)':'#c8c5bc')+';font-size:22px;"><i class="ti ti-bookmark"></i></button></div>';
+}
+function renderHeader(){
+ document.getElementById('appnm').textContent=T(UI.app);
+ document.getElementById('tagline').textContent=T(UI.tagline);
+ document.getElementById('areasel').innerHTML=AREA.map(function(a){return '<option value="'+a.id+'"'+(a.id===area?' selected':'')+'>'+T(a.t)+'</option>';}).join('');
+ document.getElementById('lang').innerHTML='<span class="'+(L_lang==='en'?'on':'')+'" onclick="kfm.setLang(\'en\')">EN</span><span class="'+(L_lang==='ko'?'on':'')+'" onclick="kfm.setLang(\'ko\')">KO</span>';
+}
+function renderFilters(){
+ var lr='<span class="flbl">'+T(UI.local)+'</span>';
+ LENS.forEach(function(le){if(lensCount(le.id)===0)return;var on=flt.type==='lens'&&flt.id===le.id;lr+='<span class="chip lens'+(on?' on':'')+'" onclick="kfm.setFilter(\'lens\',\''+le.id+'\')"><i class="ti '+le.i+'" style="font-size:13px;"></i>'+T(le.t)+(le.kw?' · '+le.kw:'')+'</span>';});
+ document.getElementById('lensrow').innerHTML=lr;
+ var cr='<span class="flbl">'+T(UI.browse)+'</span>';
+ CAT.forEach(function(c){if(c.id!=='all'&&catCount(c.id)===0)return;var on=(c.id==='all'&&flt.type==='all')||(flt.type==='cat'&&flt.id===c.id);cr+='<span class="chip'+(on?' on':'')+'" onclick="kfm.setFilter(\''+(c.id==='all'?'all':'cat')+'\',\''+c.id+'\')">'+(c.i?'<i class="ti '+c.i+'" style="font-size:13px;"></i>':'')+T(c.t)+'</span>';});
+ document.getElementById('catrow').innerHTML=cr;
+}
+function renderList(){
+ var data=listData();
+ var h='<div class="sect" style="margin-bottom:8px;color:var(--pri);">'+T(UI.hype)+'</div><div class="hstrip">';
+ HYPE.forEach(function(hy,i){h+='<div class="hcard" onclick="kfm.hype('+i+')" style="cursor:pointer;border-color:'+((flt.type==='hype'&&flt.id===i)?'var(--pri)':'var(--line)')+';"><div class="ph"><div class="ico" style="background:#2A2A33;color:#F5A623;"><i class="ti '+hy.ic+'" style="font-size:26px;"></i></div><img src="'+hpic(hy)+'" loading="lazy" onerror="this.style.display=\'none\'"><span style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.55);color:#fff;font-size:9px;padding:2px 6px;border-radius:12px;z-index:2;"><i class="ti ti-eye" style="font-size:10px;"></i> '+hy.v+'</span></div><div class="cap"><div style="font-size:12px;font-weight:500;line-height:1.25;">'+T(hy.t)+'</div></div></div>';});
+ h+='</div>';
+ h+='<div style="font-size:13px;color:var(--gray);margin:4px 2px 12px;">'+data.length+' '+T(UI.results)+' · '+(flt.type==='hype'?T(HYPE[flt.id].t):T(curArea().t))+'</div>';
+ if(!data.length)h+='<div style="padding:30px;text-align:center;color:var(--gray);font-size:13px;">'+T(UI.none)+'</div>';
+ data.forEach(function(r){h+=rcard(r);});
+ document.getElementById('list').innerHTML=h;
+}
+function pinIcon(r){return L.divIcon({className:'',html:'<div class="kfm-pin'+(sel===r.id?' sel':'')+'"><i class="ti '+r.i+'" style="font-size:17px;"></i></div>',iconSize:[36,36],iconAnchor:[18,32]});}
+function renderMap(){
+ if(!window.L)return;
+ var el=document.getElementById('webmap');if(!el)return;
+ if(!wmap){wmap=L.map(el,{zoomControl:true,attributionControl:false}).setView(curArea().c,curArea().z);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(wmap);}
+ Object.keys(markers).forEach(function(id){wmap.removeLayer(markers[id]);});markers={};
+ var data=listData(),pts=[];
+ data.forEach(function(r){var mk=L.marker([r.lat,r.lng],{icon:pinIcon(r)}).on('click',function(){kfm.open(r.id);});mk.addTo(wmap);markers[r.id]=mk;pts.push([r.lat,r.lng]);});
+ if(pts.length>1)wmap.fitBounds(pts,{padding:[50,50],maxZoom:16});else if(pts.length===1)wmap.setView(pts[0],15);else wmap.setView(curArea().c,curArea().z);
+}
+function updatePins(){Object.keys(markers).forEach(function(id){markers[id].setIcon(pinIcon(R[id]));});}
+function openDetail(id){var r=R[id],sv=saved[id];
+ function sec(la,bo){return '<div style="margin-bottom:18px;"><div class="sect">'+la+'</div>'+bo+'</div>';}
+ var h='<div class="x" onclick="kfm.close()"><i class="ti ti-x"></i></div>';
+ h+='<div class="ph" style="height:230px;border-radius:18px 18px 0 0;"><div class="ico"><i class="ti '+r.i+'" style="font-size:60px;"></i></div><img src="'+picFor(r)+'" onerror="this.style.display=\'none\'">'
+ +'<button class="kbtn" onclick="kfm.save(\''+id+'\',event)" aria-label="save" style="position:absolute;top:12px;right:14px;z-index:3;width:44px;height:44px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:'+(sv?'var(--pri)':'#b9b6ad')+';font-size:23px;box-shadow:0 1px 4px rgba(0,0,0,.2);"><i class="ti ti-bookmark"></i></button></div>';
+ h+='<div style="padding:18px 20px;"><div style="font-size:23px;font-weight:500;">'+nm(r)+'</div><div style="font-size:13px;color:var(--gray);margin:3px 0 14px;">'+nsub(r)+' · '+aName(r)+'</div>';
+ h+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;">'
+ +'<span class="pill" style="background:'+SP[r.spice]+'22;color:'+SP[r.spice]+';"><i class="ti ti-flame" style="font-size:12px;"></i>'+T(UI.spice)+' '+r.spice+'/5</span>'
+ +(r.solo?'<span class="pill" style="background:var(--teal50);color:var(--teal);"><i class="ti ti-user" style="font-size:12px;"></i>'+T(UI.solo)+'</span>':'')
+ +(r.halal?'<span class="pill" style="background:#EAF3DE;color:#3B6D11;"><i class="ti ti-moon" style="font-size:12px;"></i>'+T(UI.halal)+'</span>':'')
+ +'<span class="pill" style="background:var(--pri50);color:var(--prid);">'+T(DIFF[r.diff])+'</span>'
+ +(r.open?'<span class="pill" style="background:var(--blue50);color:var(--blue);">'+T(UI.open)+'</span>':'<span class="pill" style="background:#F2F1ED;color:#999;">'+T(UI.closed)+'</span>')+'</div>';
+ h+=sec(T(UI.why),'<div style="font-size:14.5px;color:var(--ink2);line-height:1.65;">'+T(r.why)+'</div>');
+ h+=sec(T(UI.ctx),'<div style="font-size:14.5px;color:var(--ink2);line-height:1.65;">'+T(r.ctx)+'</div>');
+ h+=sec(T(UI.spice),'<div style="display:flex;gap:6px;align-items:center;">'+dots(r.spice)+'<span style="font-size:12px;color:var(--gray);margin-left:4px;">'+T(UI.spiceW)[r.spice]+'</span></div>');
+ var mn='';r.menu.forEach(function(m){mn+='<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);"><div><div style="font-size:14px;">'+(L_lang==='ko'?m.ko:m.n)+'</div><div style="font-size:11px;color:var(--gray);">'+(L_lang==='ko'?m.n:m.ko)+'</div></div><div style="font-size:13px;color:var(--ink2);">'+m.p+'</div></div>';});
+ h+=sec(T(UI.menu),mn);
+ var nr='';r.near.forEach(function(n){nr+='<span class="pill" style="background:#fff;border:1px solid var(--line);color:#666;margin:0 6px 6px 0;"><i class="ti ti-walk" style="font-size:12px;"></i>'+T(n.t)+' · '+n.m+'m</span>';});
+ h+=sec(T(UI.near),'<div style="display:flex;flex-wrap:wrap;">'+nr+'</div>');
+ h+='<button class="kbtn" onclick="kfm.maps(\''+id+'\')" style="width:100%;background:var(--pri);color:#fff;font-size:15px;font-weight:500;padding:14px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:4px;"><i class="ti ti-brand-google-maps" style="font-size:18px;"></i>'+T(UI.maps)+'</button>';
+ h+='</div>';
+ document.getElementById('modal').innerHTML=h;
+ document.getElementById('overlay').classList.add('show');
+}
+function renderAll(){renderHeader();renderFilters();renderList();renderMap();}
+renderAll();
+})();
+</script>
+</body>
+</html>
