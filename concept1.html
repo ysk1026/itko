@@ -190,6 +190,7 @@ body{font-family:var(--sans);background:#E9E7E0;color:var(--ink);display:flex;ju
 .dcta button{flex:1;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;}
 .b-save{background:var(--ink);color:#fff;}.b-save.sv{background:var(--pri50);color:var(--prid);}
 .b-map{background:var(--pri);color:#fff;}
+.b-naver{width:100%;margin-top:9px;border:1.5px solid #03C75A;background:#fff;color:#03A64A;border-radius:12px;padding:12px;font-size:13.5px;font-weight:800;font-family:inherit;cursor:pointer;}
 
 .login{position:absolute;left:0;right:0;bottom:0;background:var(--paper);border-radius:22px 22px 0 0;transform:translateY(100%);transition:.28s cubic-bezier(.3,.8,.3,1);z-index:43;padding:24px 20px max(22px,env(safe-area-inset-bottom));}
 .login.on{transform:translateY(0);}
@@ -226,8 +227,8 @@ var MODE='B';   // 'B' = local-base + lens · 'C' = blend
 
 var T={
  en:{discover:'Discover',map:'Map',idols:'Idols',saved:'Saved',all:'✨ All',kidol:'💜 K-IDOL Spots',local:'📍 Local Faves',
-  heroTitle:'K-IDOL Spots',localTitle:'Local Faves in Hongdae',seeAll:'See all ›',whyGo:'WHY GO',save:'Save',saved2:'Saved',openMaps:'Open in Maps ↗',
-  ctxLab:'KOREAN CONTEXT',menuLab:'BEST MENU',nearLab:'NEARBY',solo:'Solo ok',
+  heroTitle:'K-IDOL Spots',localTitle:'Local Faves in Hongdae',seeAll:'See all ›',whyGo:'WHY GO',save:'Save',saved2:'Saved',
+  ctxLab:'KOREAN CONTEXT',menuLab:'BEST MENU',nearLab:'NEARBY',solo:'Solo ok',gmaps:'Open in Google Maps',naver:'Naver Map (directions)',
   mapTitle:'Map',idolsTitle:'Idols',browseIdol:'Browse by idol',spots:'spots',savedTitle:'Saved',savedCount:'spots saved',
   emptyH:'No saved spots yet',emptyP:'Tap ♡ on any spot to build your Korea food list.',explore:'Explore spots',
   loginH:'Save your spots',loginP:'Sign in to keep your Korea list across devices.',google:'Continue with Google',apple:'Continue with Apple',later:'Maybe later',
@@ -235,8 +236,8 @@ var T={
   lensOn:'💜 K-IDOL lens on — where idols actually ate (verified sources).',whereEat:'Where idols eat',
   spice0:'Not spicy',spice1:'Mild',spice2:'Medium',spice3:'Spicy'},
  ko:{discover:'탐색',map:'지도',idols:'아이돌',saved:'저장',all:'✨ 전체',kidol:'💜 아이돌 맛집',local:'📍 로컬 맛집',
-  heroTitle:'아이돌 맛집',localTitle:'홍대 로컬 맛집',seeAll:'전체 보기 ›',whyGo:'왜 가야 할까',save:'저장',saved2:'저장됨',openMaps:'지도에서 열기 ↗',
-  ctxLab:'한국식 맥락',menuLab:'추천 메뉴',nearLab:'주변',solo:'혼밥 가능',
+  heroTitle:'아이돌 맛집',localTitle:'홍대 로컬 맛집',seeAll:'전체 보기 ›',whyGo:'왜 가야 할까',save:'저장',saved2:'저장됨',
+  ctxLab:'한국식 맥락',menuLab:'추천 메뉴',nearLab:'주변',solo:'혼밥 가능',gmaps:'Google Maps에서 열기',naver:'네이버맵 길찾기',
   mapTitle:'지도',idolsTitle:'아이돌',browseIdol:'아이돌별 보기',spots:'곳',savedTitle:'저장',savedCount:'곳 저장됨',
   emptyH:'아직 저장한 곳이 없어요',emptyP:'♡ 를 눌러 나만의 한국 맛집 리스트를 만들어요.',explore:'맛집 둘러보기',
   loginH:'맛집을 저장하세요',loginP:'로그인하면 기기 간에 리스트가 유지돼요.',google:'Google로 계속',apple:'Apple로 계속',later:'다음에',
@@ -428,7 +429,8 @@ function openDetail(id){
   '<div class="dbody"><div class="dname">'+d.n+'</div><div class="dmeta"><span>'+d.cat+'</span></div>'+pills+prov+
   '<div class="dwhy"><div class="lab">'+t('whyGo')+'</div><p>'+d.why+'</p></div>'+
   ctx+menu+near+tip+
-  '<div class="dcta"><button class="b-save'+(sv?' sv':'')+'" onclick="toggleSave('+id+',true)">'+(sv?'♥ '+t('saved2'):'♡ '+t('save'))+'</button><button class="b-map">'+t('openMaps')+'</button></div></div>';
+  '<div class="dcta"><button class="b-save'+(sv?' sv':'')+'" onclick="toggleSave('+id+',true)">'+(sv?'♥ '+t('saved2'):'♡ '+t('save'))+'</button><button class="b-map">📍 '+t('gmaps')+'</button></div>'+
+  '<button class="b-naver">🟢 '+t('naver')+'</button></div>';
  document.getElementById('scrim').classList.add('on');document.getElementById('sheet').classList.add('on');
 }
 

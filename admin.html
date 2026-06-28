@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Itko — Admin (시안)</title>
+<style>
+:root{
+ --pri:#F47B20;--prid:#C75E0C;--pri50:#FDEAD6;
+ --idol:#8B5CF6;--idol50:#F1ECFD;--idold:#6D40D9;
+ --ink:#1A1A1A;--ink2:#3A3A3A;--gray:#7C7A73;--line:#ECE9E2;--paper:#fff;--bg:#F2F0E9;
+ --teal:#178A6E;--teal50:#E1F2ED;--red:#CF3A2A;--red50:#FBEAE7;
+ --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+ --serif:Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);}
+.layout{display:flex;min-height:100vh;}
+
+/* sidebar */
+.side{width:228px;flex:0 0 auto;background:#15131C;color:#cfcdd6;display:flex;flex-direction:column;padding:18px 14px;position:sticky;top:0;height:100vh;}
+.brand{display:flex;align-items:center;gap:8px;padding:6px 8px 18px;}
+.brand .lg{font-size:22px;font-weight:800;color:var(--pri);letter-spacing:-.02em;}
+.brand .lg span{color:#fff;}
+.brand .adm{font-size:10px;font-weight:700;color:#8b8896;border:1px solid #34313f;border-radius:6px;padding:2px 6px;letter-spacing:.05em;}
+.nav{display:flex;flex-direction:column;gap:3px;margin-top:4px;}
+.nav a{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:10px;font-size:13.5px;font-weight:600;color:#b6b3c0;cursor:pointer;}
+.nav a .ic{font-size:16px;width:18px;text-align:center;}
+.nav a:hover{background:#231f2e;color:#fff;}
+.nav a.on{background:var(--pri);color:#fff;}
+.nav a .badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:800;border-radius:9px;padding:1px 7px;}
+.nav a.on .badge{background:#fff;color:var(--prid);}
+.side .foot{margin-top:auto;display:flex;align-items:center;gap:9px;padding:10px 8px;border-top:1px solid #2a2733;font-size:12px;}
+.side .foot .av{width:30px;height:30px;border-radius:50%;background:var(--idol);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px;}
+.side .foot .nm{font-weight:700;color:#e7e5ee;}.side .foot .role{font-size:10.5px;color:#8b8896;}
+
+/* main */
+.main{flex:1;min-width:0;padding:22px 26px 40px;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.topbar h1{font-size:22px;font-weight:800;letter-spacing:-.01em;}
+.topbar .sub{font-size:12.5px;color:var(--gray);margin-top:2px;}
+.topbar .actions{display:flex;gap:9px;}
+.btn{border:none;border-radius:10px;padding:10px 15px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.btn.pri{background:var(--pri);color:#fff;}
+.btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink2);}
+
+.pane{display:none;}.pane.on{display:block;}
+
+/* KPI cards */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.kpi{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:15px 16px;}
+.kpi .lab{font-size:11.5px;color:var(--gray);font-weight:700;display:flex;align-items:center;gap:6px;}
+.kpi .val{font-size:27px;font-weight:800;margin-top:7px;letter-spacing:-.02em;}
+.kpi .delta{font-size:11px;font-weight:700;margin-top:3px;}
+.kpi .up{color:var(--teal);}.kpi .warn{color:var(--prid);}
+
+/* card / table */
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+.card .ch{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line);}
+.card .ch h2{font-size:15px;font-weight:800;}
+.tabs{display:flex;gap:7px;}
+.tab{padding:6px 12px;border-radius:18px;font-size:12px;font-weight:700;background:var(--bg);color:var(--ink2);border:1px solid var(--line);cursor:pointer;}
+.tab.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+.tab.on.idol{background:var(--idol);border-color:var(--idol);}
+.search{display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:7px 11px;font-size:12.5px;color:var(--gray);}
+.search input{border:none;background:none;outline:none;font-family:inherit;font-size:12.5px;width:150px;}
+
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;font-size:11px;font-weight:700;color:var(--gray);padding:11px 16px;background:#FAF9F6;border-bottom:1px solid var(--line);letter-spacing:.02em;}
+td{padding:11px 16px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#FCFBF8;}
+.rn{display:flex;align-items:center;gap:11px;}
+.rn .ph{width:42px;height:42px;border-radius:9px;background-size:cover;background-position:center;flex:0 0 auto;}
+.rn .nm{font-weight:700;}.rn .cat{font-size:11px;color:var(--gray);}
+.typebadge{font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:12px;white-space:nowrap;}
+.tb-idol{background:var(--idol50);color:var(--idold);}.tb-local{background:var(--pri50);color:var(--prid);}
+.src{font-size:11.5px;color:var(--idold);font-weight:600;}.src.none{color:#c2bfb6;font-weight:500;}
+.spice{font-size:12px;}
+.rowact{display:flex;gap:6px;}
+.iconbtn{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--ink2);}
+.iconbtn.del:hover{background:var(--red50);color:var(--red);border-color:#f0c8c0;}
+
+/* submissions */
+.subgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.subcard{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+.subcard .ph{height:140px;background-size:cover;background-position:center;position:relative;}
+.subcard .pend{position:absolute;top:10px;left:10px;background:#E8A33A;color:#1A1A1A;font-size:10px;font-weight:800;padding:3px 9px;border-radius:12px;}
+.subcard .bd{padding:13px 15px;}
+.subcard .nm{font-size:15px;font-weight:800;}
+.subcard .by{font-size:11.5px;color:var(--gray);margin-top:2px;}
+.subcard .claim{margin-top:10px;background:var(--idol50);border-radius:9px;padding:9px 11px;font-size:12px;color:var(--idold);font-weight:600;}
+.subcard .claim a{color:var(--idold);text-decoration:underline;}
+.subcard .acts{display:flex;gap:8px;margin-top:12px;}
+.subcard .acts button{flex:1;border:none;border-radius:9px;padding:10px;font-size:12.5px;font-weight:800;font-family:inherit;cursor:pointer;}
+.ok{background:var(--teal);color:#fff;}.no{background:#fff;border:1px solid var(--line)!important;color:var(--gray);}
+.emptyq{grid-column:1/-1;text-align:center;color:var(--gray);font-size:13px;padding:50px;}
+
+/* analytics */
+.bars{display:flex;align-items:flex-end;gap:14px;height:170px;padding:12px 6px 0;}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;justify-content:flex-end;}
+.bar .b{width:100%;max-width:46px;border-radius:7px 7px 0 0;background:var(--pri);}
+.bar .v{font-size:12px;font-weight:800;}.bar .lb{font-size:10.5px;color:var(--gray);}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.note{font-size:11.5px;color:var(--gray);margin-top:11px;}
+
+/* drawer (add/edit) */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:.2s;z-index:40;}
+.scrim.on{opacity:1;pointer-events:auto;}
+.drawer{position:fixed;top:0;right:0;width:420px;max-width:92vw;height:100vh;background:var(--paper);box-shadow:-10px 0 40px rgba(0,0,0,.2);transform:translateX(100%);transition:.26s cubic-bezier(.3,.8,.3,1);z-index:41;overflow-y:auto;padding:22px 22px 40px;}
+.drawer.on{transform:translateX(0);}
+.drawer h3{font-size:18px;font-weight:800;}
+.drawer .x{position:absolute;top:18px;right:18px;font-size:18px;color:var(--gray);cursor:pointer;border:none;background:none;}
+.field{margin-top:15px;}
+.field label{font-size:11.5px;font-weight:800;color:var(--ink2);display:block;margin-bottom:6px;}
+.field label .req{color:var(--red);}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 11px;font-size:13px;font-family:inherit;background:#fff;color:var(--ink);}
+.field textarea{resize:vertical;min-height:62px;}
+.srcbox{margin-top:15px;background:var(--idol50);border:1px solid #e0d6fb;border-radius:11px;padding:13px 14px;}
+.srcbox .h{font-size:12px;font-weight:800;color:var(--idold);margin-bottom:4px;}
+.srcbox .hint{font-size:11px;color:#6d619b;margin-bottom:6px;}
+.drawer .save{width:100%;margin-top:20px;background:var(--pri);color:#fff;border:none;border-radius:11px;padding:13px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(16px);background:var(--ink);color:#fff;font-size:13px;font-weight:700;padding:11px 18px;border-radius:22px;opacity:0;transition:.25s;z-index:60;}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+.disc{font-size:11px;color:#b6b3aa;text-align:center;margin-top:24px;}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="side">
+    <div class="brand"><div class="lg">it<span>ko</span></div><div class="adm">ADMIN</div></div>
+    <nav class="nav" id="nav">
+      <a class="on" data-p="dash"><span class="ic">▥</span> Dashboard</a>
+      <a data-p="spots"><span class="ic">🍜</span> Restaurants</a>
+      <a data-p="subs"><span class="ic">📥</span> Submissions <span class="badge" id="navbadge">3</span></a>
+      <a data-p="analytics"><span class="ic">📈</span> Analytics</a>
+    </nav>
+    <div class="foot"><div class="av">Y</div><div><div class="nm">Youngseon</div><div class="role">Admin</div></div></div>
+  </aside>
+
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <section class="pane on" id="pane-dash">
+      <div class="topbar"><div><h1>Dashboard</h1><div class="sub">Seoul · Hongdae 우선 · 오늘 한눈에</div></div>
+        <div class="actions"><button class="btn pri" onclick="openAdd()">＋ Add spot</button></div></div>
+      <div class="kpis">
+        <div class="kpi"><div class="lab">🍜 Total spots</div><div class="val">8</div><div class="delta up">＋2 this week</div></div>
+        <div class="kpi"><div class="lab">🔖 Saves (7d)</div><div class="val">1,284</div><div class="delta up">▲ 18%</div></div>
+        <div class="kpi"><div class="lab">📍 Maps CTR</div><div class="val">42%</div><div class="delta up">▲ 4pt</div></div>
+        <div class="kpi"><div class="lab">📥 Pending</div><div class="val" id="kpiPend">3</div><div class="delta warn">검수 필요</div></div>
+      </div>
+      <div class="two">
+        <div class="card"><div class="ch"><h2>Recent activity</h2></div>
+          <table><tbody>
+            <tr><td>🟣 Idol spot <b>“Gwangjang Yukhoe”</b> 게시</td><td style="text-align:right;color:var(--gray);font-size:12px;">2h ago</td></tr>
+            <tr><td>📥 팬 제보 3건 도착 (검수 대기)</td><td style="text-align:right;color:var(--gray);font-size:12px;">5h ago</td></tr>
+            <tr><td>🟠 Local <b>“Hangover Haejang”</b> 수정</td><td style="text-align:right;color:var(--gray);font-size:12px;">1d ago</td></tr>
+            <tr><td>🔖 “Café Onion” 저장 100회 돌파</td><td style="text-align:right;color:var(--gray);font-size:12px;">1d ago</td></tr>
+          </tbody></table>
+        </div>
+        <div class="card"><div class="ch"><h2>Top saved</h2></div>
+          <table><tbody>
+            <tr><td><b>1.</b> Café Onion Seongsu <span class="typebadge tb-idol" style="margin-left:6px;">💜 Karina</span></td><td style="text-align:right;font-weight:800;">312</td></tr>
+            <tr><td><b>2.</b> Gwangjang Yukhoe <span class="typebadge tb-idol" style="margin-left:6px;">💜 V</span></td><td style="text-align:right;font-weight:800;">287</td></tr>
+            <tr><td><b>3.</b> Hangover Haejang <span class="typebadge tb-local" style="margin-left:6px;">📍 Local</span></td><td style="text-align:right;font-weight:800;">196</td></tr>
+            <tr><td><b>4.</b> Wonyoung Tanghulu <span class="typebadge tb-idol" style="margin-left:6px;">💜 Wonyoung</span></td><td style="text-align:right;font-weight:800;">154</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESTAURANTS -->
+    <section class="pane" id="pane-spots">
+      <div class="topbar"><div><h1>Restaurants</h1><div class="sub">로컬 + 아이돌 맛집 큐레이션 관리</div></div>
+        <div class="actions"><button class="btn ghost">⤓ Export</button><button class="btn pri" onclick="openAdd()">＋ Add spot</button></div></div>
+      <div class="card">
+        <div class="ch">
+          <div class="tabs"><div class="tab on" data-f="all" onclick="filt('all',this)">All</div><div class="tab idol" data-f="idol" onclick="filt('idol',this)">💜 K-IDOL</div><div class="tab" data-f="local" onclick="filt('local',this)">📍 Local</div></div>
+          <div class="search">🔍 <input placeholder="Search spots…"></div>
+        </div>
+        <table>
+          <thead><tr><th>Spot</th><th>Type</th><th>Area</th><th>Spice</th><th>Source (idol)</th><th>Saves</th><th style="text-align:right;">Actions</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SUBMISSIONS -->
+    <section class="pane" id="pane-subs">
+      <div class="topbar"><div><h1>Fan submissions · 제보 검수</h1><div class="sub">팬 제출 → 출처 검증 후 게시. 오픈 게시판 아님 (모더레이션 리스크 차단).</div></div></div>
+      <div class="subgrid" id="subq"></div>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section class="pane" id="pane-analytics">
+      <div class="topbar"><div><h1>Analytics</h1><div class="sub">개요만 · 상세는 PostHog 연동</div></div></div>
+      <div class="two">
+        <div class="card"><div class="ch"><h2>Save rate (7d) · 1순위 KPI</h2></div>
+          <div style="padding:8px 14px 16px;"><div class="bars">
+            <div class="bar"><div class="v">28%</div><div class="b" style="height:60px;"></div><div class="lb">Mon</div></div>
+            <div class="bar"><div class="v">31%</div><div class="b" style="height:74px;"></div><div class="lb">Tue</div></div>
+            <div class="bar"><div class="v">35%</div><div class="b" style="height:90px;"></div><div class="lb">Wed</div></div>
+            <div class="bar"><div class="v">33%</div><div class="b" style="height:82px;"></div><div class="lb">Thu</div></div>
+            <div class="bar"><div class="v">39%</div><div class="b" style="height:104px;"></div><div class="lb">Fri</div></div>
+            <div class="bar"><div class="v">44%</div><div class="b" style="height:124px;"></div><div class="lb">Sat</div></div>
+            <div class="bar"><div class="v">41%</div><div class="b" style="height:116px;"></div><div class="lb">Sun</div></div>
+          </div><div class="note">저장한 유저 / 상세 본 유저. 아이돌 맛집이 로컬 대비 평균 save rate ↑.</div></div>
+        </div>
+        <div class="card"><div class="ch"><h2>Maps CTR (7d) · 2순위 KPI</h2></div>
+          <div style="padding:8px 14px 16px;"><div class="bars">
+            <div class="bar"><div class="v">36%</div><div class="b" style="height:70px;background:var(--idol);"></div><div class="lb">Mon</div></div>
+            <div class="bar"><div class="v">38%</div><div class="b" style="height:78px;background:var(--idol);"></div><div class="lb">Tue</div></div>
+            <div class="bar"><div class="v">40%</div><div class="b" style="height:88px;background:var(--idol);"></div><div class="lb">Wed</div></div>
+            <div class="bar"><div class="v">41%</div><div class="b" style="height:92px;background:var(--idol);"></div><div class="lb">Thu</div></div>
+            <div class="bar"><div class="v">43%</div><div class="b" style="height:104px;background:var(--idol);"></div><div class="lb">Fri</div></div>
+            <div class="bar"><div class="v">47%</div><div class="b" style="height:122px;background:var(--idol);"></div><div class="lb">Sat</div></div>
+            <div class="bar"><div class="v">42%</div><div class="b" style="height:100px;background:var(--idol);"></div><div class="lb">Sun</div></div>
+          </div><div class="note">Open in Maps 클릭 / 상세 본 유저 = 실제 방문 의향 프록시.</div></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="scrim" id="scrim" onclick="closeAdd()"></div>
+<aside class="drawer" id="drawer">
+  <button class="x" onclick="closeAdd()">✕</button>
+  <h3>Add a spot</h3>
+  <div class="field"><label>Name <span class="req">*</span></label><input placeholder="e.g. Gwangjang Yukhoe"></div>
+  <div class="field"><label>Type <span class="req">*</span></label>
+    <select id="typeSel" onchange="onType()"><option value="local">📍 Local fave</option><option value="idol">💜 K-IDOL spot</option></select></div>
+  <div class="field"><label>Area</label><select><option>Hongdae</option><option>Seongsu</option><option>Gangnam</option><option>Hannam</option></select></div>
+  <div class="field"><label>Category</label><input placeholder="e.g. Beef tartare · 광장시장"></div>
+  <div class="field"><label>Spice 🌶️</label><select><option>Not spicy</option><option>Mild</option><option>Medium</option><option>Spicy</option></select></div>
+  <div class="field"><label>WHY GO (curation) <span class="req">*</span></label><textarea placeholder="우리 큐레이션 멘트 — 왜 가야 하나"></textarea></div>
+  <div class="field"><label>Korean context</label><textarea placeholder="해장/소주안주 등 한국식 맥락"></textarea></div>
+
+  <div class="srcbox" id="srcbox" style="display:none;">
+    <div class="h">💜 Idol source — 필수</div>
+    <div class="hint">가짜 금지. 본인 인증 + 공신력 출처만. 팬이 신빙성 느끼게 원본 링크 필수.</div>
+    <div class="field" style="margin-top:8px;"><label>Idol · Group <span class="req">*</span></label><input placeholder="e.g. V · BTS"></div>
+    <div class="field"><label>When <span class="req">*</span></label><input placeholder="e.g. Mar 2024"></div>
+    <div class="field"><label>Source type <span class="req">*</span></label><select><option>Weverse / live</option><option>Official SNS (IG/X)</option><option>Vlog / YouTube</option><option>TV / variety</option><option>Fan-verified + restaurant</option></select></div>
+    <div class="field"><label>Original link <span class="req">*</span></label><input placeholder="https://…"></div>
+  </div>
+
+  <button class="save" onclick="saveSpot()">Save spot</button>
+  <div class="disc">시안 · 가 데이터 · 실제 저장 안 함</div>
+</aside>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var SPOTS=[
+ {n:'Gwangjang Yukhoe',cat:'Beef tartare · 광장시장',pic:'galbi.jpg',type:'idol',area:'Jongno',spice:1,src:"V · BTS — Weverse live",saves:287},
+ {n:'Café Onion Seongsu',cat:'Bakery · 성수',pic:'cafe.jpg',type:'idol',area:'Seongsu',spice:0,src:"Karina · aespa — IG story",saves:312},
+ {n:"Jungkook's Pho",cat:'Vietnamese · 한남',pic:'noodle.jpg',type:'idol',area:'Hannam',spice:1,src:"Jungkook · BTS — fan verified",saves:140},
+ {n:'Wonyoung Tanghulu',cat:'Dessert · 홍대',pic:'tanghulu.jpg',type:'idol',area:'Hongdae',spice:0,src:"Wonyoung · IVE — vlog",saves:154},
+ {n:'Hongdae Kalguksu',cat:'Knife noodles · 홍대',pic:'noodle.jpg',type:'local',area:'Hongdae',spice:1,src:"",saves:88},
+ {n:'Mapo Galbi House',cat:'BBQ · 마포',pic:'galbi.jpg',type:'local',area:'Mapo',spice:1,src:"",saves:74},
+ {n:'Hangover Haejang',cat:'Soup · 홍대',pic:'soup.jpg',type:'local',area:'Hongdae',spice:2,src:"",saves:196},
+ {n:'Seongsu Bingsu Bar',cat:'Café · 성수',pic:'bingsu.jpg',type:'local',area:'Seongsu',spice:0,src:"",saves:61}
+];
+var SUBS=[
+ {n:'Newjeans Hanni Ramen',by:'@bunnies_kr',pic:'ramen.jpg',claim:"Hanni · NewJeans",via:'Phoning live · Apr 2024',link:'weverse.io/newjeans'},
+ {n:'Lisa Tteokbokki',by:'@blink_seoul',pic:'streetfood.jpg',claim:"Lisa · BLACKPINK",via:'IG story · Mar 2024',link:'instagram.com/lalalalisa_m'},
+ {n:'Cha Eunwoo Salad Bar',by:'@arohatravels',pic:'salad.jpg',claim:"Cha Eunwoo · ASTRO",via:'Fan sighting (needs check)',link:'theqoo thread'}
+];
+function pic(p){return 'img/'+p;}
+function spiceDots(n){var s='';for(var i=0;i<3;i++)s+=i<n?'🌶️':'<span style="opacity:.22">🌶️</span>';return s;}
+
+function renderRows(f){
+ f=f||'all';
+ var list=SPOTS.filter(function(s){return f==='all'||s.type===f;});
+ document.getElementById('rows').innerHTML=list.map(function(s){
+  var badge=s.type==='idol'?'<span class="typebadge tb-idol">💜 K-IDOL</span>':'<span class="typebadge tb-local">📍 Local</span>';
+  var src=s.src?'<span class="src">🔗 '+s.src+'</span>':'<span class="src none">— (로컬, 불필요)</span>';
+  return '<tr><td><div class="rn"><div class="ph" style="background-image:url('+pic(s.pic)+')"></div><div><div class="nm">'+s.n+'</div><div class="cat">'+s.cat+'</div></div></div></td>'+
+   '<td>'+badge+'</td><td>'+s.area+'</td><td class="spice">'+spiceDots(s.spice)+'</td><td>'+src+'</td><td style="font-weight:800;">'+s.saves+'</td>'+
+   '<td><div class="rowact" style="justify-content:flex-end;"><button class="iconbtn" title="Edit" onclick="openAdd()">✎</button><button class="iconbtn del" title="Delete">🗑</button></div></td></tr>';
+ }).join('');
+}
+function filt(f,el){document.querySelectorAll('#pane-spots .tab').forEach(function(t){t.classList.remove('on');});el.classList.add('on');renderRows(f);}
+
+function renderSubs(){
+ var q=document.getElementById('subq');
+ if(SUBS.length===0){q.innerHTML='<div class="emptyq">✅ 검수 대기 없음 — 다 처리했어요.</div>';return;}
+ q.innerHTML=SUBS.map(function(s,i){
+  return '<div class="subcard"><div class="ph" style="background-image:url('+pic(s.pic)+')"><div class="pend">⏳ PENDING</div></div>'+
+   '<div class="bd"><div class="nm">'+s.n+'</div><div class="by">제보: '+s.by+'</div>'+
+   '<div class="claim">💜 주장: <b>'+s.claim+'</b><br>출처: '+s.via+' · <a>'+s.link+'</a></div>'+
+   '<div class="acts"><button class="ok" onclick="review('+i+',true)">✓ 승인·게시</button><button class="no" onclick="review('+i+',false)">✕ 반려</button></div></div></div>';
+ }).join('');
+}
+function review(i,ok){var s=SUBS[i];SUBS.splice(i,1);renderSubs();
+ var n=SUBS.length;document.getElementById('navbadge').textContent=n;document.getElementById('kpiPend').textContent=n;
+ if(n===0)document.getElementById('navbadge').style.display='none';
+ toast(ok?('게시됨 · '+s.n):('반려됨 · '+s.n));}
+
+function nav(p,el){document.querySelectorAll('.pane').forEach(function(x){x.classList.remove('on');});document.getElementById('pane-'+p).classList.add('on');
+ document.querySelectorAll('#nav a').forEach(function(a){a.classList.remove('on');});el.classList.add('on');}
+document.getElementById('nav').addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;nav(a.getAttribute('data-p'),a);});
+
+function openAdd(){document.getElementById('scrim').classList.add('on');document.getElementById('drawer').classList.add('on');}
+function closeAdd(){document.getElementById('scrim').classList.remove('on');document.getElementById('drawer').classList.remove('on');}
+function onType(){document.getElementById('srcbox').style.display=document.getElementById('typeSel').value==='idol'?'block':'none';}
+function saveSpot(){closeAdd();toast('저장됨 (시안 — 실제 저장 안 함)');}
+var tt;function toast(m){var el=document.getElementById('toast');el.textContent=m;el.classList.add('on');clearTimeout(tt);tt=setTimeout(function(){el.classList.remove('on');},1600);}
+
+renderRows('all');renderSubs();
+</script>
+</body>
+</html>
