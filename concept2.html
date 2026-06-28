@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Itko — 시안 2 (Blend)</title>
+<style>
+:root{
+ --pri:#F47B20;--prid:#C75E0C;--pri50:#FDEAD6;
+ --idol:#8B5CF6;--idol50:#F1ECFD;--idold:#6D40D9;
+ --ink:#1A1A1A;--gray:#7C7A73;--line:#ECE9E2;--paper:#fff;--bg:#F7F5F0;
+ --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+ --serif:Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:var(--sans);background:#E9E7E0;color:var(--ink);display:flex;justify-content:center;padding:18px;}
+#app{width:min(390px,100vw);height:min(844px,100dvh);background:var(--bg);border-radius:30px;box-shadow:0 18px 60px rgba(0,0,0,.22);overflow:hidden;position:relative;display:flex;flex-direction:column;}
+@media (max-width:440px),(max-height:900px){body{padding:0;}#app{border-radius:0;box-shadow:none;height:100dvh;}}
+
+.cbadge{position:absolute;top:0;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:10px;font-weight:800;padding:3px 12px;border-radius:0 0 10px 10px;z-index:60;letter-spacing:.04em;}
+
+.top{background:var(--paper);padding:12px 16px 9px;flex:0 0 auto;border-bottom:1px solid var(--line);}
+.tr{display:flex;align-items:center;justify-content:space-between;}
+.logo{font-size:20px;font-weight:800;color:var(--pri);letter-spacing:-.02em;}
+.logo span{color:var(--ink);}
+.tright{display:flex;align-items:center;gap:10px;}
+.tg{display:flex;border:1px solid var(--line);border-radius:16px;overflow:hidden;font-size:10.5px;font-weight:800;cursor:pointer;}
+.tg b{padding:4px 9px;color:var(--gray);}.tg b.on{background:var(--ink);color:#fff;}
+.srch{width:30px;height:30px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:15px;}
+.area{display:flex;align-items:center;gap:5px;margin-top:9px;font-size:13.5px;font-weight:800;}
+.area .pin{color:var(--pri);font-size:11px;}.area .ch{font-size:10px;color:var(--gray);}
+.ptitle{font-size:21px;font-weight:800;letter-spacing:-.02em;margin-top:6px;}
+
+.filters{padding:10px 16px 4px;flex:0 0 auto;}
+.chips{display:flex;gap:7px;overflow-x:auto;}
+.chips::-webkit-scrollbar{display:none;}
+.chip{flex:0 0 auto;display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:20px;font-size:12.5px;font-weight:800;background:var(--paper);border:1.5px solid var(--line);color:var(--ink);cursor:pointer;white-space:nowrap;transition:.15s;}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+.chip.idol.on{background:var(--idol);border-color:var(--idol);}
+/* lens toggle (B) */
+.lenstoggle{display:flex;align-items:center;gap:8px;background:var(--idol50);border:1px solid #e0d6fb;border-radius:14px;padding:9px 12px;cursor:pointer;transition:.2s;}
+.lenstoggle .lt{font-size:12.5px;font-weight:800;color:var(--idold);flex:1;}
+.lenstoggle .sw{width:38px;height:22px;border-radius:14px;background:#d8cef5;position:relative;}
+.lenstoggle .sw::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:2px;left:2px;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.2s;}
+.lenstoggle.on{background:var(--idol);border-color:var(--idold);}
+.lenstoggle.on .lt{color:#fff;}
+.lenstoggle.on .sw{background:rgba(255,255,255,.45);}
+.lenstoggle.on .sw::after{left:18px;}
+
+.body{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;padding-bottom:78px;position:relative;}
+.body::-webkit-scrollbar{display:none;}
+.tabpane{display:none;}.tabpane.on{display:block;}
+
+/* hype */
+.hype{margin:14px 16px 2px;border-radius:16px;overflow:hidden;position:relative;height:130px;background-size:cover;background-position:center;box-shadow:0 4px 14px rgba(0,0,0,.12);cursor:pointer;}
+.hype .ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.72));}
+.hype .tag{position:absolute;top:10px;left:10px;background:#FF4D3D;color:#fff;font-size:10px;font-weight:800;padding:4px 9px;border-radius:14px;letter-spacing:.04em;}
+.hype .cap{position:absolute;left:13px;right:13px;bottom:11px;color:#fff;}
+.hype .cap .h{font-size:17px;font-weight:800;letter-spacing:-.01em;}
+.hype .cap .s{font-size:11.5px;color:#eee;margin-top:2px;}
+
+.sech{display:flex;align-items:baseline;justify-content:space-between;padding:16px 16px 9px;}
+.sech .t{font-size:16px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:6px;}
+.sech .t.idol .em{color:var(--idol);}
+.sech .more{font-size:11.5px;font-weight:700;color:var(--gray);}
+
+.hero{display:flex;gap:11px;overflow-x:auto;padding:0 16px 4px;scroll-snap-type:x mandatory;}
+.hero::-webkit-scrollbar{display:none;}
+.hcard{flex:0 0 162px;scroll-snap-align:start;background:var(--paper);border-radius:15px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.06);cursor:pointer;}
+.hph{position:relative;height:110px;background-size:cover;background-position:center;}
+.hbadge{position:absolute;top:8px;left:8px;display:flex;align-items:center;gap:5px;background:rgba(139,92,246,.95);color:#fff;font-size:10.5px;font-weight:800;padding:3px 8px 3px 4px;border-radius:14px;}
+.hbadge .av{width:15px;height:15px;border-radius:50%;background-size:cover;background-position:center;border:1px solid #fff;}
+.hheart{position:absolute;top:7px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.3);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;backdrop-filter:blur(2px);}
+.hheart.sv{background:#fff;color:var(--pri);}
+.hb{padding:9px 10px 11px;}
+.hn{font-size:14px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hsub{font-size:11px;color:var(--gray);margin-top:2px;}
+.hsrc{font-size:10.5px;color:var(--idold);font-weight:700;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+.list{padding:0 16px;display:flex;flex-direction:column;gap:11px;}
+.lcard{background:var(--paper);border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.045);display:flex;cursor:pointer;}
+.lph{flex:0 0 92px;height:92px;background-size:cover;background-position:center;position:relative;margin:9px 0 9px 9px;border-radius:11px;}
+.lheart{position:absolute;top:6px;right:6px;width:25px;height:25px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.18);}
+.lheart.sv{color:var(--pri);}
+.lb{flex:1;padding:10px 12px 10px 11px;min-width:0;display:flex;flex-direction:column;justify-content:center;}
+.kick{font-size:9.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--prid);display:flex;align-items:center;gap:4px;}
+.kick.idol{color:var(--idold);}
+.ln{font-size:15px;font-weight:800;letter-spacing:-.01em;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.spice{display:flex;align-items:center;gap:5px;margin-top:4px;font-size:10.5px;color:var(--gray);font-weight:700;}
+.spice .ch .off{opacity:.25;}
+.lwhy{font-family:var(--serif);font-style:italic;font-size:12.5px;color:#5a5852;line-height:1.35;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.lsrc{font-size:10px;color:var(--idold);font-weight:700;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* idol entry banner (B) */
+.identry{margin:14px 16px 2px;background:linear-gradient(120deg,#3a2f5c,#221a36);border-radius:16px;padding:14px 15px;display:flex;align-items:center;gap:12px;color:#fff;cursor:pointer;}
+.identry .av{display:flex;}
+.identry .av span{width:30px;height:30px;border-radius:50%;background-size:cover;background-position:center;border:2px solid #221a36;margin-left:-10px;}
+.identry .av span:first-child{margin-left:0;}
+.identry .tx{flex:1;}
+.identry .tx .h{font-size:14px;font-weight:800;}
+.identry .tx .s{font-size:11px;color:#c7bdf0;margin-top:1px;}
+.identry .go{font-size:20px;color:var(--idol);}
+.lensnote{margin:14px 16px 0;font-size:11px;color:var(--idold);font-weight:700;background:var(--idol50);border-radius:10px;padding:8px 11px;}
+
+/* idol avatar row */
+.idolrow{display:flex;gap:13px;overflow-x:auto;padding:6px 16px 6px;}
+.idolrow::-webkit-scrollbar{display:none;}
+.iav{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;width:62px;}
+.iav .ph{width:58px;height:58px;border-radius:50%;background-size:cover;background-position:center;border:2.5px solid transparent;}
+.iav.on .ph{border-color:var(--idol);}
+.iav .nm{font-size:10.5px;font-weight:700;text-align:center;line-height:1.2;color:var(--gray);}
+.iav.on .nm{color:var(--idold);}
+.ihead{margin:6px 16px 2px;background:linear-gradient(135deg,#2a2440,#15131c);border-radius:16px;padding:15px 16px;color:#fff;display:flex;align-items:center;gap:13px;}
+.ihead .big{width:52px;height:52px;border-radius:50%;background-size:cover;background-position:center;border:2px solid var(--idol);}
+.ihead .who{font-size:18px;font-weight:800;}
+.ihead .grp{font-size:12px;color:#c7bdf0;margin-top:1px;}
+.ihead .cnt{margin-left:auto;text-align:right;}
+.ihead .cnt b{font-size:20px;font-weight:800;color:var(--idol);}
+.ihead .cnt span{display:block;font-size:10px;color:#a39bc4;}
+
+/* MAP */
+.maparea{position:relative;height:330px;background:repeating-linear-gradient(0deg,transparent 0 38px,rgba(0,0,0,.035) 38px 40px),repeating-linear-gradient(90deg,transparent 0 38px,rgba(0,0,0,.035) 38px 40px),linear-gradient(160deg,#EAF1EC,#E5EBF2);}
+.river{position:absolute;left:-10%;top:62%;width:130%;height:34px;background:#CFE0EC;transform:rotate(-8deg);border-radius:20px;}
+.road{position:absolute;background:#fff;}.r1{left:0;top:40%;width:100%;height:9px;}.r2{left:46%;top:0;width:9px;height:100%;}
+.mpin{position:absolute;transform:translate(-50%,-100%);cursor:pointer;z-index:2;}
+.mpin .dot{width:30px;height:30px;border-radius:50% 50% 50% 2px;transform:rotate(45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.25);border:2px solid #fff;}
+.mpin .dot span{transform:rotate(-45deg);font-size:13px;}
+.mpin.local .dot{background:var(--pri);}.mpin.idol .dot{background:var(--idol);}
+.mpin.sel .dot{width:38px;height:38px;}
+.mapbar{position:absolute;top:12px;left:12px;right:12px;display:flex;gap:8px;}
+.mappill{background:#fff;border-radius:20px;padding:8px 13px;font-size:12.5px;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,.12);display:flex;align-items:center;gap:6px;}
+.mappill .pin{color:var(--pri);font-size:10px;}
+.maplegend{margin-left:auto;background:#fff;border-radius:20px;padding:7px 11px;font-size:10.5px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.12);display:flex;gap:9px;}
+.maplegend .li{display:flex;align-items:center;gap:4px;}.maplegend .sw{width:9px;height:9px;border-radius:50%;}
+.mapcards{display:flex;gap:11px;overflow-x:auto;padding:14px 16px 4px;scroll-snap-type:x mandatory;}
+.mapcards::-webkit-scrollbar{display:none;}
+.mcard{flex:0 0 230px;scroll-snap-align:center;background:var(--paper);border-radius:15px;box-shadow:0 4px 14px rgba(0,0,0,.08);display:flex;overflow:hidden;cursor:pointer;border:2px solid transparent;}
+.mcard.sel{border-color:var(--ink);}
+.mcard .mph{flex:0 0 78px;height:78px;background-size:cover;background-position:center;}
+.mcard .mb{padding:8px 10px;min-width:0;display:flex;flex-direction:column;justify-content:center;}
+.mcard .mn{font-size:13.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mcard .mk{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
+.mcard .mk.idol{color:var(--idold);}.mcard .mk.local{color:var(--prid);}
+.mcard .mmeta{font-size:11px;color:var(--gray);margin-top:3px;}
+
+/* SAVED */
+.savedhead{padding:14px 16px 2px;font-size:12.5px;color:var(--gray);font-weight:700;}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:90px 30px;text-align:center;}
+.empty .ic{font-size:48px;}.empty h3{font-size:17px;font-weight:800;margin-top:14px;}
+.empty p{font-size:13px;color:var(--gray);margin-top:7px;line-height:1.5;}
+.empty button{margin-top:18px;background:var(--ink);color:#fff;border:none;border-radius:12px;padding:12px 22px;font-size:13.5px;font-weight:800;font-family:inherit;cursor:pointer;}
+
+.dock{position:absolute;bottom:0;left:0;right:0;background:var(--paper);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0 max(8px,env(safe-area-inset-bottom));flex:0 0 auto;z-index:30;}
+.dk{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9.5px;font-weight:700;color:#BAB7AF;cursor:pointer;position:relative;}
+.dk.on{color:var(--pri);}.dk .ic{font-size:19px;}
+.dk .bdg{position:absolute;top:-4px;right:50%;transform:translateX(15px);background:var(--pri);color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.2s;z-index:40;}
+.scrim.on{opacity:1;pointer-events:auto;}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:92%;background:var(--paper);border-radius:22px 22px 0 0;transform:translateY(100%);transition:.28s cubic-bezier(.3,.8,.3,1);z-index:41;overflow-y:auto;}
+.sheet.on{transform:translateY(0);}.sheet::-webkit-scrollbar{display:none;}
+.dph{height:188px;background-size:cover;background-position:center;position:relative;}
+.dclose{position:absolute;top:11px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.4);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;backdrop-filter:blur(3px);}
+.dbody{padding:15px 17px 22px;}
+.dname{font-size:21px;font-weight:800;letter-spacing:-.02em;}
+.dmeta{font-size:12px;color:var(--gray);margin-top:4px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.dspice{font-weight:700;color:var(--prid);}.dspice .off{opacity:.25;}
+.dsrc{margin-top:13px;background:var(--idol50);border-radius:12px;padding:12px 13px;}
+.dsrc .h{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;color:var(--idold);}
+.dsrc .av{width:24px;height:24px;border-radius:50%;background-size:cover;background-position:center;}
+.dsrc .q{font-family:var(--serif);font-style:italic;font-size:13.5px;color:#4b3a78;margin-top:8px;line-height:1.45;}
+.dsrc .lk{font-size:11px;font-weight:700;color:var(--idold);margin-top:9px;}
+.dwhy{margin-top:15px;}
+.dwhy .lab{font-size:10.5px;font-weight:800;letter-spacing:.1em;color:var(--pri);}
+.dwhy p{font-family:var(--serif);font-size:15px;line-height:1.55;margin-top:6px;color:#2a2a2a;}
+.dtip{margin-top:13px;font-size:13px;color:var(--prid);font-weight:700;}
+.dcta{display:flex;gap:9px;margin-top:17px;}
+.dcta button{flex:1;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;}
+.b-save{background:var(--ink);color:#fff;}.b-save.sv{background:var(--pri50);color:var(--prid);}
+.b-map{background:var(--pri);color:#fff;}
+
+.login{position:absolute;left:0;right:0;bottom:0;background:var(--paper);border-radius:22px 22px 0 0;transform:translateY(100%);transition:.28s cubic-bezier(.3,.8,.3,1);z-index:43;padding:24px 20px max(22px,env(safe-area-inset-bottom));}
+.login.on{transform:translateY(0);}
+.login .grip{width:38px;height:4px;border-radius:3px;background:var(--line);margin:0 auto 16px;}
+.login h3{font-size:19px;font-weight:800;text-align:center;}
+.login p{font-size:13px;color:var(--gray);text-align:center;margin-top:7px;line-height:1.5;}
+.login .lbtn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;border-radius:12px;padding:14px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;margin-top:13px;border:1.5px solid var(--line);background:#fff;color:var(--ink);}
+.login .lbtn.apple{background:#000;color:#fff;border-color:#000;}
+.login .skip{display:block;margin:14px auto 0;background:none;border:none;color:var(--gray);font-size:12.5px;font-weight:700;cursor:pointer;}
+.toast{position:absolute;left:50%;bottom:92px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-size:12.5px;font-weight:700;padding:10px 16px;border-radius:22px;opacity:0;transition:.25s;z-index:50;white-space:nowrap;}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="cbadge" id="cbadge"></div>
+  <div class="top" id="top"></div>
+  <div class="filters" id="filters"></div>
+  <div class="body">
+    <div class="tabpane on" id="pane-discover"></div>
+    <div class="tabpane" id="pane-map"></div>
+    <div class="tabpane" id="pane-idols"></div>
+    <div class="tabpane" id="pane-saved"></div>
+  </div>
+  <div class="dock" id="dock"></div>
+  <div class="scrim" id="scrim" onclick="closeAll()"></div>
+  <div class="sheet" id="sheet"></div>
+  <div class="login" id="login"></div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+var MODE='C';   // 'B' = local-base + lens · 'C' = blend
+
+var T={
+ en:{discover:'Discover',map:'Map',idols:'Idols',saved:'Saved',all:'✨ All',kidol:'💜 K-IDOL Spots',local:'📍 Local Faves',
+  heroTitle:'K-IDOL Spots',localTitle:'Local Faves in Hongdae',seeAll:'See all ›',whyGo:'WHY GO',save:'Save',saved2:'Saved',openMaps:'Open in Maps ↗',
+  mapTitle:'Map',idolsTitle:'Idols',browseIdol:'Browse by idol',spots:'spots',savedTitle:'Saved',savedCount:'spots saved',
+  emptyH:'No saved spots yet',emptyP:'Tap ♡ on any spot to build your Korea food list.',explore:'Explore spots',
+  loginH:'Save your spots',loginP:'Sign in to keep your Korea list across devices.',google:'Continue with Google',apple:'Continue with Apple',later:'Maybe later',
+  savedToast:'Saved to your list',removedToast:'Removed',lens:'💜 K-IDOL lens',idolEntryH:'Where your idols eat',idolEntryS:'Turn on the K-IDOL lens →',
+  lensOn:'💜 K-IDOL lens on — where idols actually ate (verified sources).',whereEat:'Where idols eat',
+  spice0:'Not spicy',spice1:'Mild',spice2:'Medium',spice3:'Spicy'},
+ ko:{discover:'탐색',map:'지도',idols:'아이돌',saved:'저장',all:'✨ 전체',kidol:'💜 아이돌 맛집',local:'📍 로컬 맛집',
+  heroTitle:'아이돌 맛집',localTitle:'홍대 로컬 맛집',seeAll:'전체 보기 ›',whyGo:'왜 가야 할까',save:'저장',saved2:'저장됨',openMaps:'지도에서 열기 ↗',
+  mapTitle:'지도',idolsTitle:'아이돌',browseIdol:'아이돌별 보기',spots:'곳',savedTitle:'저장',savedCount:'곳 저장됨',
+  emptyH:'아직 저장한 곳이 없어요',emptyP:'♡ 를 눌러 나만의 한국 맛집 리스트를 만들어요.',explore:'맛집 둘러보기',
+  loginH:'맛집을 저장하세요',loginP:'로그인하면 기기 간에 리스트가 유지돼요.',google:'Google로 계속',apple:'Apple로 계속',later:'다음에',
+  savedToast:'리스트에 저장됨',removedToast:'삭제됨',lens:'💜 아이돌 렌즈',idolEntryH:'최애가 간 맛집',idolEntryS:'아이돌 렌즈 켜기 →',
+  lensOn:'💜 아이돌 렌즈 ON — 실제 인증된 출처만.',whereEat:'최애가 간 곳',
+  spice0:'안 매움',spice1:'순함',spice2:'보통',spice3:'매움'}
+};
+var AV={v:'https://i.pravatar.cc/80?img=12',karina:'https://i.pravatar.cc/80?img=47',jk:'https://i.pravatar.cc/80?img=33',won:'https://i.pravatar.cc/80?img=45'};
+var DATA=[
+ {id:1,kind:'idol',n:"Gwangjang Yukhoe",cat:"Beef tartare · 광장시장",pic:'galbi.jpg',spice:1,idol:"V",group:"BTS",av:AV.v,via:"V's live · Mar '24",
+  q:'"해장은 여기 육회국밥이지" — V, on a Weverse live',lk:"Source: weverse.io/bts · 03:14",
+  why:"The exact stall V named when fans asked his hangover cure. Raw beef, warm broth, zero tourist polish.",mx:30,my:46},
+ {id:2,kind:'idol',n:"Café Onion Seongsu",cat:"Bakery · 성수",pic:'cafe.jpg',spice:0,idol:"Karina",group:"aespa",av:AV.karina,via:"IG story · Jan '24",
+  q:'Karina tagged this café in an Instagram story',lk:"Source: instagram.com/katarinabluu",
+  why:"The pandoro Karina posted is on every fan's list now. Go before noon — it sells out on weekends.",mx:68,my:30},
+ {id:3,kind:'idol',n:"Jungkook's Pho",cat:"Vietnamese · 한남",pic:'noodle.jpg',spice:1,idol:"Jungkook",group:"BTS",av:AV.jk,via:"Fan verified · Nov '23",
+  q:'Fan sightings cross-checked with the owner',lk:"Source: theqoo thread · verified",
+  why:"Multiple sightings confirmed by the restaurant. The rare-beef pho he orders is now the house special.",mx:54,my:64},
+ {id:7,kind:'idol',n:"Wonyoung Tanghulu",cat:"Dessert · 홍대",pic:'tanghulu.jpg',spice:0,idol:"Wonyoung",group:"IVE",av:AV.won,via:"Vlog · Feb '24",
+  q:'From Wonyoung\'s "day off in Hongdae" vlog',lk:"Source: youtube.com/@wonyoung · 4:02",
+  why:"The strawberry tanghulu she filmed herself eating. Expect a short line of fellow DIVE fans.",mx:22,my:24},
+ {id:4,kind:'local',n:"Hongdae Kalguksu",cat:"Knife noodles · 홍대",pic:'noodle.jpg',spice:1,
+  why:"Hand-cut noodles in anchovy broth where the ajummas line up at 11am. The real deal, not a trap.",tip:"Cash only · 11am rush",mx:42,my:38},
+ {id:5,kind:'local',n:"Mapo Galbi House",cat:"BBQ · 마포",pic:'galbi.jpg',spice:1,
+  why:"The locals' birthday-dinner spot. Marinated galbi, then cold naengmyeon to finish.",tip:"Book for dinner",mx:60,my:50},
+ {id:6,kind:'local',n:"Hangover Haejang",cat:"Soup · 홍대",pic:'soup.jpg',spice:2,
+  why:"What Koreans actually eat at 3am after soju — bean-sprout haejang, open all night.",tip:"Open 24h",mx:36,my:70},
+ {id:8,kind:'local',n:"Seongsu Bingsu Bar",cat:"Café · 성수",pic:'bingsu.jpg',spice:0,
+  why:"Injeolmi bingsu done right: toasted soybean powder, not too sweet. A local summer ritual.",tip:"Share one",mx:74,my:58}
+];
+var HYPE=[
+ {title:"Tanghulu, still everywhere",sub:"This week's trend in Hongdae",pic:'tanghulu.jpg',spot:7},
+ {title:"Gwangjang street food buzz",sub:"Going viral on TikTok",pic:'streetfood.jpg',spot:1}
+];
+
+var state={tab:'discover',filter:'all',lang:'en',idol:'V',selPin:null,lens:false};
+var saved={},loggedIn=false,pendingSave=null;
+function t(k){return T[state.lang][k];}
+function pic(p){return "img/"+p;}
+function byId(id){for(var i=0;i<DATA.length;i++){if(DATA[i].id===id)return DATA[i];}return null;}
+function idols(){return DATA.filter(function(d){return d.kind==='idol';});}
+function locals(){return DATA.filter(function(d){return d.kind==='local';});}
+function savedList(){return DATA.filter(function(d){return saved[d.id];});}
+function spiceStr(n){return t('spice'+n);}
+function spiceDots(n){var f='';for(var i=0;i<3;i++){f+= i<n?'🌶️':'<span class="off">🌶️</span>';}return f;}
+
+function renderTop(){
+ var top=document.getElementById('top');var title='';
+ if(state.tab==='discover'){title='<div class="area"><span class="pin">●</span> Seoul · Hongdae <span class="ch">▾</span></div>';}
+ else if(state.tab==='map'){title='<div class="ptitle">'+t('mapTitle')+'</div>';}
+ else if(state.tab==='idols'){title='<div class="ptitle">'+t('idolsTitle')+'</div>';}
+ else{title='<div class="ptitle">'+t('savedTitle')+'</div>';}
+ top.innerHTML='<div class="tr"><div class="logo">it<span>ko</span></div><div class="tright">'+
+   '<div class="tg" onclick="toggleLang()"><b class="'+(state.lang==='en'?'on':'')+'">EN</b><b class="'+(state.lang==='ko'?'on':'')+'">KO</b></div>'+
+   '<div class="srch">🔍</div></div></div>'+title;
+ var f=document.getElementById('filters');
+ if(state.tab==='discover'){
+  f.style.display='block';
+  if(MODE==='C'){
+   f.innerHTML='<div class="chips"><div class="chip '+(state.filter==='all'?'on':'')+'" onclick="setFilter(\'all\')">'+t('all')+'</div>'+
+    '<div class="chip idol '+(state.filter==='idol'?'on':'')+'" onclick="setFilter(\'idol\')">'+t('kidol')+'</div>'+
+    '<div class="chip '+(state.filter==='local'?'on':'')+'" onclick="setFilter(\'local\')">'+t('local')+'</div></div>';
+  } else {
+   f.innerHTML='<div class="lenstoggle'+(state.lens?' on':'')+'" onclick="toggleLens()"><div class="lt">'+t('lens')+'</div><div class="sw"></div></div>';
+  }
+ } else { f.style.display='none'; }
+}
+function renderDock(){
+ var n=savedList().length;
+ var items=[['discover','🍜'],['map','🗺️'],['idols','💜'],['saved','🔖']];
+ document.getElementById('dock').innerHTML=items.map(function(it){
+  var bdg=(it[0]==='saved'&&n>0)?'<div class="bdg">'+n+'</div>':'';
+  return '<div class="dk '+(state.tab===it[0]?'on':'')+'" onclick="go(\''+it[0]+'\')">'+bdg+'<div class="ic">'+it[1]+'</div>'+t(it[0])+'</div>';
+ }).join('');
+}
+function heart(id,cls){return '<div class="'+cls+(saved[id]?' sv':'')+'" onclick="event.stopPropagation();toggleSave('+id+')">'+(saved[id]?'♥':'♡')+'</div>';}
+function heroCard(d){return '<div class="hcard" onclick="openDetail('+d.id+')">'+
+ '<div class="hph" style="background-image:url('+pic(d.pic)+')"><div class="hbadge"><span class="av" style="background-image:url('+d.av+')"></span>'+d.idol+'</div>'+heart(d.id,'hheart')+'</div>'+
+ '<div class="hb"><div class="hn">'+d.n+'</div><div class="hsub">'+d.cat+'</div><div class="hsrc">🔗 '+d.via+'</div></div></div>';}
+function rowCard(d){
+ var mid;
+ if(d.kind==='idol'){mid='<div class="kick idol">💜 '+d.group+' '+d.idol+'</div><div class="ln">'+d.n+'</div>'+
+   '<div class="lwhy">'+d.why+'</div><div class="lsrc">🔗 '+d.via+'</div>';}
+ else{mid='<div class="kick">📍 Local fave</div><div class="ln">'+d.n+'</div>'+
+   '<div class="spice"><span class="ch">'+spiceDots(d.spice)+'</span> '+spiceStr(d.spice)+' · '+d.tip+'</div>'+
+   '<div class="lwhy">'+d.why+'</div>';}
+ return '<div class="lcard" onclick="openDetail('+d.id+')"><div class="lph" style="background-image:url('+pic(d.pic)+')">'+heart(d.id,'lheart')+'</div><div class="lb">'+mid+'</div></div>';
+}
+function hypeBanner(){
+ var h=HYPE[0];
+ return '<div class="hype" style="background-image:url('+pic(h.pic)+')" onclick="openDetail('+h.spot+')">'+
+  '<div class="ov"></div><div class="tag">🔥 HYPE</div>'+
+  '<div class="cap"><div class="h">'+h.title+'</div><div class="s">'+h.sub+'</div></div></div>';
+}
+function idolBrowse(){
+ var list=idols();
+ var avs=list.map(function(d){return '<div class="iav '+(state.idol===d.idol?'on':'')+'" onclick="setIdol(\''+d.idol+'\')">'+
+   '<div class="ph" style="background-image:url('+d.av+')"></div><div class="nm">'+d.group+'<br>'+d.idol+'</div></div>';}).join('');
+ var cur=list.filter(function(d){return d.idol===state.idol;});var sel=cur[0]||list[0];
+ var head='<div class="ihead"><div class="big" style="background-image:url('+sel.av+')"></div><div><div class="who">'+sel.idol+'</div><div class="grp">'+sel.group+'</div></div>'+
+   '<div class="cnt"><b>'+cur.length+'</b><span>'+t('spots')+'</span></div></div>';
+ return '<div class="idolrow">'+avs+'</div>'+head+'<div class="list" style="margin-top:12px;">'+cur.map(rowCard).join('')+'</div>';
+}
+
+function renderDiscover(){
+ var h='';
+ if(MODE==='C'){
+  if(state.filter==='all'||state.filter==='idol')h+=hypeBanner();
+  if(state.filter==='all'||state.filter==='idol'){
+   h+='<div class="sech"><div class="t idol"><span class="em">💜</span> '+t('heroTitle')+'</div><div class="more">'+t('seeAll')+'</div></div>';
+   h+='<div class="hero">'+idols().map(heroCard).join('')+'</div>';
+  }
+  var ld;
+  if(state.filter==='all'){ld=locals();h+='<div class="sech"><div class="t">📍 '+t('localTitle')+'</div></div>';}
+  else if(state.filter==='idol'){ld=idols();h+='<div class="sech"><div class="t">'+t('kidol')+'</div></div>';}
+  else{ld=locals();h+=hypeBanner()+'<div class="sech"><div class="t">📍 '+t('local')+'</div></div>';}
+  h+='<div class="list">'+ld.map(rowCard).join('')+'</div>';
+ } else { // MODE B
+  if(!state.lens){
+   h+=hypeBanner();
+   var av=idols().slice(0,3).map(function(d){return '<span style="background-image:url('+d.av+')"></span>';}).join('');
+   h+='<div class="identry" onclick="toggleLens()"><div class="av">'+av+'</div><div class="tx"><div class="h">'+t('idolEntryH')+'</div><div class="s">'+t('idolEntryS')+'</div></div><div class="go">›</div></div>';
+   h+='<div class="sech"><div class="t">📍 '+t('localTitle')+'</div><div class="more">'+t('seeAll')+'</div></div>';
+   h+='<div class="list">'+locals().map(rowCard).join('')+'</div>';
+  } else {
+   h+='<div class="lensnote">'+t('lensOn')+'</div>';
+   h+='<div class="sech"><div class="t idol"><span class="em">💜</span> '+t('whereEat')+'</div></div>';
+   h+=idolBrowse();
+  }
+ }
+ document.getElementById('pane-discover').innerHTML=h;
+}
+
+function renderMap(){
+ var pins=DATA.map(function(d){var sel=(state.selPin===d.id)?' sel':'';
+  return '<div class="mpin '+d.kind+sel+'" style="left:'+d.mx+'%;top:'+d.my+'%" onclick="selPin('+d.id+')"><div class="dot"><span>'+(d.kind==='idol'?'💜':'🍜')+'</span></div></div>';}).join('');
+ var cards=DATA.map(function(d){var sel=(state.selPin===d.id)?' sel':'';
+  return '<div class="mcard'+sel+'" id="mc'+d.id+'" onclick="openDetail('+d.id+')"><div class="mph" style="background-image:url('+pic(d.pic)+')"></div>'+
+   '<div class="mb"><div class="mk '+d.kind+'">'+(d.kind==='idol'?'💜 '+d.idol:'📍 Local')+'</div><div class="mn">'+d.n+'</div><div class="mmeta">'+d.cat+'</div></div></div>';}).join('');
+ document.getElementById('pane-map').innerHTML='<div class="maparea"><div class="river"></div><div class="road r1"></div><div class="road r2"></div>'+
+  '<div class="mapbar"><div class="mappill"><span class="pin">●</span> Hongdae ▾</div><div class="maplegend"><div class="li"><span class="sw" style="background:var(--idol)"></span>K-IDOL</div><div class="li"><span class="sw" style="background:var(--pri)"></span>Local</div></div></div>'+pins+'</div>'+
+  '<div class="mapcards" id="mapcards">'+cards+'</div>';
+}
+function selPin(id){state.selPin=id;renderMap();var el=document.getElementById('mc'+id);if(el)el.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});}
+
+function renderIdols(){
+ document.getElementById('pane-idols').innerHTML='<div class="savedhead">'+t('browseIdol')+'</div>'+idolBrowse();
+}
+function setIdol(n){state.idol=n;if(state.tab==='idols')renderIdols();else renderDiscover();}
+
+function renderSaved(){
+ var list=savedList();var h;
+ if(list.length===0){h='<div class="empty"><div class="ic">🔖</div><h3>'+t('emptyH')+'</h3><p>'+t('emptyP')+'</p><button onclick="go(\'discover\')">'+t('explore')+'</button></div>';}
+ else{h='<div class="savedhead">'+list.length+' '+t('savedCount')+'</div><div class="list" style="margin-top:8px;">'+list.map(rowCard).join('')+'</div>';}
+ document.getElementById('pane-saved').innerHTML=h;
+}
+
+function openDetail(id){
+ var d=byId(id);if(!d)return;
+ var prov=d.kind==='idol'?'<div class="dsrc"><div class="h"><span class="av" style="background-image:url('+d.av+')"></span>'+d.group+' '+d.idol+' · '+d.via+'</div><div class="q">'+d.q+'</div><div class="lk">🔗 '+d.lk+'</div></div>':'';
+ var tip=d.kind==='local'?'<div class="dtip">💡 '+d.tip+'</div>':'';
+ var sv=saved[id];
+ document.getElementById('sheet').innerHTML='<div class="dph" style="background-image:url('+pic(d.pic)+')"><div class="dclose" onclick="closeAll()">✕</div></div>'+
+  '<div class="dbody"><div class="dname">'+d.n+'</div><div class="dmeta"><span>'+d.cat+'</span><span class="dspice">'+spiceDots(d.spice)+' '+spiceStr(d.spice)+'</span></div>'+prov+
+  '<div class="dwhy"><div class="lab">'+t('whyGo')+'</div><p>'+d.why+'</p></div>'+tip+
+  '<div class="dcta"><button class="b-save'+(sv?' sv':'')+'" onclick="toggleSave('+id+',true)">'+(sv?'♥ '+t('saved2'):'♡ '+t('save'))+'</button><button class="b-map">'+t('openMaps')+'</button></div></div>';
+ document.getElementById('scrim').classList.add('on');document.getElementById('sheet').classList.add('on');
+}
+
+function toggleSave(id,fromDetail){
+ if(!saved[id]){if(!loggedIn){pendingSave=id;openLogin();return;}saved[id]=true;toast(t('savedToast'));}
+ else{delete saved[id];toast(t('removedToast'));}
+ refreshAll();if(fromDetail)openDetail(id);
+}
+function openLogin(){
+ document.getElementById('login').innerHTML='<div class="grip"></div><h3>'+t('loginH')+'</h3><p>'+t('loginP')+'</p>'+
+  '<button class="lbtn" onclick="doLogin()">🟦 '+t('google')+'</button><button class="lbtn apple" onclick="doLogin()"> '+t('apple')+'</button>'+
+  '<button class="skip" onclick="closeLogin()">'+t('later')+'</button>';
+ document.getElementById('scrim').classList.add('on');document.getElementById('login').classList.add('on');
+}
+function doLogin(){loggedIn=true;document.getElementById('login').classList.remove('on');
+ if(pendingSave){saved[pendingSave]=true;toast(t('savedToast'));var id=pendingSave;pendingSave=null;refreshAll();
+   if(document.getElementById('sheet').classList.contains('on'))openDetail(id);}
+ setTimeout(function(){if(!document.getElementById('sheet').classList.contains('on'))document.getElementById('scrim').classList.remove('on');},50);}
+function closeLogin(){pendingSave=null;document.getElementById('login').classList.remove('on');if(!document.getElementById('sheet').classList.contains('on'))document.getElementById('scrim').classList.remove('on');}
+function closeAll(){document.getElementById('scrim').classList.remove('on');document.getElementById('sheet').classList.remove('on');document.getElementById('login').classList.remove('on');pendingSave=null;}
+var toastTimer;function toast(m){var el=document.getElementById('toast');el.textContent=m;el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove('on');},1500);}
+
+function go(tab){state.tab=tab;document.querySelectorAll('.tabpane').forEach(function(p){p.classList.remove('on');});
+ document.getElementById('pane-'+tab).classList.add('on');
+ if(tab==='map')renderMap();if(tab==='idols')renderIdols();if(tab==='saved')renderSaved();
+ renderTop();renderDock();document.querySelector('.body').scrollTop=0;}
+function setFilter(f){state.filter=f;renderTop();renderDiscover();document.querySelector('.body').scrollTop=0;}
+function toggleLens(){state.lens=!state.lens;renderTop();renderDiscover();document.querySelector('.body').scrollTop=0;}
+function toggleLang(){state.lang=state.lang==='en'?'ko':'en';refreshAll();}
+function refreshAll(){renderTop();renderDock();renderDiscover();if(state.tab==='map')renderMap();if(state.tab==='idols')renderIdols();if(state.tab==='saved')renderSaved();}
+
+document.getElementById('cbadge').textContent=(MODE==='C'?'시안 2 · Blend':'시안 1 · Local + K-POP lens');
+renderTop();renderDock();renderDiscover();
+</script>
+</body>
+</html>
