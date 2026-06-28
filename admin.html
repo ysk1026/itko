@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Itko — Admin (시안)</title>
+<title>Itko — 어드민 (시안)</title>
 <style>
 :root{
  --pri:#F47B20;--prid:#C75E0C;--pri50:#FDEAD6;
@@ -131,28 +131,28 @@ tr:hover td{background:#FCFBF8;}
   <aside class="side">
     <div class="brand"><div class="lg">it<span>ko</span></div><div class="adm">ADMIN</div></div>
     <nav class="nav" id="nav">
-      <a class="on" data-p="dash"><span class="ic">▥</span> Dashboard</a>
-      <a data-p="spots"><span class="ic">🍜</span> Restaurants</a>
-      <a data-p="subs"><span class="ic">📥</span> Submissions <span class="badge" id="navbadge">3</span></a>
-      <a data-p="analytics"><span class="ic">📈</span> Analytics</a>
+      <a class="on" data-p="dash"><span class="ic">▥</span> 대시보드</a>
+      <a data-p="spots"><span class="ic">🍜</span> 맛집 관리</a>
+      <a data-p="subs"><span class="ic">📥</span> 제보 검수 <span class="badge" id="navbadge">3</span></a>
+      <a data-p="analytics"><span class="ic">📈</span> 통계</a>
     </nav>
-    <div class="foot"><div class="av">Y</div><div><div class="nm">Youngseon</div><div class="role">Admin</div></div></div>
+    <div class="foot"><div class="av">Y</div><div><div class="nm">Youngseon</div><div class="role">관리자</div></div></div>
   </aside>
 
   <main class="main">
 
     <!-- DASHBOARD -->
     <section class="pane on" id="pane-dash">
-      <div class="topbar"><div><h1>Dashboard</h1><div class="sub">Seoul · Hongdae 우선 · 오늘 한눈에</div></div>
-        <div class="actions"><button class="btn pri" onclick="openAdd()">＋ Add spot</button></div></div>
+      <div class="topbar"><div><h1>대시보드</h1><div class="sub">서울 · 홍대 우선 · 오늘 한눈에</div></div>
+        <div class="actions"><button class="btn pri" onclick="openAdd()">＋ 맛집 추가</button></div></div>
       <div class="kpis">
-        <div class="kpi"><div class="lab">🍜 Total spots</div><div class="val">8</div><div class="delta up">＋2 this week</div></div>
-        <div class="kpi"><div class="lab">🔖 Saves (7d)</div><div class="val">1,284</div><div class="delta up">▲ 18%</div></div>
-        <div class="kpi"><div class="lab">📍 Maps CTR</div><div class="val">42%</div><div class="delta up">▲ 4pt</div></div>
-        <div class="kpi"><div class="lab">📥 Pending</div><div class="val" id="kpiPend">3</div><div class="delta warn">검수 필요</div></div>
+        <div class="kpi"><div class="lab">🍜 전체 맛집</div><div class="val">8</div><div class="delta up">＋2 이번 주</div></div>
+        <div class="kpi"><div class="lab">🔖 저장수 (7일)</div><div class="val">1,284</div><div class="delta up">▲ 18%</div></div>
+        <div class="kpi"><div class="lab">📍 지도 클릭률</div><div class="val">42%</div><div class="delta up">▲ 4pt</div></div>
+        <div class="kpi"><div class="lab">📥 검수 대기</div><div class="val" id="kpiPend">3</div><div class="delta warn">검수 필요</div></div>
       </div>
       <div class="two">
-        <div class="card"><div class="ch"><h2>Recent activity</h2></div>
+        <div class="card"><div class="ch"><h2>최근 활동</h2></div>
           <table><tbody>
             <tr><td>🟣 Idol spot <b>“Gwangjang Yukhoe”</b> 게시</td><td style="text-align:right;color:var(--gray);font-size:12px;">2h ago</td></tr>
             <tr><td>📥 팬 제보 3건 도착 (검수 대기)</td><td style="text-align:right;color:var(--gray);font-size:12px;">5h ago</td></tr>
@@ -160,11 +160,11 @@ tr:hover td{background:#FCFBF8;}
             <tr><td>🔖 “Café Onion” 저장 100회 돌파</td><td style="text-align:right;color:var(--gray);font-size:12px;">1d ago</td></tr>
           </tbody></table>
         </div>
-        <div class="card"><div class="ch"><h2>Top saved</h2></div>
+        <div class="card"><div class="ch"><h2>저장 많은 순</h2></div>
           <table><tbody>
             <tr><td><b>1.</b> Café Onion Seongsu <span class="typebadge tb-idol" style="margin-left:6px;">💜 Karina</span></td><td style="text-align:right;font-weight:800;">312</td></tr>
             <tr><td><b>2.</b> Gwangjang Yukhoe <span class="typebadge tb-idol" style="margin-left:6px;">💜 V</span></td><td style="text-align:right;font-weight:800;">287</td></tr>
-            <tr><td><b>3.</b> Hangover Haejang <span class="typebadge tb-local" style="margin-left:6px;">📍 Local</span></td><td style="text-align:right;font-weight:800;">196</td></tr>
+            <tr><td><b>3.</b> Hangover Haejang <span class="typebadge tb-local" style="margin-left:6px;">📍 로컬</span></td><td style="text-align:right;font-weight:800;">196</td></tr>
             <tr><td><b>4.</b> Wonyoung Tanghulu <span class="typebadge tb-idol" style="margin-left:6px;">💜 Wonyoung</span></td><td style="text-align:right;font-weight:800;">154</td></tr>
           </tbody></table>
         </div>
@@ -173,15 +173,15 @@ tr:hover td{background:#FCFBF8;}
 
     <!-- RESTAURANTS -->
     <section class="pane" id="pane-spots">
-      <div class="topbar"><div><h1>Restaurants</h1><div class="sub">로컬 + 아이돌 맛집 큐레이션 관리</div></div>
-        <div class="actions"><button class="btn ghost">⤓ Export</button><button class="btn pri" onclick="openAdd()">＋ Add spot</button></div></div>
+      <div class="topbar"><div><h1>맛집 관리</h1><div class="sub">로컬 + 아이돌 맛집 큐레이션 관리</div></div>
+        <div class="actions"><button class="btn ghost">⤓ 내보내기</button><button class="btn pri" onclick="openAdd()">＋ 맛집 추가</button></div></div>
       <div class="card">
         <div class="ch">
-          <div class="tabs"><div class="tab on" data-f="all" onclick="filt('all',this)">All</div><div class="tab idol" data-f="idol" onclick="filt('idol',this)">💜 K-IDOL</div><div class="tab" data-f="local" onclick="filt('local',this)">📍 Local</div></div>
-          <div class="search">🔍 <input placeholder="Search spots…"></div>
+          <div class="tabs"><div class="tab on" data-f="all" onclick="filt('all',this)">전체</div><div class="tab idol" data-f="idol" onclick="filt('idol',this)">💜 아이돌</div><div class="tab" data-f="local" onclick="filt('local',this)">📍 로컬</div></div>
+          <div class="search">🔍 <input placeholder="맛집 검색…"></div>
         </div>
         <table>
-          <thead><tr><th>Spot</th><th>Type</th><th>Area</th><th>Spice</th><th>Source (idol)</th><th>Saves</th><th style="text-align:right;">Actions</th></tr></thead>
+          <thead><tr><th>맛집</th><th>유형</th><th>지역</th><th>맵기</th><th>출처 (아이돌)</th><th>저장수</th><th style="text-align:right;">관리</th></tr></thead>
           <tbody id="rows"></tbody>
         </table>
       </div>
@@ -189,34 +189,34 @@ tr:hover td{background:#FCFBF8;}
 
     <!-- SUBMISSIONS -->
     <section class="pane" id="pane-subs">
-      <div class="topbar"><div><h1>Fan submissions · 제보 검수</h1><div class="sub">팬 제출 → 출처 검증 후 게시. 오픈 게시판 아님 (모더레이션 리스크 차단).</div></div></div>
+      <div class="topbar"><div><h1>제보 검수</h1><div class="sub">팬 제출 → 출처 검증 후 게시. 오픈 게시판 아님 (모더레이션 리스크 차단).</div></div></div>
       <div class="subgrid" id="subq"></div>
     </section>
 
     <!-- ANALYTICS -->
     <section class="pane" id="pane-analytics">
-      <div class="topbar"><div><h1>Analytics</h1><div class="sub">개요만 · 상세는 PostHog 연동</div></div></div>
+      <div class="topbar"><div><h1>통계</h1><div class="sub">개요만 · 상세는 PostHog 연동</div></div></div>
       <div class="two">
-        <div class="card"><div class="ch"><h2>Save rate (7d) · 1순위 KPI</h2></div>
+        <div class="card"><div class="ch"><h2>저장률 (7일) · 1순위 KPI</h2></div>
           <div style="padding:8px 14px 16px;"><div class="bars">
-            <div class="bar"><div class="v">28%</div><div class="b" style="height:60px;"></div><div class="lb">Mon</div></div>
-            <div class="bar"><div class="v">31%</div><div class="b" style="height:74px;"></div><div class="lb">Tue</div></div>
-            <div class="bar"><div class="v">35%</div><div class="b" style="height:90px;"></div><div class="lb">Wed</div></div>
-            <div class="bar"><div class="v">33%</div><div class="b" style="height:82px;"></div><div class="lb">Thu</div></div>
-            <div class="bar"><div class="v">39%</div><div class="b" style="height:104px;"></div><div class="lb">Fri</div></div>
-            <div class="bar"><div class="v">44%</div><div class="b" style="height:124px;"></div><div class="lb">Sat</div></div>
-            <div class="bar"><div class="v">41%</div><div class="b" style="height:116px;"></div><div class="lb">Sun</div></div>
+            <div class="bar"><div class="v">28%</div><div class="b" style="height:60px;"></div><div class="lb">월</div></div>
+            <div class="bar"><div class="v">31%</div><div class="b" style="height:74px;"></div><div class="lb">화</div></div>
+            <div class="bar"><div class="v">35%</div><div class="b" style="height:90px;"></div><div class="lb">수</div></div>
+            <div class="bar"><div class="v">33%</div><div class="b" style="height:82px;"></div><div class="lb">목</div></div>
+            <div class="bar"><div class="v">39%</div><div class="b" style="height:104px;"></div><div class="lb">금</div></div>
+            <div class="bar"><div class="v">44%</div><div class="b" style="height:124px;"></div><div class="lb">토</div></div>
+            <div class="bar"><div class="v">41%</div><div class="b" style="height:116px;"></div><div class="lb">일</div></div>
           </div><div class="note">저장한 유저 / 상세 본 유저. 아이돌 맛집이 로컬 대비 평균 save rate ↑.</div></div>
         </div>
-        <div class="card"><div class="ch"><h2>Maps CTR (7d) · 2순위 KPI</h2></div>
+        <div class="card"><div class="ch"><h2>지도 클릭률 (7일) · 2순위 KPI</h2></div>
           <div style="padding:8px 14px 16px;"><div class="bars">
-            <div class="bar"><div class="v">36%</div><div class="b" style="height:70px;background:var(--idol);"></div><div class="lb">Mon</div></div>
-            <div class="bar"><div class="v">38%</div><div class="b" style="height:78px;background:var(--idol);"></div><div class="lb">Tue</div></div>
-            <div class="bar"><div class="v">40%</div><div class="b" style="height:88px;background:var(--idol);"></div><div class="lb">Wed</div></div>
-            <div class="bar"><div class="v">41%</div><div class="b" style="height:92px;background:var(--idol);"></div><div class="lb">Thu</div></div>
-            <div class="bar"><div class="v">43%</div><div class="b" style="height:104px;background:var(--idol);"></div><div class="lb">Fri</div></div>
-            <div class="bar"><div class="v">47%</div><div class="b" style="height:122px;background:var(--idol);"></div><div class="lb">Sat</div></div>
-            <div class="bar"><div class="v">42%</div><div class="b" style="height:100px;background:var(--idol);"></div><div class="lb">Sun</div></div>
+            <div class="bar"><div class="v">36%</div><div class="b" style="height:70px;background:var(--idol);"></div><div class="lb">월</div></div>
+            <div class="bar"><div class="v">38%</div><div class="b" style="height:78px;background:var(--idol);"></div><div class="lb">화</div></div>
+            <div class="bar"><div class="v">40%</div><div class="b" style="height:88px;background:var(--idol);"></div><div class="lb">수</div></div>
+            <div class="bar"><div class="v">41%</div><div class="b" style="height:92px;background:var(--idol);"></div><div class="lb">목</div></div>
+            <div class="bar"><div class="v">43%</div><div class="b" style="height:104px;background:var(--idol);"></div><div class="lb">금</div></div>
+            <div class="bar"><div class="v">47%</div><div class="b" style="height:122px;background:var(--idol);"></div><div class="lb">토</div></div>
+            <div class="bar"><div class="v">42%</div><div class="b" style="height:100px;background:var(--idol);"></div><div class="lb">일</div></div>
           </div><div class="note">Open in Maps 클릭 / 상세 본 유저 = 실제 방문 의향 프록시.</div></div>
         </div>
       </div>
@@ -228,26 +228,26 @@ tr:hover td{background:#FCFBF8;}
 <div class="scrim" id="scrim" onclick="closeAdd()"></div>
 <aside class="drawer" id="drawer">
   <button class="x" onclick="closeAdd()">✕</button>
-  <h3>Add a spot</h3>
-  <div class="field"><label>Name <span class="req">*</span></label><input placeholder="e.g. Gwangjang Yukhoe"></div>
-  <div class="field"><label>Type <span class="req">*</span></label>
-    <select id="typeSel" onchange="onType()"><option value="local">📍 Local fave</option><option value="idol">💜 K-IDOL spot</option></select></div>
-  <div class="field"><label>Area</label><select><option>Hongdae</option><option>Seongsu</option><option>Gangnam</option><option>Hannam</option></select></div>
-  <div class="field"><label>Category</label><input placeholder="e.g. Beef tartare · 광장시장"></div>
-  <div class="field"><label>Spice 🌶️</label><select><option>Not spicy</option><option>Mild</option><option>Medium</option><option>Spicy</option></select></div>
-  <div class="field"><label>WHY GO (curation) <span class="req">*</span></label><textarea placeholder="우리 큐레이션 멘트 — 왜 가야 하나"></textarea></div>
-  <div class="field"><label>Korean context</label><textarea placeholder="해장/소주안주 등 한국식 맥락"></textarea></div>
+  <h3>맛집 추가</h3>
+  <div class="field"><label>이름 <span class="req">*</span></label><input placeholder="예: 광장시장 육회골목"></div>
+  <div class="field"><label>유형 <span class="req">*</span></label>
+    <select id="typeSel" onchange="onType()"><option value="local">📍 로컬 맛집</option><option value="idol">💜 아이돌 맛집</option></select></div>
+  <div class="field"><label>지역</label><select><option>홍대</option><option>성수</option><option>강남</option><option>한남</option></select></div>
+  <div class="field"><label>카테고리</label><input placeholder="예: 육회 · 광장시장"></div>
+  <div class="field"><label>맵기 🌶️</label><select><option>안 매움</option><option>순함</option><option>보통</option><option>매움</option></select></div>
+  <div class="field"><label>왜 가야 하나 (큐레이션) <span class="req">*</span></label><textarea placeholder="우리 큐레이션 멘트 — 왜 가야 하나"></textarea></div>
+  <div class="field"><label>한국식 맥락</label><textarea placeholder="해장 / 소주 안주 등 한국식 맥락"></textarea></div>
 
   <div class="srcbox" id="srcbox" style="display:none;">
-    <div class="h">💜 Idol source — 필수</div>
+    <div class="h">💜 아이돌 출처 — 필수</div>
     <div class="hint">가짜 금지. 본인 인증 + 공신력 출처만. 팬이 신빙성 느끼게 원본 링크 필수.</div>
-    <div class="field" style="margin-top:8px;"><label>Idol · Group <span class="req">*</span></label><input placeholder="e.g. V · BTS"></div>
-    <div class="field"><label>When <span class="req">*</span></label><input placeholder="e.g. Mar 2024"></div>
-    <div class="field"><label>Source type <span class="req">*</span></label><select><option>Weverse / live</option><option>Official SNS (IG/X)</option><option>Vlog / YouTube</option><option>TV / variety</option><option>Fan-verified + restaurant</option></select></div>
-    <div class="field"><label>Original link <span class="req">*</span></label><input placeholder="https://…"></div>
+    <div class="field" style="margin-top:8px;"><label>아이돌 · 그룹 <span class="req">*</span></label><input placeholder="예: 뷔 · BTS"></div>
+    <div class="field"><label>시점 <span class="req">*</span></label><input placeholder="예: 2024년 3월"></div>
+    <div class="field"><label>출처 종류 <span class="req">*</span></label><select><option>위버스 / 라이브</option><option>공식 SNS (인스타/X)</option><option>브이로그 / 유튜브</option><option>방송 / 예능</option><option>팬 인증 + 식당 확인</option></select></div>
+    <div class="field"><label>원본 링크 <span class="req">*</span></label><input placeholder="https://…"></div>
   </div>
 
-  <button class="save" onclick="saveSpot()">Save spot</button>
+  <button class="save" onclick="saveSpot()">맛집 저장</button>
   <div class="disc">시안 · 가 데이터 · 실제 저장 안 함</div>
 </aside>
 
@@ -255,14 +255,14 @@ tr:hover td{background:#FCFBF8;}
 
 <script>
 var SPOTS=[
- {n:'Gwangjang Yukhoe',cat:'Beef tartare · 광장시장',pic:'galbi.jpg',type:'idol',area:'Jongno',spice:1,src:"V · BTS — Weverse live",saves:287},
- {n:'Café Onion Seongsu',cat:'Bakery · 성수',pic:'cafe.jpg',type:'idol',area:'Seongsu',spice:0,src:"Karina · aespa — IG story",saves:312},
- {n:"Jungkook's Pho",cat:'Vietnamese · 한남',pic:'noodle.jpg',type:'idol',area:'Hannam',spice:1,src:"Jungkook · BTS — fan verified",saves:140},
- {n:'Wonyoung Tanghulu',cat:'Dessert · 홍대',pic:'tanghulu.jpg',type:'idol',area:'Hongdae',spice:0,src:"Wonyoung · IVE — vlog",saves:154},
- {n:'Hongdae Kalguksu',cat:'Knife noodles · 홍대',pic:'noodle.jpg',type:'local',area:'Hongdae',spice:1,src:"",saves:88},
- {n:'Mapo Galbi House',cat:'BBQ · 마포',pic:'galbi.jpg',type:'local',area:'Mapo',spice:1,src:"",saves:74},
- {n:'Hangover Haejang',cat:'Soup · 홍대',pic:'soup.jpg',type:'local',area:'Hongdae',spice:2,src:"",saves:196},
- {n:'Seongsu Bingsu Bar',cat:'Café · 성수',pic:'bingsu.jpg',type:'local',area:'Seongsu',spice:0,src:"",saves:61}
+ {n:'Gwangjang Yukhoe',cat:'Beef tartare · 광장시장',pic:'galbi.jpg',type:'idol',area:'종로',spice:1,src:"V · BTS — Weverse live",saves:287},
+ {n:'Café Onion Seongsu',cat:'Bakery · 성수',pic:'cafe.jpg',type:'idol',area:'성수',spice:0,src:"Karina · aespa — IG story",saves:312},
+ {n:"Jungkook's Pho",cat:'Vietnamese · 한남',pic:'noodle.jpg',type:'idol',area:'한남',spice:1,src:"Jungkook · BTS — fan verified",saves:140},
+ {n:'Wonyoung Tanghulu',cat:'Dessert · 홍대',pic:'tanghulu.jpg',type:'idol',area:'홍대',spice:0,src:"Wonyoung · IVE — vlog",saves:154},
+ {n:'Hongdae Kalguksu',cat:'Knife noodles · 홍대',pic:'noodle.jpg',type:'local',area:'홍대',spice:1,src:"",saves:88},
+ {n:'Mapo Galbi House',cat:'BBQ · 마포',pic:'galbi.jpg',type:'local',area:'마포',spice:1,src:"",saves:74},
+ {n:'Hangover Haejang',cat:'Soup · 홍대',pic:'soup.jpg',type:'local',area:'홍대',spice:2,src:"",saves:196},
+ {n:'Seongsu Bingsu Bar',cat:'Café · 성수',pic:'bingsu.jpg',type:'local',area:'성수',spice:0,src:"",saves:61}
 ];
 var SUBS=[
  {n:'Newjeans Hanni Ramen',by:'@bunnies_kr',pic:'ramen.jpg',claim:"Hanni · NewJeans",via:'Phoning live · Apr 2024',link:'weverse.io/newjeans'},
@@ -276,7 +276,7 @@ function renderRows(f){
  f=f||'all';
  var list=SPOTS.filter(function(s){return f==='all'||s.type===f;});
  document.getElementById('rows').innerHTML=list.map(function(s){
-  var badge=s.type==='idol'?'<span class="typebadge tb-idol">💜 K-IDOL</span>':'<span class="typebadge tb-local">📍 Local</span>';
+  var badge=s.type==='idol'?'<span class="typebadge tb-idol">💜 아이돌</span>':'<span class="typebadge tb-local">📍 로컬</span>';
   var src=s.src?'<span class="src">🔗 '+s.src+'</span>':'<span class="src none">— (로컬, 불필요)</span>';
   return '<tr><td><div class="rn"><div class="ph" style="background-image:url('+pic(s.pic)+')"></div><div><div class="nm">'+s.n+'</div><div class="cat">'+s.cat+'</div></div></div></td>'+
    '<td>'+badge+'</td><td>'+s.area+'</td><td class="spice">'+spiceDots(s.spice)+'</td><td>'+src+'</td><td style="font-weight:800;">'+s.saves+'</td>'+
@@ -289,7 +289,7 @@ function renderSubs(){
  var q=document.getElementById('subq');
  if(SUBS.length===0){q.innerHTML='<div class="emptyq">✅ 검수 대기 없음 — 다 처리했어요.</div>';return;}
  q.innerHTML=SUBS.map(function(s,i){
-  return '<div class="subcard"><div class="ph" style="background-image:url('+pic(s.pic)+')"><div class="pend">⏳ PENDING</div></div>'+
+  return '<div class="subcard"><div class="ph" style="background-image:url('+pic(s.pic)+')"><div class="pend">⏳ 검수 대기</div></div>'+
    '<div class="bd"><div class="nm">'+s.n+'</div><div class="by">제보: '+s.by+'</div>'+
    '<div class="claim">💜 주장: <b>'+s.claim+'</b><br>출처: '+s.via+' · <a>'+s.link+'</a></div>'+
    '<div class="acts"><button class="ok" onclick="review('+i+',true)">✓ 승인·게시</button><button class="no" onclick="review('+i+',false)">✕ 반려</button></div></div></div>';
