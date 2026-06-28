@@ -119,6 +119,15 @@ tr:hover td{background:#FCFBF8;}
 .srcbox{margin-top:15px;background:var(--idol50);border:1px solid #e0d6fb;border-radius:11px;padding:13px 14px;}
 .srcbox .h{font-size:12px;font-weight:800;color:var(--idold);margin-bottom:4px;}
 .srcbox .hint{font-size:11px;color:#6d619b;margin-bottom:6px;}
+.uploader{border:1.5px dashed #cfc9bd;border-radius:11px;padding:16px;text-align:center;cursor:pointer;background:#FAF9F6;transition:.15s;}
+.uploader:hover{border-color:var(--pri);background:var(--pri50);}
+.uploader .ic{font-size:25px;}
+.uploader .t{font-size:13px;font-weight:800;margin-top:5px;}
+.uploader .s{font-size:11px;color:var(--gray);margin-top:3px;}
+.thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.thumb{position:relative;width:74px;height:74px;border-radius:9px;background-size:cover;background-position:center;border:1px solid var(--line);}
+.thumb .rm{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--ink);color:#fff;border:none;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.thumb.cover::after{content:'대표';position:absolute;bottom:0;left:0;right:0;background:rgba(244,123,32,.92);color:#fff;font-size:9px;font-weight:800;text-align:center;padding:1px 0;border-radius:0 0 8px 8px;}
 .drawer .save{width:100%;margin-top:20px;background:var(--pri);color:#fff;border:none;border-radius:11px;padding:13px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;}
 .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(16px);background:var(--ink);color:#fff;font-size:13px;font-weight:700;padding:11px 18px;border-radius:22px;opacity:0;transition:.25s;z-index:60;}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -229,6 +238,13 @@ tr:hover td{background:#FCFBF8;}
 <aside class="drawer" id="drawer">
   <button class="x" onclick="closeAdd()">✕</button>
   <h3>맛집 추가</h3>
+  <div class="field"><label>사진 <span class="req">*</span> <span style="color:var(--gray);font-weight:500;">(직접 촬영·제휴·동의 사진만 — 스크래핑 금지)</span></label>
+    <div class="uploader" onclick="document.getElementById('photoIn').click()">
+      <div class="ic">📷</div><div class="t">사진 추가 / 끌어다 놓기</div><div class="s">JPG·PNG · 첫 장이 대표 사진</div>
+    </div>
+    <input type="file" id="photoIn" accept="image/*" multiple style="display:none" onchange="addPhotos(this)">
+    <div class="thumbs" id="thumbs"></div>
+  </div>
   <div class="field"><label>이름 <span class="req">*</span></label><input placeholder="예: 광장시장 육회골목"></div>
   <div class="field"><label>유형 <span class="req">*</span></label>
     <select id="typeSel" onchange="onType()"><option value="local">📍 로컬 맛집</option><option value="idol">💜 아이돌 맛집</option></select></div>
@@ -304,7 +320,11 @@ function nav(p,el){document.querySelectorAll('.pane').forEach(function(x){x.clas
  document.querySelectorAll('#nav a').forEach(function(a){a.classList.remove('on');});el.classList.add('on');}
 document.getElementById('nav').addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;nav(a.getAttribute('data-p'),a);});
 
-function openAdd(){document.getElementById('scrim').classList.add('on');document.getElementById('drawer').classList.add('on');}
+var photos=[];
+function addPhotos(input){for(var i=0;i<input.files.length;i++){photos.push(URL.createObjectURL(input.files[i]));}input.value='';renderThumbs();}
+function rmPhoto(i){photos.splice(i,1);renderThumbs();}
+function renderThumbs(){document.getElementById('thumbs').innerHTML=photos.map(function(u,i){return '<div class="thumb'+(i===0?' cover':'')+'" style="background-image:url('+u+')"><button class="rm" onclick="rmPhoto('+i+')">✕</button></div>';}).join('');}
+function openAdd(){photos=[];renderThumbs();document.getElementById('scrim').classList.add('on');document.getElementById('drawer').classList.add('on');}
 function closeAdd(){document.getElementById('scrim').classList.remove('on');document.getElementById('drawer').classList.remove('on');}
 function onType(){document.getElementById('srcbox').style.display=document.getElementById('typeSel').value==='idol'?'block':'none';}
 function saveSpot(){closeAdd();toast('저장됨 (시안 — 실제 저장 안 함)');}
