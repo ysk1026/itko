@@ -103,6 +103,28 @@ tr:hover td{background:#FCFBF8;}
 .bar .v{font-size:12px;font-weight:800;}.bar .lb{font-size:10.5px;color:var(--gray);}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .note{font-size:11.5px;color:var(--gray);margin-top:11px;}
+.crow{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--line);}
+.crow:last-child{border-bottom:none;}
+.crow .nm{font-size:12.5px;font-weight:700;width:150px;flex:0 0 auto;}
+.crow .track{flex:1;height:9px;border-radius:6px;background:var(--bg);overflow:hidden;}
+.crow .fill{height:100%;border-radius:6px;background:var(--pri);}
+.crow .pct{font-size:12.5px;font-weight:800;width:46px;text-align:right;}
+.crow .tag{font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:10px;flex:0 0 auto;}
+.tag-req{background:#EDEBE4;color:#777;}.tag-opt{background:var(--teal50);color:var(--teal);}
+.risk{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line);}
+.risk:last-child{border-bottom:none;}
+.risk .ic{font-size:17px;width:22px;text-align:center;flex:0 0 auto;}
+.risk .t{flex:1;}.risk .t .h{font-size:13px;font-weight:700;}
+.risk .t .s{font-size:11.5px;color:var(--gray);margin-top:2px;line-height:1.4;}
+.risk .st{font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:12px;white-space:nowrap;flex:0 0 auto;}
+.st-ok{background:var(--teal50);color:var(--teal);}.st-watch{background:var(--pri50);color:var(--prid);}.st-warn{background:var(--red50);color:var(--red);}
+.ret{display:flex;padding:14px 16px;}
+.ret .col{flex:1;text-align:center;border-right:1px solid var(--line);}
+.ret .col:last-child{border-right:none;}
+.ret .col .v{font-size:24px;font-weight:800;}.ret .col .l{font-size:11px;color:var(--gray);margin-top:2px;}
+.ismsbar{margin:0 16px 14px;}
+.ismsbar .track{height:8px;border-radius:6px;background:var(--bg);overflow:hidden;}
+.ismsbar .fill{height:100%;background:var(--pri);border-radius:6px;}
 
 /* drawer (add/edit) */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:.2s;z-index:40;}
@@ -144,6 +166,7 @@ tr:hover td{background:#FCFBF8;}
       <a data-p="spots"><span class="ic">🍜</span> 맛집 관리</a>
       <a data-p="subs"><span class="ic">📥</span> 제보 검수 <span class="badge" id="navbadge">3</span></a>
       <a data-p="analytics"><span class="ic">📈</span> 통계</a>
+      <a data-p="users"><span class="ic">👤</span> 유저 · 개인정보</a>
     </nav>
     <div class="foot"><div class="av">Y</div><div><div class="nm">Youngseon</div><div class="role">관리자</div></div></div>
   </aside>
@@ -226,8 +249,70 @@ tr:hover td{background:#FCFBF8;}
             <div class="bar"><div class="v">43%</div><div class="b" style="height:104px;background:var(--idol);"></div><div class="lb">금</div></div>
             <div class="bar"><div class="v">47%</div><div class="b" style="height:122px;background:var(--idol);"></div><div class="lb">토</div></div>
             <div class="bar"><div class="v">42%</div><div class="b" style="height:100px;background:var(--idol);"></div><div class="lb">일</div></div>
-          </div><div class="note">Open in Maps 클릭 / 상세 본 유저 = 실제 방문 의향 프록시.</div></div>
+          </div><div class="note">지도 클릭 / 상세 본 유저 = 실제 방문 의향 프록시.</div></div>
         </div>
+      </div>
+      <div class="two" style="margin-top:14px;">
+        <div class="card"><div class="ch"><h2>전환 퍼널 (7일)</h2></div>
+          <div style="padding:6px 0;">
+            <div class="crow"><div class="nm">상세 조회</div><div class="track"><div class="fill" style="width:100%"></div></div><div class="pct">12.4k</div></div>
+            <div class="crow"><div class="nm">🔖 저장</div><div class="track"><div class="fill" style="width:41%"></div></div><div class="pct">41%</div></div>
+            <div class="crow"><div class="nm">📍 지도 클릭</div><div class="track"><div class="fill" style="width:28%"></div></div><div class="pct">28%</div></div>
+          </div>
+        </div>
+        <div class="card"><div class="ch"><h2>저장 출처 비중</h2></div>
+          <div style="padding:6px 0;">
+            <div class="crow"><div class="nm">💜 아이돌 맛집</div><div class="track"><div class="fill" style="width:64%;background:var(--idol)"></div></div><div class="pct">64%</div></div>
+            <div class="crow"><div class="nm">📍 로컬 맛집</div><div class="track"><div class="fill" style="width:36%"></div></div><div class="pct">36%</div></div>
+          </div>
+          <div class="note" style="padding:0 16px 13px;">아이돌 맛집이 저장 전환을 견인 — 팬덤 wedge 가설 뒷받침.</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px;"><div class="ch"><h2>리텐션</h2><span style="font-size:11.5px;color:var(--gray);">재방문율</span></div>
+        <div class="ret">
+          <div class="col"><div class="v">52%</div><div class="l">D1 (다음날)</div></div>
+          <div class="col"><div class="v">31%</div><div class="l">D7 (1주)</div></div>
+          <div class="col"><div class="v">18%</div><div class="l">D30 (1달)</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- USERS & PRIVACY -->
+    <section class="pane" id="pane-users">
+      <div class="topbar"><div><h1>유저 · 개인정보</h1><div class="sub">가입·동의 현황 + 데이터 활용 리스크 (PIPA 기준 · 법률자문 아님)</div></div></div>
+      <div class="kpis">
+        <div class="kpi"><div class="lab">👤 가입 유저</div><div class="val">38,420</div><div class="delta up">＋1,240 (7일)</div></div>
+        <div class="kpi"><div class="lab">📅 MAU</div><div class="val">21,860</div><div class="delta up">▲ 9%</div></div>
+        <div class="kpi"><div class="lab">🔑 로그인 방식</div><div class="val">Google</div><div class="delta">92% · Apple 8%</div></div>
+        <div class="kpi"><div class="lab">🌍 EU 유저</div><div class="val">2.1%</div><div class="delta warn">GDPR 모니터링</div></div>
+      </div>
+
+      <div class="two">
+        <div class="card"><div class="ch"><h2>개인정보 동의 현황</h2><span style="font-size:11px;color:var(--gray);">필수/선택 분리 · 선택 거부해도 이용 가능</span></div>
+          <div class="crow"><div class="nm">서비스 이용</div><div class="track"><div class="fill" style="width:100%"></div></div><div class="pct">100%</div><span class="tag tag-req">필수</span></div>
+          <div class="crow"><div class="nm">위치 정보 (지도)</div><div class="track"><div class="fill" style="width:84%"></div></div><div class="pct">84%</div><span class="tag tag-opt">선택</span></div>
+          <div class="crow"><div class="nm">행동 분석 (PostHog)</div><div class="track"><div class="fill" style="width:73%"></div></div><div class="pct">73%</div><span class="tag tag-opt">선택</span></div>
+          <div class="crow"><div class="nm">국외 이전</div><div class="track"><div class="fill" style="width:68%"></div></div><div class="pct">68%</div><span class="tag tag-opt">선택</span></div>
+          <div class="crow"><div class="nm">마케팅 수신</div><div class="track"><div class="fill" style="width:41%"></div></div><div class="pct">41%</div><span class="tag tag-opt">선택</span></div>
+        </div>
+
+        <div class="card"><div class="ch"><h2>데이터 활용 리스크 · 컴플라이언스</h2></div>
+          <div class="risk"><div class="ic">🚨</div><div class="t"><div class="h">ISMS 인증 의무 임계치</div><div class="s">일평균 100만 유저 또는 IT매출 ₩100억 → 일평균 <b>12.4만</b> (12%). 리드타임 6–12개월, 미리 준비.</div></div><span class="st st-watch">모니터링</span></div>
+          <div class="ismsbar"><div class="track"><div class="fill" style="width:12%"></div></div></div>
+          <div class="risk"><div class="ic">🧑‍⚖️</div><div class="t"><div class="h">CPO (개인정보 보호책임자)</div><div class="s">규모 무관 지정 의무 — 현재 임원 겸임</div></div><span class="st st-ok">지정됨</span></div>
+          <div class="risk"><div class="ic">🗑️</div><div class="t"><div class="h">보유·파기 정책</div><div class="s">회원 탈퇴 시 즉시 파기 · 접속 로그 1년 후 파기</div></div><span class="st st-ok">설정됨</span></div>
+          <div class="risk"><div class="ic">🌐</div><div class="t"><div class="h">국외 이전 (PostHog US 등)</div><div class="s">별도 동의 + 처리위탁 고지 + DPA 체결</div></div><span class="st st-ok">고지 완료</span></div>
+          <div class="risk"><div class="ic">🔒</div><div class="t"><div class="h">민감정보</div><div class="s">미수집 — 뷰티/의료 버티컬은 별도 컴플라이언스 프로젝트</div></div><span class="st st-ok">미수집</span></div>
+          <div class="risk"><div class="ic">🇪🇺</div><div class="t"><div class="h">GDPR (EU 유저 2.1%)</div><div class="s">EU 유저 유입 — 대리인 지정·PostHog EU 클라우드 검토</div></div><span class="st st-watch">검토 필요</span></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;"><div class="ch"><h2>최근 개인정보 요청</h2><span style="font-size:11px;color:var(--gray);">열람·삭제·정정 (법정 처리기한 내)</span></div>
+        <table><thead><tr><th>유형</th><th>유저</th><th>접수일</th><th>상태</th></tr></thead><tbody>
+          <tr><td>🗑️ 삭제(탈퇴)</td><td>user#0992</td><td>2일 전</td><td><span class="st st-ok">처리 완료</span></td></tr>
+          <tr><td>👁️ 열람 요청</td><td>user#1043</td><td>3일 전</td><td><span class="st st-ok">처리 완료</span></td></tr>
+          <tr><td>✏️ 정정 요청</td><td>user#1120</td><td>5일 전</td><td><span class="st st-ok">처리 완료</span></td></tr>
+        </tbody></table>
       </div>
     </section>
 
