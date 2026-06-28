@@ -173,7 +173,19 @@ body{font-family:var(--sans);background:#E9E7E0;color:var(--ink);display:flex;ju
 .dwhy{margin-top:15px;}
 .dwhy .lab{font-size:10.5px;font-weight:800;letter-spacing:.1em;color:var(--pri);}
 .dwhy p{font-family:var(--serif);font-size:15px;line-height:1.55;margin-top:6px;color:#2a2a2a;}
-.dtip{margin-top:13px;font-size:13px;color:var(--prid);font-weight:700;}
+.dpills{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px;}
+.dtag{font-size:11px;font-weight:800;padding:4px 10px;border-radius:14px;}
+.dsec{margin-top:16px;}
+.dsec .lab{font-size:10.5px;font-weight:800;letter-spacing:.1em;color:var(--pri);}
+.dctx{font-size:13.5px;line-height:1.55;color:#3a3a3a;margin-top:6px;}
+.dmenu{margin-top:7px;}
+.dmenu .mi{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);}
+.dmenu .mi .nm{font-size:13.5px;font-weight:700;}
+.dmenu .mi .ko{font-size:11px;color:var(--gray);margin-top:1px;}
+.dmenu .mi .p{font-size:13px;font-weight:700;color:#3a3a3a;}
+.dnear{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;}
+.dpill{font-size:11.5px;color:#666;background:#fff;border:1px solid var(--line);border-radius:14px;padding:5px 10px;}
+.dtip{margin-top:16px;font-size:13px;color:var(--prid);font-weight:700;}
 .dcta{display:flex;gap:9px;margin-top:17px;}
 .dcta button{flex:1;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;}
 .b-save{background:var(--ink);color:#fff;}.b-save.sv{background:var(--pri50);color:var(--prid);}
@@ -215,6 +227,7 @@ var MODE='B';   // 'B' = local-base + lens · 'C' = blend
 var T={
  en:{discover:'Discover',map:'Map',idols:'Idols',saved:'Saved',all:'✨ All',kidol:'💜 K-IDOL Spots',local:'📍 Local Faves',
   heroTitle:'K-IDOL Spots',localTitle:'Local Faves in Hongdae',seeAll:'See all ›',whyGo:'WHY GO',save:'Save',saved2:'Saved',openMaps:'Open in Maps ↗',
+  ctxLab:'KOREAN CONTEXT',menuLab:'BEST MENU',nearLab:'NEARBY',solo:'Solo ok',
   mapTitle:'Map',idolsTitle:'Idols',browseIdol:'Browse by idol',spots:'spots',savedTitle:'Saved',savedCount:'spots saved',
   emptyH:'No saved spots yet',emptyP:'Tap ♡ on any spot to build your Korea food list.',explore:'Explore spots',
   loginH:'Save your spots',loginP:'Sign in to keep your Korea list across devices.',google:'Continue with Google',apple:'Continue with Apple',later:'Maybe later',
@@ -223,6 +236,7 @@ var T={
   spice0:'Not spicy',spice1:'Mild',spice2:'Medium',spice3:'Spicy'},
  ko:{discover:'탐색',map:'지도',idols:'아이돌',saved:'저장',all:'✨ 전체',kidol:'💜 아이돌 맛집',local:'📍 로컬 맛집',
   heroTitle:'아이돌 맛집',localTitle:'홍대 로컬 맛집',seeAll:'전체 보기 ›',whyGo:'왜 가야 할까',save:'저장',saved2:'저장됨',openMaps:'지도에서 열기 ↗',
+  ctxLab:'한국식 맥락',menuLab:'추천 메뉴',nearLab:'주변',solo:'혼밥 가능',
   mapTitle:'지도',idolsTitle:'아이돌',browseIdol:'아이돌별 보기',spots:'곳',savedTitle:'저장',savedCount:'곳 저장됨',
   emptyH:'아직 저장한 곳이 없어요',emptyP:'♡ 를 눌러 나만의 한국 맛집 리스트를 만들어요.',explore:'맛집 둘러보기',
   loginH:'맛집을 저장하세요',loginP:'로그인하면 기기 간에 리스트가 유지돼요.',google:'Google로 계속',apple:'Apple로 계속',later:'다음에',
@@ -234,24 +248,40 @@ var AV={v:'https://i.pravatar.cc/80?img=12',karina:'https://i.pravatar.cc/80?img
 var DATA=[
  {id:1,kind:'idol',n:"Gwangjang Yukhoe",cat:"Beef tartare · 광장시장",pic:'galbi.jpg',spice:1,idol:"V",group:"BTS",av:AV.v,via:"V's live · Mar '24",
   q:'"해장은 여기 육회국밥이지" — V, on a Weverse live',lk:"Source: weverse.io/bts · 03:14",
-  why:"The exact stall V named when fans asked his hangover cure. Raw beef, warm broth, zero tourist polish.",mx:30,my:46},
+  why:"The exact stall V named when fans asked his hangover cure. Raw beef, warm broth, zero tourist polish.",
+  price:'$$',solo:true,ctx:"Yukhoe — raw beef with a golden yolk — is a classic Gwangjang Market dish, eaten with sesame oil and a shot of soju.",
+  menu:[{n:'Yukhoe (beef tartare)',ko:'육회',p:'₩15,000'},{n:'Yukhoe bibimbap',ko:'육회비빔밥',p:'₩10,000'}],near:[{t:'Gwangjang Market',ko:'광장시장',m:1}],mx:30,my:46},
  {id:2,kind:'idol',n:"Café Onion Seongsu",cat:"Bakery · 성수",pic:'cafe.jpg',spice:0,idol:"Karina",group:"aespa",av:AV.karina,via:"IG story · Jan '24",
   q:'Karina tagged this café in an Instagram story',lk:"Source: instagram.com/katarinabluu",
-  why:"The pandoro Karina posted is on every fan's list now. Go before noon — it sells out on weekends.",mx:68,my:30},
+  why:"The pandoro Karina posted is on every fan's list now. Go before noon — it sells out on weekends.",
+  price:'$$',solo:true,ctx:"Korea turns dessert into an outing — the bakery-café is its own culture, and the pandoro here is the signature.",
+  menu:[{n:'Pandoro',ko:'판도로',p:'₩6,500'},{n:'Cream latte',ko:'크림라떼',p:'₩5,500'}],near:[{t:'Seoul Forest',ko:'서울숲',m:5}],mx:68,my:30},
  {id:3,kind:'idol',n:"Jungkook's Pho",cat:"Vietnamese · 한남",pic:'noodle.jpg',spice:1,idol:"Jungkook",group:"BTS",av:AV.jk,via:"Fan verified · Nov '23",
   q:'Fan sightings cross-checked with the owner',lk:"Source: theqoo thread · verified",
-  why:"Multiple sightings confirmed by the restaurant. The rare-beef pho he orders is now the house special.",mx:54,my:64},
+  why:"Multiple sightings confirmed by the restaurant. The rare-beef pho he orders is now the house special.",
+  price:'$$',solo:true,ctx:"Hannam is Seoul's most international neighborhood — where locals go when they want non-Korean food.",
+  menu:[{n:'Rare beef pho',ko:'양지 쌀국수',p:'₩12,000'},{n:'Spring rolls',ko:'스프링롤',p:'₩7,000'}],near:[{t:'Hannam-dong',ko:'한남동',m:3}],mx:54,my:64},
  {id:7,kind:'idol',n:"Wonyoung Tanghulu",cat:"Dessert · 홍대",pic:'tanghulu.jpg',spice:0,idol:"Wonyoung",group:"IVE",av:AV.won,via:"Vlog · Feb '24",
   q:'From Wonyoung\'s "day off in Hongdae" vlog',lk:"Source: youtube.com/@wonyoung · 4:02",
-  why:"The strawberry tanghulu she filmed herself eating. Expect a short line of fellow DIVE fans.",mx:22,my:24},
+  why:"The strawberry tanghulu she filmed herself eating. Expect a short line of fellow DIVE fans.",
+  price:'$',solo:true,ctx:"Tanghulu — candied fruit on a skewer — swept Korea as a viral street snack. Crunchy shell, juicy inside.",
+  menu:[{n:'Strawberry tanghulu',ko:'딸기 탕후루',p:'₩4,000'},{n:'Grape tanghulu',ko:'포도 탕후루',p:'₩4,000'}],near:[{t:'Hongik Univ. Stn',ko:'홍대입구역',m:4}],mx:22,my:24},
  {id:4,kind:'local',n:"Hongdae Kalguksu",cat:"Knife noodles · 홍대",pic:'noodle.jpg',spice:1,
-  why:"Hand-cut noodles in anchovy broth where the ajummas line up at 11am. The real deal, not a trap.",tip:"Cash only · 11am rush",mx:42,my:38},
+  why:"Hand-cut noodles in anchovy broth where the ajummas line up at 11am. The real deal, not a trap.",tip:"Cash only · 11am rush",
+  price:'$$',solo:true,ctx:"Kalguksu — hand-cut knife noodles in warm broth — is Korean comfort food, especially on a rainy day.",
+  menu:[{n:'Kalguksu',ko:'칼국수',p:'₩9,000'},{n:'Mandu (dumplings)',ko:'만두',p:'₩6,000'}],near:[{t:'Hongik Univ. Stn',ko:'홍대입구역',m:5}],mx:42,my:38},
  {id:5,kind:'local',n:"Mapo Galbi House",cat:"BBQ · 마포",pic:'galbi.jpg',spice:1,
-  why:"The locals' birthday-dinner spot. Marinated galbi, then cold naengmyeon to finish.",tip:"Book for dinner",mx:60,my:50},
+  why:"The locals' birthday-dinner spot. Marinated galbi, then cold naengmyeon to finish.",tip:"Book for dinner",
+  price:'$$$',solo:false,ctx:"Charcoal-grilled galbi (marinated short rib) is the Korean celebration meal — finish with cold naengmyeon.",
+  menu:[{n:'Marinated galbi',ko:'양념갈비',p:'₩18,000'},{n:'Cold naengmyeon',ko:'물냉면',p:'₩9,000'}],near:[{t:'Mapo Stn',ko:'마포역',m:6}],mx:60,my:50},
  {id:6,kind:'local',n:"Hangover Haejang",cat:"Soup · 홍대",pic:'soup.jpg',spice:2,
-  why:"What Koreans actually eat at 3am after soju — bean-sprout haejang, open all night.",tip:"Open 24h",mx:36,my:70},
+  why:"What Koreans actually eat at 3am after soju — bean-sprout haejang, open all night.",tip:"Open 24h",
+  price:'$$',solo:true,ctx:"Haejang-guk literally means 'soup to chase a hangover' — what Koreans eat after a night of soju.",
+  menu:[{n:'Bean-sprout haejang',ko:'콩나물해장국',p:'₩9,000'},{n:'Sundae soup',ko:'순대국',p:'₩10,000'}],near:[{t:'Hongik Univ. Stn',ko:'홍대입구역',m:7}],mx:36,my:70},
  {id:8,kind:'local',n:"Seongsu Bingsu Bar",cat:"Café · 성수",pic:'bingsu.jpg',spice:0,
-  why:"Injeolmi bingsu done right: toasted soybean powder, not too sweet. A local summer ritual.",tip:"Share one",mx:74,my:58}
+  why:"Injeolmi bingsu done right: toasted soybean powder, not too sweet. A local summer ritual.",tip:"Share one",
+  price:'$',solo:false,ctx:"Bingsu — a mountain of shaved ice with toppings — is the Korean summer ritual, made to share.",
+  menu:[{n:'Injeolmi bingsu',ko:'인절미 빙수',p:'₩12,000'},{n:'Iced latte',ko:'아이스 라떼',p:'₩5,500'}],near:[{t:'Seongsu Cafe St.',ko:'성수 카페거리',m:3}],mx:74,my:58}
 ];
 var HYPE=[
  {title:"Tanghulu, still everywhere",sub:"This week's trend in Hongdae",pic:'tanghulu.jpg',spot:7},
@@ -381,13 +411,23 @@ function renderSaved(){
 }
 
 function openDetail(id){
- var d=byId(id);if(!d)return;
+ var d=byId(id);if(!d)return;var sv=saved[id];
+ var pills='<div class="dpills">'+
+   '<span class="dtag dspice" style="background:var(--pri50);color:var(--prid)">'+spiceDots(d.spice)+' '+spiceStr(d.spice)+'</span>'+
+   '<span class="dtag" style="background:#EEEDF6;color:#555">'+d.price+'</span>'+
+   (d.solo?'<span class="dtag" style="background:#E1F2ED;color:#0f6e56">🧑 '+t('solo')+'</span>':'')+'</div>';
  var prov=d.kind==='idol'?'<div class="dsrc"><div class="h"><span class="av" style="background-image:url('+d.av+')"></span>'+d.group+' '+d.idol+' · '+d.via+'</div><div class="q">'+d.q+'</div><div class="lk">🔗 '+d.lk+'</div></div>':'';
+ var menu='<div class="dsec"><div class="lab">'+t('menuLab')+'</div><div class="dmenu">'+
+   d.menu.map(function(mi){var a=state.lang==='ko'?mi.ko:mi.n,b=state.lang==='ko'?mi.n:mi.ko;
+     return '<div class="mi"><div><div class="nm">'+a+'</div><div class="ko">'+b+'</div></div><div class="p">'+mi.p+'</div></div>';}).join('')+'</div></div>';
+ var near='<div class="dsec"><div class="lab">'+t('nearLab')+'</div><div class="dnear">'+
+   d.near.map(function(n){return '<span class="dpill">🚶 '+(state.lang==='ko'?n.ko:n.t)+' · '+n.m+'m</span>';}).join('')+'</div></div>';
+ var ctx='<div class="dsec"><div class="lab">'+t('ctxLab')+'</div><div class="dctx">'+d.ctx+'</div></div>';
  var tip=d.kind==='local'?'<div class="dtip">💡 '+d.tip+'</div>':'';
- var sv=saved[id];
  document.getElementById('sheet').innerHTML='<div class="dph" style="background-image:url('+pic(d.pic)+')"><div class="dclose" onclick="closeAll()">✕</div></div>'+
-  '<div class="dbody"><div class="dname">'+d.n+'</div><div class="dmeta"><span>'+d.cat+'</span><span class="dspice">'+spiceDots(d.spice)+' '+spiceStr(d.spice)+'</span></div>'+prov+
-  '<div class="dwhy"><div class="lab">'+t('whyGo')+'</div><p>'+d.why+'</p></div>'+tip+
+  '<div class="dbody"><div class="dname">'+d.n+'</div><div class="dmeta"><span>'+d.cat+'</span></div>'+pills+prov+
+  '<div class="dwhy"><div class="lab">'+t('whyGo')+'</div><p>'+d.why+'</p></div>'+
+  ctx+menu+near+tip+
   '<div class="dcta"><button class="b-save'+(sv?' sv':'')+'" onclick="toggleSave('+id+',true)">'+(sv?'♥ '+t('saved2'):'♡ '+t('save'))+'</button><button class="b-map">'+t('openMaps')+'</button></div></div>';
  document.getElementById('scrim').classList.add('on');document.getElementById('sheet').classList.add('on');
 }
