@@ -1,174 +1,510 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Itko — 시안2 + 실데이터 (데모)</title>
+<title>Itko — 시안2 + 강남 실데이터</title>
 <style>
-:root{--pri:#F47B20;--prid:#C75E0C;--pri50:#FDEAD6;--idol:#8B5CF6;--idol50:#F1ECFD;--idold:#6D40D9;--ink:#1A1A1A;--gray:#7C7A73;--line:#ECE9E2;--paper:#fff;--bg:#F7F5F0;--teal:#178A6E;--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;--serif:Georgia,serif;}
+:root{
+ --pri:#F47B20;--prid:#C75E0C;--pri50:#FDEAD6;
+ --idol:#8B5CF6;--idol50:#F1ECFD;--idold:#6D40D9;
+ --ink:#1A1A1A;--gray:#7C7A73;--line:#ECE9E2;--paper:#fff;--bg:#F7F5F0;
+ --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+ --serif:Georgia,'Times New Roman',serif;
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:var(--sans);background:#E9E7E0;color:var(--ink);display:flex;justify-content:center;padding:18px;}
 #app{width:min(390px,100vw);height:min(844px,100dvh);background:var(--bg);border-radius:30px;box-shadow:0 18px 60px rgba(0,0,0,.22);overflow:hidden;position:relative;display:flex;flex-direction:column;}
 @media (max-width:440px),(max-height:900px){body{padding:0;}#app{border-radius:0;box-shadow:none;height:100dvh;}}
-.cbadge{position:absolute;top:0;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:10px;font-weight:800;padding:3px 12px;border-radius:0 0 10px 10px;z-index:60;}
+
+.cbadge{position:absolute;top:0;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:10px;font-weight:800;padding:3px 12px;border-radius:0 0 10px 10px;z-index:60;letter-spacing:.04em;}
+
 .top{background:var(--paper);padding:12px 16px 9px;flex:0 0 auto;border-bottom:1px solid var(--line);}
 .tr{display:flex;align-items:center;justify-content:space-between;}
-.logo{font-size:20px;font-weight:800;color:var(--pri);letter-spacing:-.02em;}.logo span{color:var(--ink);}
+.logo{font-size:20px;font-weight:800;color:var(--pri);letter-spacing:-.02em;}
+.logo span{color:var(--ink);}
+.tright{display:flex;align-items:center;gap:10px;}
+.tg{display:flex;border:1px solid var(--line);border-radius:16px;overflow:hidden;font-size:10.5px;font-weight:800;cursor:pointer;}
+.tg b{padding:4px 9px;color:var(--gray);}.tg b.on{background:var(--ink);color:#fff;}
 .srch{width:30px;height:30px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:15px;}
-.area{display:flex;align-items:center;gap:5px;margin-top:9px;font-size:13.5px;font-weight:800;}.area .pin{color:var(--pri);font-size:11px;}.area .ch{font-size:10px;color:var(--gray);}
-.filters{display:flex;gap:7px;padding:10px 16px 4px;overflow-x:auto;flex:0 0 auto;}.filters::-webkit-scrollbar{display:none;}
-.chip{flex:0 0 auto;padding:7px 13px;border-radius:20px;font-size:12.5px;font-weight:800;background:var(--paper);border:1.5px solid var(--line);color:var(--ink);cursor:pointer;white-space:nowrap;}
-.chip.on{background:var(--ink);border-color:var(--ink);color:#fff;}.chip.idol.on{background:var(--idol);border-color:var(--idol);}
-.body{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;padding-bottom:78px;}.body::-webkit-scrollbar{display:none;}
+.area{display:flex;align-items:center;gap:5px;margin-top:9px;font-size:13.5px;font-weight:800;}
+.area .pin{color:var(--pri);font-size:11px;}.area .ch{font-size:10px;color:var(--gray);}
+.ptitle{font-size:21px;font-weight:800;letter-spacing:-.02em;margin-top:6px;}
+
+.filters{padding:10px 16px 4px;flex:0 0 auto;}
+.chips{display:flex;gap:7px;overflow-x:auto;}
+.chips::-webkit-scrollbar{display:none;}
+.chip{flex:0 0 auto;display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:20px;font-size:12.5px;font-weight:800;background:var(--paper);border:1.5px solid var(--line);color:var(--ink);cursor:pointer;white-space:nowrap;transition:.15s;}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+.chip.idol.on{background:var(--idol);border-color:var(--idol);}
+/* lens toggle (B) */
+.lenstoggle{display:flex;align-items:center;gap:8px;background:var(--idol50);border:1px solid #e0d6fb;border-radius:14px;padding:9px 12px;cursor:pointer;transition:.2s;}
+.lenstoggle .lt{font-size:12.5px;font-weight:800;color:var(--idold);flex:1;}
+.lenstoggle .sw{width:38px;height:22px;border-radius:14px;background:#d8cef5;position:relative;}
+.lenstoggle .sw::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:2px;left:2px;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.2s;}
+.lenstoggle.on{background:var(--idol);border-color:var(--idold);}
+.lenstoggle.on .lt{color:#fff;}
+.lenstoggle.on .sw{background:rgba(255,255,255,.45);}
+.lenstoggle.on .sw::after{left:18px;}
+
+.body{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;padding-bottom:78px;position:relative;}
+.body::-webkit-scrollbar{display:none;}
 .tabpane{display:none;}.tabpane.on{display:block;}
-.hype{margin:14px 16px 2px;border-radius:16px;overflow:hidden;position:relative;height:128px;background-size:cover;background-position:center;box-shadow:0 4px 14px rgba(0,0,0,.12);cursor:pointer;}
+
+/* hype */
+.hype{margin:14px 16px 2px;border-radius:16px;overflow:hidden;position:relative;height:130px;background-size:cover;background-position:center;box-shadow:0 4px 14px rgba(0,0,0,.12);cursor:pointer;}
 .hype .ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.72));}
-.hype .tag{position:absolute;top:10px;left:10px;background:#FF4D3D;color:#fff;font-size:10px;font-weight:800;padding:4px 9px;border-radius:14px;}
-.hype .cap{position:absolute;left:13px;right:13px;bottom:11px;color:#fff;}.hype .cap .h{font-size:17px;font-weight:800;}.hype .cap .s{font-size:11.5px;color:#eee;margin-top:2px;}
+.hype .tag{position:absolute;top:10px;left:10px;background:#FF4D3D;color:#fff;font-size:10px;font-weight:800;padding:4px 9px;border-radius:14px;letter-spacing:.04em;}
+.hype .cap{position:absolute;left:13px;right:13px;bottom:11px;color:#fff;}
+.hype .cap .h{font-size:17px;font-weight:800;letter-spacing:-.01em;}
+.hype .cap .s{font-size:11.5px;color:#eee;margin-top:2px;}
+
 .sech{display:flex;align-items:baseline;justify-content:space-between;padding:16px 16px 9px;}
-.sech .t{font-size:16px;font-weight:800;display:flex;align-items:center;gap:6px;}.sech .t .em{color:var(--idol);}.sech .more{font-size:11.5px;font-weight:700;color:var(--gray);}
-.hero{display:flex;gap:11px;overflow-x:auto;padding:0 16px 4px;}.hero::-webkit-scrollbar{display:none;}
-.hcard{flex:0 0 168px;background:var(--paper);border-radius:15px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.06);cursor:pointer;}
+.sech .t{font-size:16px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:6px;}
+.sech .t.idol .em{color:var(--idol);}
+.sech .more{font-size:11.5px;font-weight:700;color:var(--gray);}
+
+.hero{display:flex;gap:11px;overflow-x:auto;padding:0 16px 4px;scroll-snap-type:x mandatory;}
+.hero::-webkit-scrollbar{display:none;}
+.hcard{flex:0 0 162px;scroll-snap-align:start;background:var(--paper);border-radius:15px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.06);cursor:pointer;}
 .hph{position:relative;height:110px;background-size:cover;background-position:center;}
-.hbadge{position:absolute;top:8px;left:8px;background:rgba(139,92,246,.95);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:14px;max-width:148px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
-.hcnt{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:800;padding:3px 7px;border-radius:12px;}
-.hheart{position:absolute;bottom:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.35);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;}.hheart.sv{background:#fff;color:var(--pri);}
-.hb{padding:9px 10px 11px;}.hn{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.hsub{font-size:11px;color:var(--gray);margin-top:2px;}
+.hbadge{position:absolute;top:8px;left:8px;display:flex;align-items:center;gap:5px;background:rgba(139,92,246,.95);color:#fff;font-size:10.5px;font-weight:800;padding:3px 8px 3px 4px;border-radius:14px;}
+.hbadge .av{width:15px;height:15px;border-radius:50%;background-size:cover;background-position:center;border:1px solid #fff;}
+.hheart{position:absolute;top:7px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.3);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;backdrop-filter:blur(2px);}
+.hheart.sv{background:#fff;color:var(--pri);}
+.hb{padding:9px 10px 11px;}
+.hn{font-size:14px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hsub{font-size:11px;color:var(--gray);margin-top:2px;}
+.hsrc{font-size:10.5px;color:var(--idold);font-weight:700;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
 .list{padding:0 16px;display:flex;flex-direction:column;gap:11px;}
 .lcard{background:var(--paper);border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.045);display:flex;cursor:pointer;}
 .lph{flex:0 0 92px;height:92px;background-size:cover;background-position:center;position:relative;margin:9px 0 9px 9px;border-radius:11px;}
-.lheart{position:absolute;top:6px;right:6px;width:25px;height:25px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font-size:13px;}.lheart.sv{color:var(--pri);}
-.lb{flex:1;padding:10px 12px;min-width:0;display:flex;flex-direction:column;justify-content:center;}
-.kick{font-size:9.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.kick.idol{color:var(--idold);}.kick.local{color:var(--prid);}
-.ln{font-size:15px;font-weight:800;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.lsub{font-size:11.5px;color:var(--gray);margin-top:3px;}
-.spice{display:flex;align-items:center;gap:5px;margin-top:4px;font-size:10.5px;color:var(--gray);font-weight:700;}.spice .off{opacity:.25;}
+.lheart{position:absolute;top:6px;right:6px;width:25px;height:25px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.18);}
+.lheart.sv{color:var(--pri);}
+.lb{flex:1;padding:10px 12px 10px 11px;min-width:0;display:flex;flex-direction:column;justify-content:center;}
+.kick{font-size:9.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--prid);display:flex;align-items:center;gap:4px;}
+.kick.idol{color:var(--idold);}
+.ln{font-size:15px;font-weight:800;letter-spacing:-.01em;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.spice{display:flex;align-items:center;gap:5px;margin-top:4px;font-size:10.5px;color:var(--gray);font-weight:700;}
+.spice .ch .off{opacity:.25;}
 .lwhy{font-family:var(--serif);font-style:italic;font-size:12.5px;color:#5a5852;line-height:1.35;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.maparea{position:relative;height:330px;background:repeating-linear-gradient(0deg,transparent 0 38px,rgba(0,0,0,.035) 38px 40px),repeating-linear-gradient(90deg,transparent 0 38px,rgba(0,0,0,.035) 38px 40px),linear-gradient(160deg,#EAF1EC,#E5EBF2);overflow:hidden;}
-.mpin{position:absolute;transform:translate(-50%,-100%);cursor:pointer;}
-.mpin .dot{width:26px;height:26px;border-radius:50% 50% 50% 2px;transform:rotate(45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.25);border:2px solid #fff;}
-.mpin.idol .dot{background:var(--idol);}.mpin.local .dot{background:var(--pri);}
-.mpin .dot span{transform:rotate(-45deg);font-size:11px;}
-.mapnote{position:absolute;top:12px;left:12px;background:#fff;border-radius:18px;padding:7px 12px;font-size:11px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.12);color:var(--gray);z-index:2;}
-.empty{text-align:center;color:var(--gray);font-size:13px;padding:80px 30px;}.empty .ic{font-size:46px;}
+.lsrc{font-size:10px;color:var(--idold);font-weight:700;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* idol entry banner (B) */
+.identry{margin:14px 16px 2px;background:linear-gradient(120deg,#3a2f5c,#221a36);border-radius:16px;padding:14px 15px;display:flex;align-items:center;gap:12px;color:#fff;cursor:pointer;}
+.identry .av{display:flex;}
+.identry .av span{width:30px;height:30px;border-radius:50%;background-size:cover;background-position:center;border:2px solid #221a36;margin-left:-10px;}
+.identry .av span:first-child{margin-left:0;}
+.identry .tx{flex:1;}
+.identry .tx .h{font-size:14px;font-weight:800;}
+.identry .tx .s{font-size:11px;color:#c7bdf0;margin-top:1px;}
+.identry .go{font-size:20px;color:var(--idol);}
+.lensnote{margin:14px 16px 0;font-size:11px;color:var(--idold);font-weight:700;background:var(--idol50);border-radius:10px;padding:8px 11px;}
+
+/* idol avatar row */
+.idolrow{display:flex;gap:13px;overflow-x:auto;padding:6px 16px 6px;}
+.idolrow::-webkit-scrollbar{display:none;}
+.iav{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;width:62px;}
+.iav .ph{width:58px;height:58px;border-radius:50%;background-size:cover;background-position:center;border:2.5px solid transparent;}
+.iav.on .ph{border-color:var(--idol);}
+.iav .nm{font-size:10.5px;font-weight:700;text-align:center;line-height:1.2;color:var(--gray);}
+.iav.on .nm{color:var(--idold);}
+.ihead{margin:6px 16px 2px;background:linear-gradient(135deg,#2a2440,#15131c);border-radius:16px;padding:15px 16px;color:#fff;display:flex;align-items:center;gap:13px;}
+.ihead .big{width:52px;height:52px;border-radius:50%;background-size:cover;background-position:center;border:2px solid var(--idol);}
+.ihead .who{font-size:18px;font-weight:800;}
+.ihead .grp{font-size:12px;color:#c7bdf0;margin-top:1px;}
+.ihead .cnt{margin-left:auto;text-align:right;}
+.ihead .cnt b{font-size:20px;font-weight:800;color:var(--idol);}
+.ihead .cnt span{display:block;font-size:10px;color:#a39bc4;}
+
+/* MAP */
+.maparea{position:relative;height:330px;background:repeating-linear-gradient(0deg,transparent 0 38px,rgba(0,0,0,.035) 38px 40px),repeating-linear-gradient(90deg,transparent 0 38px,rgba(0,0,0,.035) 38px 40px),linear-gradient(160deg,#EAF1EC,#E5EBF2);}
+.river{position:absolute;left:-10%;top:62%;width:130%;height:34px;background:#CFE0EC;transform:rotate(-8deg);border-radius:20px;}
+.road{position:absolute;background:#fff;}.r1{left:0;top:40%;width:100%;height:9px;}.r2{left:46%;top:0;width:9px;height:100%;}
+.mpin{position:absolute;transform:translate(-50%,-100%);cursor:pointer;z-index:2;}
+.mpin .dot{width:30px;height:30px;border-radius:50% 50% 50% 2px;transform:rotate(45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.25);border:2px solid #fff;}
+.mpin .dot span{transform:rotate(-45deg);font-size:13px;}
+.mpin.local .dot{background:var(--pri);}.mpin.idol .dot{background:var(--idol);}
+.mpin.sel .dot{width:38px;height:38px;}
+.mapbar{position:absolute;top:12px;left:12px;right:12px;display:flex;gap:8px;}
+.mappill{background:#fff;border-radius:20px;padding:8px 13px;font-size:12.5px;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,.12);display:flex;align-items:center;gap:6px;}
+.mappill .pin{color:var(--pri);font-size:10px;}
+.maplegend{margin-left:auto;background:#fff;border-radius:20px;padding:7px 11px;font-size:10.5px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.12);display:flex;gap:9px;}
+.maplegend .li{display:flex;align-items:center;gap:4px;}.maplegend .sw{width:9px;height:9px;border-radius:50%;}
+.mapcards{display:flex;gap:11px;overflow-x:auto;padding:14px 16px 4px;scroll-snap-type:x mandatory;}
+.mapcards::-webkit-scrollbar{display:none;}
+.mcard{flex:0 0 230px;scroll-snap-align:center;background:var(--paper);border-radius:15px;box-shadow:0 4px 14px rgba(0,0,0,.08);display:flex;overflow:hidden;cursor:pointer;border:2px solid transparent;}
+.mcard.sel{border-color:var(--ink);}
+.mcard .mph{flex:0 0 78px;height:78px;background-size:cover;background-position:center;}
+.mcard .mb{padding:8px 10px;min-width:0;display:flex;flex-direction:column;justify-content:center;}
+.mcard .mn{font-size:13.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mcard .mk{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
+.mcard .mk.idol{color:var(--idold);}.mcard .mk.local{color:var(--prid);}
+.mcard .mmeta{font-size:11px;color:var(--gray);margin-top:3px;}
+
+/* SAVED */
+.savedhead{padding:14px 16px 2px;font-size:12.5px;color:var(--gray);font-weight:700;}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:90px 30px;text-align:center;}
+.empty .ic{font-size:48px;}.empty h3{font-size:17px;font-weight:800;margin-top:14px;}
+.empty p{font-size:13px;color:var(--gray);margin-top:7px;line-height:1.5;}
+.empty button{margin-top:18px;background:var(--ink);color:#fff;border:none;border-radius:12px;padding:12px 22px;font-size:13.5px;font-weight:800;font-family:inherit;cursor:pointer;}
+
 .dock{position:absolute;bottom:0;left:0;right:0;background:var(--paper);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0 max(8px,env(safe-area-inset-bottom));flex:0 0 auto;z-index:30;}
-.dk{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9.5px;font-weight:700;color:#BAB7AF;cursor:pointer;position:relative;}.dk.on{color:var(--pri);}.dk .ic{font-size:19px;}
+.dk{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9.5px;font-weight:700;color:#BAB7AF;cursor:pointer;position:relative;}
+.dk.on{color:var(--pri);}.dk .ic{font-size:19px;}
 .dk .bdg{position:absolute;top:-4px;right:50%;transform:translateX(15px);background:var(--pri);color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
-.scrim{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.2s;z-index:40;}.scrim.on{opacity:1;pointer-events:auto;}
-.sheet{position:absolute;left:0;right:0;bottom:0;max-height:92%;background:var(--paper);border-radius:22px 22px 0 0;transform:translateY(100%);transition:.28s cubic-bezier(.3,.8,.3,1);z-index:41;overflow-y:auto;}.sheet.on{transform:translateY(0);}.sheet::-webkit-scrollbar{display:none;}
-.dph{height:188px;background-size:cover;background-position:center;position:relative;}.dph .note{position:absolute;bottom:8px;left:10px;background:rgba(0,0,0,.5);color:#fff;font-size:9.5px;padding:2px 7px;border-radius:10px;}
-.dclose{position:absolute;top:11px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.4);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;}
-.dbody{padding:15px 17px 22px;}.dname{font-size:21px;font-weight:800;}.dmeta{font-size:12px;color:var(--gray);margin-top:4px;}
-.dpills{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px;}.dtag{font-size:11px;font-weight:800;padding:4px 10px;border-radius:14px;}.dtag .off{opacity:.25;}
-.idolsec{margin-top:15px;}.idolsec .lab{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--idold);margin-bottom:6px;}
-.idolrow{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);}
-.idolrow .av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:800;flex:0 0 auto;}
-.idolrow .who{font-size:13.5px;font-weight:800;}.idolrow .src{font-size:11.5px;color:var(--gray);margin-top:2px;line-height:1.4;}
-.strong{display:inline-block;font-size:9px;font-weight:800;padding:1px 6px;border-radius:9px;margin-left:5px;}.s-강{background:var(--idol50);color:var(--idold);}.s-중{background:#EFEDE6;color:#8a8676;}
-.dsec{margin-top:15px;}.dsec .lab{font-size:10.5px;font-weight:800;letter-spacing:.1em;color:var(--pri);}
-.dctx{font-size:13.5px;line-height:1.55;color:#3a3a3a;margin-top:6px;}
+
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.2s;z-index:40;}
+.scrim.on{opacity:1;pointer-events:auto;}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:92%;background:var(--paper);border-radius:22px 22px 0 0;transform:translateY(100%);transition:.28s cubic-bezier(.3,.8,.3,1);z-index:41;overflow-y:auto;}
+.sheet.on{transform:translateY(0);}.sheet::-webkit-scrollbar{display:none;}
+.dph{height:188px;background-size:cover;background-position:center;position:relative;}
+.dclose{position:absolute;top:11px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.4);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;backdrop-filter:blur(3px);}
+.dbody{padding:15px 17px 22px;}
+.dname{font-size:21px;font-weight:800;letter-spacing:-.02em;}
+.dmeta{font-size:12px;color:var(--gray);margin-top:4px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.dspice{font-weight:700;color:var(--prid);}.dspice .off{opacity:.25;}
+.dsrc{margin-top:13px;background:var(--idol50);border-radius:12px;padding:12px 13px;}
+.dsrc .h{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;color:var(--idold);}
+.dsrc .av{width:24px;height:24px;border-radius:50%;background-size:cover;background-position:center;}
+.dsrc .q{font-family:var(--serif);font-style:italic;font-size:13.5px;color:#4b3a78;margin-top:8px;line-height:1.45;}
+.dsrc .lk{font-size:11px;font-weight:700;color:var(--idold);margin-top:9px;}
+.dwhy{margin-top:15px;}
+.dwhy .lab{font-size:10.5px;font-weight:800;letter-spacing:.1em;color:var(--pri);}
 .dwhy p{font-family:var(--serif);font-size:15px;line-height:1.55;margin-top:6px;color:#2a2a2a;}
-.dmenu{margin-top:7px;}.dmenu .mi{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);}.dmenu .mi .nm{font-size:13.5px;font-weight:700;}.dmenu .mi .p{font-size:13px;font-weight:700;color:#3a3a3a;}
-.dnear{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;}.dpill{font-size:11.5px;color:#666;background:#fff;border:1px solid var(--line);border-radius:14px;padding:5px 10px;}
-.dtip{margin-top:15px;font-size:13px;color:var(--prid);font-weight:700;}
-.dcta{display:flex;gap:9px;margin-top:18px;}.dcta button,.dcta a{flex:1;border:none;border-radius:12px;padding:13px;font-size:13.5px;font-weight:800;font-family:inherit;cursor:pointer;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;}
-.b-save{background:var(--ink);color:#fff;}.b-save.sv{background:var(--pri50);color:var(--prid);}.b-map{background:var(--pri);color:#fff;}
-.b-naver{margin-top:9px;width:100%;border:1.5px solid #03C75A;background:#fff;color:#03A64A;border-radius:12px;padding:12px;font-size:13.5px;font-weight:800;text-align:center;text-decoration:none;display:block;}
-.toast{position:absolute;left:50%;bottom:92px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-size:12.5px;font-weight:700;padding:10px 16px;border-radius:22px;opacity:0;transition:.25s;z-index:50;}.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+.dpills{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px;}
+.dtag{font-size:11px;font-weight:800;padding:4px 10px;border-radius:14px;}
+.dsec{margin-top:16px;}
+.dsec .lab{font-size:10.5px;font-weight:800;letter-spacing:.1em;color:var(--pri);}
+.dctx{font-size:13.5px;line-height:1.55;color:#3a3a3a;margin-top:6px;}
+.dmenu{margin-top:7px;}
+.dmenu .mi{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);}
+.dmenu .mi .nm{font-size:13.5px;font-weight:700;}
+.dmenu .mi .ko{font-size:11px;color:var(--gray);margin-top:1px;}
+.dmenu .mi .p{font-size:13px;font-weight:700;color:#3a3a3a;}
+.dnear{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;}
+.dpill{font-size:11.5px;color:#666;background:#fff;border:1px solid var(--line);border-radius:14px;padding:5px 10px;}
+.dtip{margin-top:16px;font-size:13px;color:var(--prid);font-weight:700;}
+.dcta{display:flex;gap:9px;margin-top:17px;}
+.dcta button{flex:1;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;}
+.b-save{background:var(--ink);color:#fff;}.b-save.sv{background:var(--pri50);color:var(--prid);}
+.b-map{background:var(--pri);color:#fff;}
+.b-naver{width:100%;margin-top:9px;border:1.5px solid #03C75A;background:#fff;color:#03A64A;border-radius:12px;padding:12px;font-size:13.5px;font-weight:800;font-family:inherit;cursor:pointer;}
+
+.login{position:absolute;left:0;right:0;bottom:0;background:var(--paper);border-radius:22px 22px 0 0;transform:translateY(100%);transition:.28s cubic-bezier(.3,.8,.3,1);z-index:43;padding:24px 20px max(22px,env(safe-area-inset-bottom));}
+.login.on{transform:translateY(0);}
+.login .grip{width:38px;height:4px;border-radius:3px;background:var(--line);margin:0 auto 16px;}
+.login h3{font-size:19px;font-weight:800;text-align:center;}
+.login p{font-size:13px;color:var(--gray);text-align:center;margin-top:7px;line-height:1.5;}
+.login .lbtn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;border-radius:12px;padding:14px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;margin-top:13px;border:1.5px solid var(--line);background:#fff;color:var(--ink);}
+.login .lbtn.apple{background:#000;color:#fff;border-color:#000;}
+.login .skip{display:block;margin:14px auto 0;background:none;border:none;color:var(--gray);font-size:12.5px;font-weight:700;cursor:pointer;}
+.toast{position:absolute;left:50%;bottom:92px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-size:12.5px;font-weight:700;padding:10px 16px;border-radius:22px;opacity:0;transition:.25s;z-index:50;white-space:nowrap;}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 <div id="app">
-  <div class="cbadge">시안2 + 실데이터 · DB 없는 데모</div>
-  <div class="top"><div class="tr"><div class="logo">it<span>ko</span></div><div class="srch">🔍</div></div>
-    <div class="area"><span class="pin">●</span> Seoul <span class="ch">▾</span></div></div>
+  <div class="cbadge" id="cbadge"></div>
+  <div class="top" id="top"></div>
   <div class="filters" id="filters"></div>
   <div class="body">
     <div class="tabpane on" id="pane-discover"></div>
     <div class="tabpane" id="pane-map"></div>
+    <div class="tabpane" id="pane-idols"></div>
     <div class="tabpane" id="pane-saved"></div>
   </div>
   <div class="dock" id="dock"></div>
   <div class="scrim" id="scrim" onclick="closeAll()"></div>
   <div class="sheet" id="sheet"></div>
+  <div class="login" id="login"></div>
   <div class="toast" id="toast"></div>
 </div>
+
 <script>
-var DATA=[{"n":"영천영화 청담점","food":"한식 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"NCT (도영·해찬)","src":"NCT 유튜브에서 단골로 소개","strength":"강"},{"label":"BTS 정국","src":"정국 방문, '놀면뭐하니'·'전참시' 노출","strength":"강"},{"label":"Stray Kids 방찬","src":"아이돌 맛집 매체 정리","strength":"중"},{"label":"ASTRO 차은우","src":"아이돌 맛집 매체 정리","strength":"중"}],"kind":"idol","pic":"galbi.jpg","foodShort":"한식","id":1,"mx":12,"my":14},{"n":"영동교집 청담직영점","food":"한식 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"BTS 정국","src":"2023.4 정국·민규·차은우 회동 보도","strength":"강"},{"label":"SEVENTEEN 민규","src":"2023.4 3인 회동 보도","strength":"강"},{"label":"ASTRO 차은우","src":"2023.4 3인 회동 보도","strength":"강"}],"kind":"idol","pic":"soup.jpg","foodShort":"한식","id":2,"mx":49,"my":67},{"n":"압구정제주집 청담점","food":"한식 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"SEVENTEEN 민규","src":"방문 아이돌 명시(다이닝코드)","strength":"중"},{"label":"ASTRO 차은우","src":"방문 아이돌 명시","strength":"중"},{"label":"BTS 정국","src":"방문 아이돌 명시","strength":"중"}],"kind":"idol","pic":"bibimbap.jpg","foodShort":"한식","id":3,"mx":86,"my":48},{"n":"청담25","food":"한식 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"EXO","src":"아이돌 단골 한정식, 방송 노출","strength":"중"},{"label":"SEVENTEEN","src":"아이돌 단골 한정식","strength":"중"},{"label":"NCT","src":"아이돌 단골 한정식","strength":"중"}],"kind":"idol","pic":"bibimbap.jpg","foodShort":"한식","id":4,"mx":47,"my":29},{"n":"잔비워","food":"주점·치킨 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"보아(BoA)","src":"보아·강타·FT아일랜드 단골 청담 주점","strength":"중"},{"label":"강타(Kangta)","src":"강타 단골 청담 주점","strength":"중"},{"label":"FT아일랜드","src":"FT아일랜드 단골 청담 주점","strength":"중"}],"kind":"idol","pic":"beer.jpg","foodShort":"주점·치킨","id":5,"mx":84,"my":82},{"n":"램니쿠야 둔촌 본점","food":"일식·양고기 (일본)","dong":"둔촌동","gu":"강동구","idols":[{"label":"Stray Kids","src":"JYP 사옥 인근 단골, 입구에 스키즈 슬로건","strength":"강"},{"label":"DAY6","src":"입구 슬로건에 DAY6 명시, JYP 단골집","strength":"중"}],"kind":"idol","pic":"soup.jpg","foodShort":"일식·양고기","id":6,"mx":45,"my":63},{"n":"울프강 스테이크하우스 청담","food":"양식 (미국)","dong":"청담동","gu":"강남구","idols":[{"label":"BLACKPINK 지수","src":"지수 인스타 노출","strength":"중"},{"label":"BLACKPINK 리사","src":"리사 인스타 노출","strength":"중"}],"kind":"idol","pic":"salad.jpg","foodShort":"양식","id":7,"mx":82,"my":44},{"n":"커피오카(Cofioca)","food":"디저트·버블티 (대만)","dong":"청담동","gu":"강남구","idols":[{"label":"하이라이트 윤두준","src":"윤두준 단골 버블티집","strength":"중"},{"label":"EXO 세훈","src":"세훈 단골 버블티집","strength":"중"}],"kind":"idol","pic":"cookie.jpg","foodShort":"디저트·버블티","id":8,"mx":43,"my":25},{"n":"아베크청담(Avecque)","food":"양식·브런치 (서양)","dong":"신사동","gu":"강남구","idols":[{"label":"BTS 진","src":"진·제니 단골로 콘텐츠 소개","strength":"중"},{"label":"BLACKPINK 제니","src":"진·제니 단골로 콘텐츠 소개","strength":"중"}],"kind":"idol","pic":"cafe.jpg","foodShort":"양식·브런치","id":9,"mx":80,"my":78},{"n":"멜트(Melt)","food":"디저트·빙수 (한국)","dong":"압구정동","gu":"강남구","idols":[{"label":"소녀시대","src":"소시·박서준 단골 빙수 전문점","strength":"중"},{"label":"헨리(Henry)","src":"헨리 단골 빙수 전문점","strength":"중"}],"kind":"idol","pic":"bingsu.jpg","foodShort":"디저트·빙수","id":10,"mx":41,"my":59},{"n":"무탄(MUTAN) 압구정 본점","food":"중식 (중국)","dong":"압구정동","gu":"강남구","idols":[{"label":"SEVENTEEN (민규·정한)","src":"민규 인스타·매거진 보도","strength":"강"}],"kind":"idol","pic":"noodle.jpg","foodShort":"중식","id":11,"mx":78,"my":40},{"n":"황소곱창 삼성직영점","food":"한식 (한국)","dong":"삼성동","gu":"강남구","idols":[{"label":"BTS 정국","src":"정국 사인·하트 인증","strength":"강"}],"kind":"idol","pic":"bibimbap.jpg","foodShort":"한식","id":12,"mx":39,"my":21},{"n":"우향우(WHW)","food":"양식 (서양)","dong":"신사동","gu":"강남구","idols":[{"label":"BTS 정국","src":"정국 청음회 장소, 팬 성지","strength":"강"}],"kind":"idol","pic":"salad.jpg","foodShort":"양식","id":13,"mx":76,"my":74},{"n":"유정식당","food":"한식 (한국)","dong":"논현동","gu":"강남구","idols":[{"label":"BTS","src":"연습생 시절 7년 단골, 아미 성지","strength":"강"}],"kind":"idol","pic":"galbi.jpg","foodShort":"한식","id":14,"mx":37,"my":55},{"n":"옛날집","food":"한식 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"Apink 남주","src":"본인 유튜브 '남주세끼'","strength":"강"}],"kind":"idol","pic":"galbi.jpg","foodShort":"한식","id":15,"mx":74,"my":36},{"n":"뜨락","food":"한식 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"Apink 남주","src":"본인 유튜브 '남주세끼'","strength":"강"}],"kind":"idol","pic":"soup.jpg","foodShort":"한식","id":16,"mx":35,"my":17},{"n":"나리식당","food":"한식 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"Apink 남주","src":"본인 유튜브 '남주세끼'","strength":"강"}],"kind":"idol","pic":"bibimbap.jpg","foodShort":"한식","id":17,"mx":72,"my":70},{"n":"진미평양냉면","food":"한식 (한국)","dong":"논현동","gu":"강남구","idols":[{"label":"다비치 강민경·이해리","src":"강민경 유튜브 '걍밍경'","strength":"강"}],"kind":"idol","pic":"galbi.jpg","foodShort":"한식","id":18,"mx":33,"my":51},{"n":"세시셀라 카페","food":"양식 (서양)","dong":"압구정동","gu":"강남구","idols":[{"label":"다비치 강민경","src":"강민경 유튜브","strength":"강"}],"kind":"idol","pic":"salad.jpg","foodShort":"양식","id":19,"mx":70,"my":32},{"n":"알로하 포케","food":"하와이안 (미국)","dong":"논현동","gu":"강남구","idols":[{"label":"다비치 강민경","src":"강민경 유튜브","strength":"강"}],"kind":"idol","pic":"galbi.jpg","foodShort":"하와이안","id":20,"mx":31,"my":85},{"n":"청담동 마녀김밥","food":"한식 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"다비치 강민경","src":"강민경 유튜브","strength":"강"}],"kind":"idol","pic":"galbi.jpg","foodShort":"한식","id":21,"mx":68,"my":66},{"n":"르뱅룰즈","food":"양식 (서양)","dong":"삼성동","gu":"강남구","idols":[{"label":"다비치 강민경","src":"강민경 유튜브(베이커리)","strength":"강"}],"kind":"idol","pic":"salad.jpg","foodShort":"양식","id":22,"mx":29,"my":47},{"n":"더민스(The Min's)","food":"디저트·카페 (한국)","dong":"압구정동","gu":"강남구","idols":[{"label":"2AM 이창민 / BTS","src":"이창민 운영, BTS 인증샷·손편지 전시","strength":"강"}],"kind":"idol","pic":"tanghulu.jpg","foodShort":"디저트·카페","id":23,"mx":66,"my":28},{"n":"스시쿠루미","food":"일식 (일본)","dong":"청담동","gu":"강남구","idols":[{"label":"EXO (시우민·첸)","src":"첸 생일 멤버 방문, '신과함께' 언급","strength":"강"}],"kind":"idol","pic":"ramen.jpg","foodShort":"일식","id":24,"mx":27,"my":81},{"n":"도산뚝배기","food":"한식 (한국)","dong":"논현동","gu":"강남구","idols":[{"label":"SEVENTEEN","src":"세븐틴 단골, 강남구청 공식 소개","strength":"강"}],"kind":"idol","pic":"soup.jpg","foodShort":"한식","id":25,"mx":64,"my":62},{"n":"닭으로가 압구정본점","food":"한식 (한국)","dong":"압구정동","gu":"강남구","idols":[{"label":"슈퍼주니어","src":"SJ 멤버 단골 닭갈비, 강남구청 소개","strength":"강"}],"kind":"idol","pic":"bibimbap.jpg","foodShort":"한식","id":26,"mx":25,"my":43},{"n":"두루(Duru)","food":"한식 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"EXO (시우민·세훈)","src":"단골 청담 한식집, 강남구청 소개","strength":"강"}],"kind":"idol","pic":"galbi.jpg","foodShort":"한식","id":27,"mx":62,"my":24},{"n":"돈블랑 청담스퀘어점","food":"한식 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"EXO (세훈·D.O.)","src":"세훈·디오 방문 화제","strength":"강"}],"kind":"idol","pic":"soup.jpg","foodShort":"한식","id":28,"mx":23,"my":77},{"n":"저스트스테이크","food":"양식 (서양)","dong":"압구정동","gu":"강남구","idols":[{"label":"KARD 전지우(가족)","src":"전지우 가족 단골, '수요미식회' 방영","strength":"강"}],"kind":"idol","pic":"galbi.jpg","foodShort":"양식","id":29,"mx":60,"my":58},{"n":"올드페리도넛 도산","food":"디저트 (미국)","dong":"신사동","gu":"강남구","idols":[{"label":"SHINee","src":"샤이니 15주년 콜라보 도넛","strength":"강"}],"kind":"idol","pic":"cookie.jpg","foodShort":"디저트","id":30,"mx":21,"my":39},{"n":"기욤(Guillaume) 청담점","food":"디저트 (프랑스)","dong":"청담동","gu":"강남구","idols":[{"label":"BTS 제이홉","src":"제이홉 생일 케이크 제작처","strength":"강"}],"kind":"idol","pic":"tanghulu.jpg","foodShort":"디저트","id":31,"mx":58,"my":20},{"n":"청담골","food":"한식 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"슈퍼주니어","src":"'아이돌 급식소'로 불리는 한정식","strength":"강"}],"kind":"idol","pic":"bibimbap.jpg","foodShort":"한식","id":32,"mx":19,"my":73},{"n":"미엘(Miel)","food":"디저트·카페 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"소녀시대 티파니","src":"티파니·2PM 단골 갤러리 카페","strength":"강"}],"kind":"idol","pic":"dessert.jpg","foodShort":"디저트·카페","id":33,"mx":56,"my":54},{"n":"누데이크 하우스도산","food":"디저트 (한국)","dong":"신사동","gu":"강남구","idols":[{"label":"BLACKPINK 제니","src":"젠틀몬스터×제니 콜라보 팝업","strength":"강"}],"kind":"idol","pic":"tanghulu.jpg","foodShort":"디저트","id":34,"mx":17,"my":35},{"n":"JYP 신사옥 구내식당","food":"한식 (한국)","dong":"성내동","gu":"강동구","idols":[{"label":"Stray Kids 현진","src":"현진이 '아이돌 라디오'에서 직접 언급","strength":"강"}],"kind":"idol","pic":"bibimbap.jpg","foodShort":"한식","id":35,"mx":54,"my":16},{"n":"길목","food":"한식 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"BTS 정국","src":"Harper's Bazaar 정국 단골 정리","strength":"중"}],"kind":"idol","pic":"galbi.jpg","foodShort":"한식","id":36,"mx":15,"my":69},{"n":"도쿄등심 선릉점","food":"일식퓨전 (일본)","dong":"역삼동","gu":"강남구","idols":[{"label":"BTS 정국","src":"정국 단골 한우 오마카세","strength":"중"}],"kind":"idol","pic":"ramen.jpg","foodShort":"일식퓨전","id":37,"mx":52,"my":50},{"n":"원조마포소금구이 강남점","food":"한식 (한국)","dong":"압구정동","gu":"강남구","idols":[{"label":"BTS 정국","src":"정국 단골 돼지구이","strength":"중"}],"kind":"idol","pic":"bibimbap.jpg","foodShort":"한식","id":38,"mx":13,"my":31},{"n":"초심한우 정육식당","food":"한식 (한국)","dong":"논현동","gu":"강남구","idols":[{"label":"BTS 정국","src":"정국 방문, 소고기라면","strength":"중"}],"kind":"idol","pic":"galbi.jpg","foodShort":"한식","id":39,"mx":50,"my":84},{"n":"은행골 신사점","food":"일식 (일본)","dong":"신사동","gu":"강남구","idols":[{"label":"BTS","src":"BTS 단골 초밥집, 사인벽","strength":"중"}],"kind":"idol","pic":"ramen.jpg","foodShort":"일식","id":40,"mx":87,"my":65},{"n":"추풍령칼삼겹살 압구정점","food":"한식 (한국)","dong":"압구정동","gu":"강남구","idols":[{"label":"SEVENTEEN","src":"기획사 회식 성지, 스타 사인벽","strength":"중"}],"kind":"idol","pic":"galbi.jpg","foodShort":"한식","id":41,"mx":48,"my":46},{"n":"도산정육 본점","food":"한식 (한국)","dong":"압구정동","gu":"강남구","idols":[{"label":"BTS 정국","src":"정국 단골 정육식당","strength":"중"}],"kind":"idol","pic":"soup.jpg","foodShort":"한식","id":42,"mx":85,"my":27},{"n":"스코파 더 셰프(SCOPA)","food":"이탈리안 (이탈리아)","dong":"청담동","gu":"강남구","idols":[{"label":"BTS 뷔","src":"뷔 방문 후 유명해진 파스타","strength":"중"}],"kind":"idol","pic":"galbi.jpg","foodShort":"이탈리안","id":43,"mx":46,"my":80},{"n":"원강","food":"한식 (한국)","dong":"논현동","gu":"강남구","idols":[{"label":"EXO 도경수(D.O.)","src":"팬사인회에서 추천한 한우집","strength":"중"}],"kind":"idol","pic":"galbi.jpg","foodShort":"한식","id":44,"mx":83,"my":61},{"n":"어제연 청담","food":"한식 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"ASTRO 차은우(가족)","src":"차은우 가족 장어집","strength":"중"}],"kind":"idol","pic":"soup.jpg","foodShort":"한식","id":45,"mx":44,"my":42},{"n":"까폼(Krap Pom)","food":"태국음식 (태국)","dong":"신사동","gu":"강남구","idols":[{"label":"BLACKPINK 리사","src":"리사가 본인 단골로 소개","strength":"중"}],"kind":"idol","pic":"galbi.jpg","foodShort":"태국음식","id":46,"mx":81,"my":23},{"n":"고센(Goshen)","food":"양식 (서양)","dong":"청담동","gu":"강남구","idols":[{"label":"소녀시대","src":"소시 멤버 단골 청담 카페","strength":"중"}],"kind":"idol","pic":"salad.jpg","foodShort":"양식","id":47,"mx":42,"my":76},{"n":"SUM 카페·SMT 서울","food":"양식·카페 (서양)","dong":"청담동","gu":"강남구","idols":[{"label":"aespa / Red Velvet","src":"SM 청담 사옥 1층 카페·레스토랑","strength":"중"}],"kind":"idol","pic":"dessert.jpg","foodShort":"양식·카페","id":48,"mx":79,"my":57},{"n":"압구정영양센터","food":"양식 (서양)","dong":"압구정동","gu":"강남구","idols":[{"label":"DAY6 성진","src":"GQ 인터뷰에서 직접 추천(통닭)","strength":"중"}],"kind":"idol","pic":"food.jpg","foodShort":"양식","id":49,"mx":40,"my":38},{"n":"심풀(SimFull)","food":"양식·브런치 (서양)","dong":"논현동","gu":"강남구","idols":[{"label":"THE BOYZ","src":"2020.09 V LIVE 방문","strength":"중"}],"kind":"idol","pic":"salad.jpg","foodShort":"양식·브런치","id":50,"mx":77,"my":19},{"n":"솔트마인","food":"양식 (서양)","dong":"논현동","gu":"강남구","idols":[{"label":"THE BOYZ","src":"2018.08 V LIVE 인증","strength":"중"}],"kind":"idol","pic":"galbi.jpg","foodShort":"양식","id":51,"mx":38,"my":72},{"n":"맘마미아","food":"이탈리안 (이탈리아)","dong":"압구정동","gu":"강남구","idols":[{"label":"THE BOYZ","src":"2020.09 공식 트위터 인증","strength":"중"}],"kind":"idol","pic":"food.jpg","foodShort":"이탈리안","id":52,"mx":75,"my":53},{"n":"도레도레 신사점","food":"디저트 (한국)","dong":"신사동","gu":"강남구","idols":[{"label":"THE BOYZ","src":"2021.04 공식 트위터 인증","strength":"중"}],"kind":"idol","pic":"cookie.jpg","foodShort":"디저트","id":53,"mx":36,"my":34},{"n":"두넛샵","food":"디저트 (미국)","dong":"논현동","gu":"강남구","idols":[{"label":"THE BOYZ 에릭","src":"2021.04 V LIVE 방문","strength":"중"}],"kind":"idol","pic":"tanghulu.jpg","foodShort":"디저트","id":54,"mx":73,"my":15},{"n":"카페일칠공","food":"카페·펍 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"THE BOYZ","src":"2021.04 유니버스 FNS 인증","strength":"중"}],"kind":"idol","pic":"cafe.jpg","foodShort":"카페·펍","id":55,"mx":34,"my":68},{"n":"우돈청","food":"한식 (한국)","dong":"신사동","gu":"강남구","idols":[{"label":"ASTRO 차은우","src":"차은우·최시원·이민호 단골 고깃집","strength":"중"}],"kind":"idol","pic":"soup.jpg","foodShort":"한식","id":56,"mx":71,"my":49},{"n":"피플더테라스","food":"양식·다이닝바 (서양)","dong":"청담동","gu":"강남구","idols":[{"label":"NCT","src":"최정상 연예인 다이닝바, NCT 방문 언급","strength":"중"}],"kind":"idol","pic":"food.jpg","foodShort":"양식·다이닝바","id":57,"mx":32,"my":30},{"n":"청담동 순도리","food":"한식 (한국)","dong":"청담동","gu":"강남구","idols":[{"label":"박재범(Jay Park)","src":"박재범 방문 먹방 극찬(순대국)","strength":"중"}],"kind":"idol","pic":"soup.jpg","foodShort":"한식","id":58,"mx":69,"my":83},{"n":"미미미 가든","food":"양식 (서양)","dong":"청담동","gu":"강남구","idols":[{"label":"박재범(Jay Park)","src":"런닝맨·나혼자산다 방송 핫플","strength":"중"}],"kind":"idol","pic":"galbi.jpg","foodShort":"양식","id":59,"mx":30,"my":64},{"n":"압구정 변강쇠떡볶이","food":"분식 (한국)","dong":"논현동","gu":"강남구","idols":[{"label":"EXO 수호","src":"수호 팬스팟 등록 40년 노포","strength":"중"}],"kind":"idol","pic":"streetfood.jpg","foodShort":"분식","id":60,"mx":67,"my":45},{"n":"도시고기","food":"한식 (한국)","dong":"성내동","gu":"강동구","idols":[{"label":"JYP 소속 아이돌","src":"JYP 사옥 맞은편 'JYP 맛집' 평판","strength":"중"}],"kind":"idol","pic":"galbi.jpg","foodShort":"한식","id":61,"mx":28,"my":26},{"kind":"local","n":"홍대칼국수","foodShort":"칼국수","dong":"홍대","gu":"마포구","pic":"noodle.jpg","spice":1,"price":"$$","solo":true,"why":"아주머니들이 11시부터 줄 서는 손칼국수. 멸치육수가 진짜.","ctx":"칼국수는 비 오는 날 먹는 한국식 컴포트 푸드.","menu":[{"n":"칼국수","p":"₩9,000"},{"n":"만두","p":"₩6,000"}],"near":[{"t":"홍대입구역","m":5}],"tip":"현금만 · 11시 피크","id":62,"mx":65,"my":79},{"kind":"local","n":"마포양념갈비","foodShort":"고기","dong":"마포","gu":"마포구","pic":"galbi.jpg","spice":1,"price":"$$$","solo":false,"why":"현지인 생일 회식 성지. 양념갈비 후 냉면으로 마무리.","ctx":"숯불 양념갈비는 한국의 축하 한 끼.","menu":[{"n":"양념갈비","p":"₩18,000"},{"n":"물냉면","p":"₩9,000"}],"near":[{"t":"마포역","m":6}],"tip":"저녁 예약 권장","id":63,"mx":26,"my":60},{"kind":"local","n":"홍대 해장국","foodShort":"국밥","dong":"홍대","gu":"마포구","pic":"soup.jpg","spice":2,"price":"$$","solo":true,"why":"소주 마신 다음날 새벽에 먹는 콩나물 해장국. 24시간.","ctx":"해장국 = 술 깨는 국. 새벽의 한국.","menu":[{"n":"콩나물해장국","p":"₩9,000"},{"n":"순대국","p":"₩10,000"}],"near":[{"t":"홍대입구역","m":7}],"tip":"24시간 영업","id":64,"mx":63,"my":41},{"kind":"local","n":"성수 빙수바","foodShort":"카페","dong":"성수","gu":"성동구","pic":"bingsu.jpg","spice":0,"price":"$","solo":false,"why":"인절미 빙수 제대로. 안 달고 콩고물 가득한 여름 의식.","ctx":"빙수는 한국의 여름 의식, 나눠 먹는 맛.","menu":[{"n":"인절미 빙수","p":"₩12,000"},{"n":"아이스 라떼","p":"₩5,500"}],"near":[{"t":"성수 카페거리","m":3}],"tip":"나눠 먹기","id":65,"mx":24,"my":22}];var HYPE_ID=65;
-var state={tab:'discover',filter:'all'};var saved={};
-function pic(p){return 'img/'+p;}
-function idols(){return DATA.filter(function(s){return s.kind==='idol';});}
-function locals(){return DATA.filter(function(s){return s.kind==='local';});}
-function byId(id){return DATA.filter(function(s){return s.id===id;})[0];}
-function avColor(s){var h=0;for(var i=0;i<s.length;i++)h=s.charCodeAt(i)+((h<<5)-h);var c=['#8B5CF6','#F47B20','#178A6E','#2E6FB0','#CF3A2A','#C75E0C'];return c[Math.abs(h)%c.length];}
-function spiceDots(n){var s='';for(var i=0;i<3;i++)s+= i<n?'🌶️':'<span class="off">🌶️</span>';return s;}
-function spiceWord(n){return ['안 매움','순함','보통','매움'][n];}
-function idolLabel(s){return s.idols[0].label+(s.idols.length>1?' 외 '+(s.idols.length-1)+'명':'');}
+var MODE='C';   // 'B' = local-base + lens · 'C' = blend
+
+var T={
+ en:{discover:'Discover',map:'Map',idols:'Idols',saved:'Saved',all:'✨ All',kidol:'💜 K-IDOL Spots',local:'📍 Local Faves',
+  heroTitle:'K-IDOL Spots',localTitle:'Local Faves in Hongdae',seeAll:'See all ›',whyGo:'WHY GO',save:'Save',saved2:'Saved',
+  ctxLab:'KOREAN CONTEXT',menuLab:'BEST MENU',nearLab:'NEARBY',solo:'Solo ok',gmaps:'Open in Google Maps',naver:'Naver Map (directions)',
+  mapTitle:'Map',idolsTitle:'Idols',browseIdol:'Browse by idol',spots:'spots',savedTitle:'Saved',savedCount:'spots saved',
+  emptyH:'No saved spots yet',emptyP:'Tap ♡ on any spot to build your Korea food list.',explore:'Explore spots',
+  loginH:'Save your spots',loginP:'Sign in to keep your Korea list across devices.',google:'Continue with Google',apple:'Continue with Apple',later:'Maybe later',
+  savedToast:'Saved to your list',removedToast:'Removed',lens:'💜 K-IDOL lens',idolEntryH:'Where your idols eat',idolEntryS:'Turn on the K-IDOL lens →',
+  lensOn:'💜 K-IDOL lens on — where idols actually ate (verified sources).',whereEat:'Where idols eat',
+  spice0:'Not spicy',spice1:'Mild',spice2:'Medium',spice3:'Spicy'},
+ ko:{discover:'탐색',map:'지도',idols:'아이돌',saved:'저장',all:'✨ 전체',kidol:'💜 아이돌 맛집',local:'📍 로컬 맛집',
+  heroTitle:'아이돌 맛집',localTitle:'홍대 로컬 맛집',seeAll:'전체 보기 ›',whyGo:'왜 가야 할까',save:'저장',saved2:'저장됨',
+  ctxLab:'한국식 맥락',menuLab:'추천 메뉴',nearLab:'주변',solo:'혼밥 가능',gmaps:'Google Maps에서 열기',naver:'네이버맵 길찾기',
+  mapTitle:'지도',idolsTitle:'아이돌',browseIdol:'아이돌별 보기',spots:'곳',savedTitle:'저장',savedCount:'곳 저장됨',
+  emptyH:'아직 저장한 곳이 없어요',emptyP:'♡ 를 눌러 나만의 한국 맛집 리스트를 만들어요.',explore:'맛집 둘러보기',
+  loginH:'맛집을 저장하세요',loginP:'로그인하면 기기 간에 리스트가 유지돼요.',google:'Google로 계속',apple:'Apple로 계속',later:'다음에',
+  savedToast:'리스트에 저장됨',removedToast:'삭제됨',lens:'💜 아이돌 렌즈',idolEntryH:'최애가 간 맛집',idolEntryS:'아이돌 렌즈 켜기 →',
+  lensOn:'💜 아이돌 렌즈 ON — 실제 인증된 출처만.',whereEat:'최애가 간 곳',
+  spice0:'안 매움',spice1:'순함',spice2:'보통',spice3:'매움'}
+};
+var AV={v:'https://i.pravatar.cc/80?img=12',karina:'https://i.pravatar.cc/80?img=47',jk:'https://i.pravatar.cc/80?img=33',won:'https://i.pravatar.cc/80?img=45'};
+var DATA=[
+ {"id":1001,"kind":"idol","n":"영천영화 청담점","cat":"한식 (한국) · 청담동","pic":"galbi.jpg","idol":"NCT (도영·해찬) 외 3명","group":"","av":"https://ui-avatars.com/api/?name=NCT&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 청담동","q":"","lk":"","why":"NCT 유튜브에서 단골로 소개","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"NCT (도영·해찬)","src":"NCT 유튜브에서 단골로 소개","strength":"강"},{"label":"BTS 정국","src":"정국 방문, '놀면뭐하니'·'전참시' 노출","strength":"강"},{"label":"Stray Kids 방찬","src":"아이돌 맛집 매체 정리","strength":"중"},{"label":"ASTRO 차은우","src":"아이돌 맛집 매체 정리","strength":"중"}],"mx":12,"my":14},
+ {"id":1002,"kind":"idol","n":"영동교집 청담직영점","cat":"한식 (한국) · 청담동","pic":"soup.jpg","idol":"BTS 정국 외 2명","group":"","av":"https://ui-avatars.com/api/?name=BTS%20%EC%A0%95%EA%B5%AD&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 청담동","q":"","lk":"","why":"2023.4 정국·민규·차은우 회동 보도","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"BTS 정국","src":"2023.4 정국·민규·차은우 회동 보도","strength":"강"},{"label":"SEVENTEEN 민규","src":"2023.4 3인 회동 보도","strength":"강"},{"label":"ASTRO 차은우","src":"2023.4 3인 회동 보도","strength":"강"}],"mx":49,"my":67},
+ {"id":1003,"kind":"idol","n":"압구정제주집 청담점","cat":"한식 (한국) · 청담동","pic":"bibimbap.jpg","idol":"SEVENTEEN 민규 외 2명","group":"","av":"https://ui-avatars.com/api/?name=SEVENTEEN%20%EB%AF%BC%EA%B7%9C&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 청담동","q":"","lk":"","why":"방문 아이돌 명시(다이닝코드)","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"SEVENTEEN 민규","src":"방문 아이돌 명시(다이닝코드)","strength":"중"},{"label":"ASTRO 차은우","src":"방문 아이돌 명시","strength":"중"},{"label":"BTS 정국","src":"방문 아이돌 명시","strength":"중"}],"mx":86,"my":48},
+ {"id":1004,"kind":"idol","n":"청담25","cat":"한식 (한국) · 청담동","pic":"bibimbap.jpg","idol":"EXO 외 2명","group":"","av":"https://ui-avatars.com/api/?name=EXO&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 청담동","q":"","lk":"","why":"아이돌 단골 한정식, 방송 노출","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"EXO","src":"아이돌 단골 한정식, 방송 노출","strength":"중"},{"label":"SEVENTEEN","src":"아이돌 단골 한정식","strength":"중"},{"label":"NCT","src":"아이돌 단골 한정식","strength":"중"}],"mx":47,"my":29},
+ {"id":1005,"kind":"idol","n":"잔비워","cat":"주점·치킨 (한국) · 청담동","pic":"beer.jpg","idol":"보아(BoA) 외 2명","group":"","av":"https://ui-avatars.com/api/?name=%EB%B3%B4%EC%95%84&background=8B5CF6&color=fff&bold=true&size=64","via":"주점·치킨 · 청담동","q":"","lk":"","why":"보아·강타·FT아일랜드 단골 청담 주점","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"보아(BoA)","src":"보아·강타·FT아일랜드 단골 청담 주점","strength":"중"},{"label":"강타(Kangta)","src":"강타 단골 청담 주점","strength":"중"},{"label":"FT아일랜드","src":"FT아일랜드 단골 청담 주점","strength":"중"}],"mx":84,"my":82},
+ {"id":1006,"kind":"idol","n":"램니쿠야 둔촌 본점","cat":"일식·양고기 (일본) · 둔촌동","pic":"soup.jpg","idol":"Stray Kids 외 1명","group":"","av":"https://ui-avatars.com/api/?name=Stray%20Kids&background=8B5CF6&color=fff&bold=true&size=64","via":"일식·양고기 · 둔촌동","q":"","lk":"","why":"JYP 사옥 인근 단골, 입구에 스키즈 슬로건","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"Stray Kids","src":"JYP 사옥 인근 단골, 입구에 스키즈 슬로건","strength":"강"},{"label":"DAY6","src":"입구 슬로건에 DAY6 명시, JYP 단골집","strength":"중"}],"mx":45,"my":63},
+ {"id":1007,"kind":"idol","n":"울프강 스테이크하우스 청담","cat":"양식 (미국) · 청담동","pic":"salad.jpg","idol":"BLACKPINK 지수 외 1명","group":"","av":"https://ui-avatars.com/api/?name=BLACKPINK%20%EC%A7%80%EC%88%98&background=8B5CF6&color=fff&bold=true&size=64","via":"양식 · 청담동","q":"","lk":"","why":"지수 인스타 노출","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"BLACKPINK 지수","src":"지수 인스타 노출","strength":"중"},{"label":"BLACKPINK 리사","src":"리사 인스타 노출","strength":"중"}],"mx":82,"my":44},
+ {"id":1008,"kind":"idol","n":"커피오카(Cofioca)","cat":"디저트·버블티 (대만) · 청담동","pic":"cookie.jpg","idol":"하이라이트 윤두준 외 1명","group":"","av":"https://ui-avatars.com/api/?name=%ED%95%98%EC%9D%B4%EB%9D%BC%EC%9D%B4%ED%8A%B8%20%EC%9C%A4%EB%91%90%EC%A4%80&background=8B5CF6&color=fff&bold=true&size=64","via":"디저트·버블티 · 청담동","q":"","lk":"","why":"윤두준 단골 버블티집","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"하이라이트 윤두준","src":"윤두준 단골 버블티집","strength":"중"},{"label":"EXO 세훈","src":"세훈 단골 버블티집","strength":"중"}],"mx":43,"my":25},
+ {"id":1009,"kind":"idol","n":"아베크청담(Avecque)","cat":"양식·브런치 (서양) · 신사동","pic":"cafe.jpg","idol":"BTS 진 외 1명","group":"","av":"https://ui-avatars.com/api/?name=BTS%20%EC%A7%84&background=8B5CF6&color=fff&bold=true&size=64","via":"양식·브런치 · 신사동","q":"","lk":"","why":"진·제니 단골로 콘텐츠 소개","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"BTS 진","src":"진·제니 단골로 콘텐츠 소개","strength":"중"},{"label":"BLACKPINK 제니","src":"진·제니 단골로 콘텐츠 소개","strength":"중"}],"mx":80,"my":78},
+ {"id":1010,"kind":"idol","n":"멜트(Melt)","cat":"디저트·빙수 (한국) · 압구정동","pic":"bingsu.jpg","idol":"소녀시대 외 1명","group":"","av":"https://ui-avatars.com/api/?name=%EC%86%8C%EB%85%80%EC%8B%9C%EB%8C%80&background=8B5CF6&color=fff&bold=true&size=64","via":"디저트·빙수 · 압구정동","q":"","lk":"","why":"소시·박서준 단골 빙수 전문점","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"소녀시대","src":"소시·박서준 단골 빙수 전문점","strength":"중"},{"label":"헨리(Henry)","src":"헨리 단골 빙수 전문점","strength":"중"}],"mx":41,"my":59},
+ {"id":1011,"kind":"idol","n":"무탄(MUTAN) 압구정 본점","cat":"중식 (중국) · 압구정동","pic":"noodle.jpg","idol":"SEVENTEEN (민규·정한)","group":"","av":"https://ui-avatars.com/api/?name=SEVENTEEN&background=8B5CF6&color=fff&bold=true&size=64","via":"중식 · 압구정동","q":"","lk":"","why":"민규 인스타·매거진 보도","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"SEVENTEEN (민규·정한)","src":"민규 인스타·매거진 보도","strength":"강"}],"mx":78,"my":40},
+ {"id":1012,"kind":"idol","n":"황소곱창 삼성직영점","cat":"한식 (한국) · 삼성동","pic":"bibimbap.jpg","idol":"BTS 정국","group":"","av":"https://ui-avatars.com/api/?name=BTS%20%EC%A0%95%EA%B5%AD&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 삼성동","q":"","lk":"","why":"정국 사인·하트 인증","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"BTS 정국","src":"정국 사인·하트 인증","strength":"강"}],"mx":39,"my":21},
+ {"id":1013,"kind":"idol","n":"우향우(WHW)","cat":"양식 (서양) · 신사동","pic":"salad.jpg","idol":"BTS 정국","group":"","av":"https://ui-avatars.com/api/?name=BTS%20%EC%A0%95%EA%B5%AD&background=8B5CF6&color=fff&bold=true&size=64","via":"양식 · 신사동","q":"","lk":"","why":"정국 청음회 장소, 팬 성지","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"BTS 정국","src":"정국 청음회 장소, 팬 성지","strength":"강"}],"mx":76,"my":74},
+ {"id":1014,"kind":"idol","n":"유정식당","cat":"한식 (한국) · 논현동","pic":"galbi.jpg","idol":"BTS","group":"","av":"https://ui-avatars.com/api/?name=BTS&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 논현동","q":"","lk":"","why":"연습생 시절 7년 단골, 아미 성지","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"BTS","src":"연습생 시절 7년 단골, 아미 성지","strength":"강"}],"mx":37,"my":55},
+ {"id":1015,"kind":"idol","n":"옛날집","cat":"한식 (한국) · 청담동","pic":"galbi.jpg","idol":"Apink 남주","group":"","av":"https://ui-avatars.com/api/?name=Apink%20%EB%82%A8%EC%A3%BC&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 청담동","q":"","lk":"","why":"본인 유튜브 '남주세끼'","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"Apink 남주","src":"본인 유튜브 '남주세끼'","strength":"강"}],"mx":74,"my":36},
+ {"id":1016,"kind":"idol","n":"뜨락","cat":"한식 (한국) · 청담동","pic":"soup.jpg","idol":"Apink 남주","group":"","av":"https://ui-avatars.com/api/?name=Apink%20%EB%82%A8%EC%A3%BC&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 청담동","q":"","lk":"","why":"본인 유튜브 '남주세끼'","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"Apink 남주","src":"본인 유튜브 '남주세끼'","strength":"강"}],"mx":35,"my":17},
+ {"id":1017,"kind":"idol","n":"나리식당","cat":"한식 (한국) · 청담동","pic":"bibimbap.jpg","idol":"Apink 남주","group":"","av":"https://ui-avatars.com/api/?name=Apink%20%EB%82%A8%EC%A3%BC&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 청담동","q":"","lk":"","why":"본인 유튜브 '남주세끼'","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"Apink 남주","src":"본인 유튜브 '남주세끼'","strength":"강"}],"mx":72,"my":70},
+ {"id":1018,"kind":"idol","n":"진미평양냉면","cat":"한식 (한국) · 논현동","pic":"galbi.jpg","idol":"다비치 강민경·이해리","group":"","av":"https://ui-avatars.com/api/?name=%EB%8B%A4%EB%B9%84%EC%B9%98%20%EA%B0%95%EB%AF%BC%EA%B2%BD%C2%B7%EC%9D%B4%ED%95%B4%EB%A6%AC&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 논현동","q":"","lk":"","why":"강민경 유튜브 '걍밍경'","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"다비치 강민경·이해리","src":"강민경 유튜브 '걍밍경'","strength":"강"}],"mx":33,"my":51},
+ {"id":1019,"kind":"idol","n":"세시셀라 카페","cat":"양식 (서양) · 압구정동","pic":"salad.jpg","idol":"다비치 강민경","group":"","av":"https://ui-avatars.com/api/?name=%EB%8B%A4%EB%B9%84%EC%B9%98%20%EA%B0%95%EB%AF%BC%EA%B2%BD&background=8B5CF6&color=fff&bold=true&size=64","via":"양식 · 압구정동","q":"","lk":"","why":"강민경 유튜브","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"다비치 강민경","src":"강민경 유튜브","strength":"강"}],"mx":70,"my":32},
+ {"id":1020,"kind":"idol","n":"알로하 포케","cat":"하와이안 (미국) · 논현동","pic":"galbi.jpg","idol":"다비치 강민경","group":"","av":"https://ui-avatars.com/api/?name=%EB%8B%A4%EB%B9%84%EC%B9%98%20%EA%B0%95%EB%AF%BC%EA%B2%BD&background=8B5CF6&color=fff&bold=true&size=64","via":"하와이안 · 논현동","q":"","lk":"","why":"강민경 유튜브","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"다비치 강민경","src":"강민경 유튜브","strength":"강"}],"mx":31,"my":85},
+ {"id":1021,"kind":"idol","n":"청담동 마녀김밥","cat":"한식 (한국) · 청담동","pic":"galbi.jpg","idol":"다비치 강민경","group":"","av":"https://ui-avatars.com/api/?name=%EB%8B%A4%EB%B9%84%EC%B9%98%20%EA%B0%95%EB%AF%BC%EA%B2%BD&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 청담동","q":"","lk":"","why":"강민경 유튜브","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"다비치 강민경","src":"강민경 유튜브","strength":"강"}],"mx":68,"my":66},
+ {"id":1022,"kind":"idol","n":"르뱅룰즈","cat":"양식 (서양) · 삼성동","pic":"salad.jpg","idol":"다비치 강민경","group":"","av":"https://ui-avatars.com/api/?name=%EB%8B%A4%EB%B9%84%EC%B9%98%20%EA%B0%95%EB%AF%BC%EA%B2%BD&background=8B5CF6&color=fff&bold=true&size=64","via":"양식 · 삼성동","q":"","lk":"","why":"강민경 유튜브(베이커리)","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"다비치 강민경","src":"강민경 유튜브(베이커리)","strength":"강"}],"mx":29,"my":47},
+ {"id":1023,"kind":"idol","n":"더민스(The Min's)","cat":"디저트·카페 (한국) · 압구정동","pic":"tanghulu.jpg","idol":"2AM 이창민 / BTS","group":"","av":"https://ui-avatars.com/api/?name=2AM%20%EC%9D%B4%EC%B0%BD%EB%AF%BC%20%2F%20BTS&background=8B5CF6&color=fff&bold=true&size=64","via":"디저트·카페 · 압구정동","q":"","lk":"","why":"이창민 운영, BTS 인증샷·손편지 전시","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"2AM 이창민 / BTS","src":"이창민 운영, BTS 인증샷·손편지 전시","strength":"강"}],"mx":66,"my":28},
+ {"id":1024,"kind":"idol","n":"스시쿠루미","cat":"일식 (일본) · 청담동","pic":"ramen.jpg","idol":"EXO (시우민·첸)","group":"","av":"https://ui-avatars.com/api/?name=EXO&background=8B5CF6&color=fff&bold=true&size=64","via":"일식 · 청담동","q":"","lk":"","why":"첸 생일 멤버 방문, '신과함께' 언급","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"EXO (시우민·첸)","src":"첸 생일 멤버 방문, '신과함께' 언급","strength":"강"}],"mx":27,"my":81},
+ {"id":1025,"kind":"idol","n":"도산뚝배기","cat":"한식 (한국) · 논현동","pic":"soup.jpg","idol":"SEVENTEEN","group":"","av":"https://ui-avatars.com/api/?name=SEVENTEEN&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 논현동","q":"","lk":"","why":"세븐틴 단골, 강남구청 공식 소개","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"SEVENTEEN","src":"세븐틴 단골, 강남구청 공식 소개","strength":"강"}],"mx":64,"my":62},
+ {"id":1026,"kind":"idol","n":"닭으로가 압구정본점","cat":"한식 (한국) · 압구정동","pic":"bibimbap.jpg","idol":"슈퍼주니어","group":"","av":"https://ui-avatars.com/api/?name=%EC%8A%88%ED%8D%BC%EC%A3%BC%EB%8B%88%EC%96%B4&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 압구정동","q":"","lk":"","why":"SJ 멤버 단골 닭갈비, 강남구청 소개","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"슈퍼주니어","src":"SJ 멤버 단골 닭갈비, 강남구청 소개","strength":"강"}],"mx":25,"my":43},
+ {"id":1027,"kind":"idol","n":"두루(Duru)","cat":"한식 (한국) · 청담동","pic":"galbi.jpg","idol":"EXO (시우민·세훈)","group":"","av":"https://ui-avatars.com/api/?name=EXO&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 청담동","q":"","lk":"","why":"단골 청담 한식집, 강남구청 소개","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"EXO (시우민·세훈)","src":"단골 청담 한식집, 강남구청 소개","strength":"강"}],"mx":62,"my":24},
+ {"id":1028,"kind":"idol","n":"돈블랑 청담스퀘어점","cat":"한식 (한국) · 청담동","pic":"soup.jpg","idol":"EXO (세훈·D.O.)","group":"","av":"https://ui-avatars.com/api/?name=EXO&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 청담동","q":"","lk":"","why":"세훈·디오 방문 화제","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"EXO (세훈·D.O.)","src":"세훈·디오 방문 화제","strength":"강"}],"mx":23,"my":77},
+ {"id":1029,"kind":"idol","n":"저스트스테이크","cat":"양식 (서양) · 압구정동","pic":"galbi.jpg","idol":"KARD 전지우(가족)","group":"","av":"https://ui-avatars.com/api/?name=KARD%20%EC%A0%84%EC%A7%80%EC%9A%B0&background=8B5CF6&color=fff&bold=true&size=64","via":"양식 · 압구정동","q":"","lk":"","why":"전지우 가족 단골, '수요미식회' 방영","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"KARD 전지우(가족)","src":"전지우 가족 단골, '수요미식회' 방영","strength":"강"}],"mx":60,"my":58},
+ {"id":1030,"kind":"idol","n":"올드페리도넛 도산","cat":"디저트 (미국) · 신사동","pic":"cookie.jpg","idol":"SHINee","group":"","av":"https://ui-avatars.com/api/?name=SHINee&background=8B5CF6&color=fff&bold=true&size=64","via":"디저트 · 신사동","q":"","lk":"","why":"샤이니 15주년 콜라보 도넛","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"SHINee","src":"샤이니 15주년 콜라보 도넛","strength":"강"}],"mx":21,"my":39},
+ {"id":1031,"kind":"idol","n":"기욤(Guillaume) 청담점","cat":"디저트 (프랑스) · 청담동","pic":"tanghulu.jpg","idol":"BTS 제이홉","group":"","av":"https://ui-avatars.com/api/?name=BTS%20%EC%A0%9C%EC%9D%B4%ED%99%89&background=8B5CF6&color=fff&bold=true&size=64","via":"디저트 · 청담동","q":"","lk":"","why":"제이홉 생일 케이크 제작처","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"BTS 제이홉","src":"제이홉 생일 케이크 제작처","strength":"강"}],"mx":58,"my":20},
+ {"id":1032,"kind":"idol","n":"청담골","cat":"한식 (한국) · 청담동","pic":"bibimbap.jpg","idol":"슈퍼주니어","group":"","av":"https://ui-avatars.com/api/?name=%EC%8A%88%ED%8D%BC%EC%A3%BC%EB%8B%88%EC%96%B4&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 청담동","q":"","lk":"","why":"'아이돌 급식소'로 불리는 한정식","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"슈퍼주니어","src":"'아이돌 급식소'로 불리는 한정식","strength":"강"}],"mx":19,"my":73},
+ {"id":1033,"kind":"idol","n":"미엘(Miel)","cat":"디저트·카페 (한국) · 청담동","pic":"dessert.jpg","idol":"소녀시대 티파니","group":"","av":"https://ui-avatars.com/api/?name=%EC%86%8C%EB%85%80%EC%8B%9C%EB%8C%80%20%ED%8B%B0%ED%8C%8C%EB%8B%88&background=8B5CF6&color=fff&bold=true&size=64","via":"디저트·카페 · 청담동","q":"","lk":"","why":"티파니·2PM 단골 갤러리 카페","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"소녀시대 티파니","src":"티파니·2PM 단골 갤러리 카페","strength":"강"}],"mx":56,"my":54},
+ {"id":1034,"kind":"idol","n":"누데이크 하우스도산","cat":"디저트 (한국) · 신사동","pic":"tanghulu.jpg","idol":"BLACKPINK 제니","group":"","av":"https://ui-avatars.com/api/?name=BLACKPINK%20%EC%A0%9C%EB%8B%88&background=8B5CF6&color=fff&bold=true&size=64","via":"디저트 · 신사동","q":"","lk":"","why":"젠틀몬스터×제니 콜라보 팝업","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"BLACKPINK 제니","src":"젠틀몬스터×제니 콜라보 팝업","strength":"강"}],"mx":17,"my":35},
+ {"id":1035,"kind":"idol","n":"JYP 신사옥 구내식당","cat":"한식 (한국) · 성내동","pic":"bibimbap.jpg","idol":"Stray Kids 현진","group":"","av":"https://ui-avatars.com/api/?name=Stray%20Kids%20%ED%98%84%EC%A7%84&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 성내동","q":"","lk":"","why":"현진이 '아이돌 라디오'에서 직접 언급","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"Stray Kids 현진","src":"현진이 '아이돌 라디오'에서 직접 언급","strength":"강"}],"mx":54,"my":16},
+ {"id":1036,"kind":"idol","n":"길목","cat":"한식 (한국) · 청담동","pic":"galbi.jpg","idol":"BTS 정국","group":"","av":"https://ui-avatars.com/api/?name=BTS%20%EC%A0%95%EA%B5%AD&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 청담동","q":"","lk":"","why":"Harper's Bazaar 정국 단골 정리","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"BTS 정국","src":"Harper's Bazaar 정국 단골 정리","strength":"중"}],"mx":15,"my":69},
+ {"id":1037,"kind":"idol","n":"도쿄등심 선릉점","cat":"일식퓨전 (일본) · 역삼동","pic":"ramen.jpg","idol":"BTS 정국","group":"","av":"https://ui-avatars.com/api/?name=BTS%20%EC%A0%95%EA%B5%AD&background=8B5CF6&color=fff&bold=true&size=64","via":"일식퓨전 · 역삼동","q":"","lk":"","why":"정국 단골 한우 오마카세","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"BTS 정국","src":"정국 단골 한우 오마카세","strength":"중"}],"mx":52,"my":50},
+ {"id":1038,"kind":"idol","n":"원조마포소금구이 강남점","cat":"한식 (한국) · 압구정동","pic":"bibimbap.jpg","idol":"BTS 정국","group":"","av":"https://ui-avatars.com/api/?name=BTS%20%EC%A0%95%EA%B5%AD&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 압구정동","q":"","lk":"","why":"정국 단골 돼지구이","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"BTS 정국","src":"정국 단골 돼지구이","strength":"중"}],"mx":13,"my":31},
+ {"id":1039,"kind":"idol","n":"초심한우 정육식당","cat":"한식 (한국) · 논현동","pic":"galbi.jpg","idol":"BTS 정국","group":"","av":"https://ui-avatars.com/api/?name=BTS%20%EC%A0%95%EA%B5%AD&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 논현동","q":"","lk":"","why":"정국 방문, 소고기라면","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"BTS 정국","src":"정국 방문, 소고기라면","strength":"중"}],"mx":50,"my":84},
+ {"id":1040,"kind":"idol","n":"은행골 신사점","cat":"일식 (일본) · 신사동","pic":"ramen.jpg","idol":"BTS","group":"","av":"https://ui-avatars.com/api/?name=BTS&background=8B5CF6&color=fff&bold=true&size=64","via":"일식 · 신사동","q":"","lk":"","why":"BTS 단골 초밥집, 사인벽","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"BTS","src":"BTS 단골 초밥집, 사인벽","strength":"중"}],"mx":87,"my":65},
+ {"id":1041,"kind":"idol","n":"추풍령칼삼겹살 압구정점","cat":"한식 (한국) · 압구정동","pic":"galbi.jpg","idol":"SEVENTEEN","group":"","av":"https://ui-avatars.com/api/?name=SEVENTEEN&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 압구정동","q":"","lk":"","why":"기획사 회식 성지, 스타 사인벽","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"SEVENTEEN","src":"기획사 회식 성지, 스타 사인벽","strength":"중"}],"mx":48,"my":46},
+ {"id":1042,"kind":"idol","n":"도산정육 본점","cat":"한식 (한국) · 압구정동","pic":"soup.jpg","idol":"BTS 정국","group":"","av":"https://ui-avatars.com/api/?name=BTS%20%EC%A0%95%EA%B5%AD&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 압구정동","q":"","lk":"","why":"정국 단골 정육식당","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"BTS 정국","src":"정국 단골 정육식당","strength":"중"}],"mx":85,"my":27},
+ {"id":1043,"kind":"idol","n":"스코파 더 셰프(SCOPA)","cat":"이탈리안 (이탈리아) · 청담동","pic":"galbi.jpg","idol":"BTS 뷔","group":"","av":"https://ui-avatars.com/api/?name=BTS%20%EB%B7%94&background=8B5CF6&color=fff&bold=true&size=64","via":"이탈리안 · 청담동","q":"","lk":"","why":"뷔 방문 후 유명해진 파스타","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"BTS 뷔","src":"뷔 방문 후 유명해진 파스타","strength":"중"}],"mx":46,"my":80},
+ {"id":1044,"kind":"idol","n":"원강","cat":"한식 (한국) · 논현동","pic":"galbi.jpg","idol":"EXO 도경수(D.O.)","group":"","av":"https://ui-avatars.com/api/?name=EXO%20%EB%8F%84%EA%B2%BD%EC%88%98&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 논현동","q":"","lk":"","why":"팬사인회에서 추천한 한우집","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"EXO 도경수(D.O.)","src":"팬사인회에서 추천한 한우집","strength":"중"}],"mx":83,"my":61},
+ {"id":1045,"kind":"idol","n":"어제연 청담","cat":"한식 (한국) · 청담동","pic":"soup.jpg","idol":"ASTRO 차은우(가족)","group":"","av":"https://ui-avatars.com/api/?name=ASTRO%20%EC%B0%A8%EC%9D%80%EC%9A%B0&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 청담동","q":"","lk":"","why":"차은우 가족 장어집","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"ASTRO 차은우(가족)","src":"차은우 가족 장어집","strength":"중"}],"mx":44,"my":42},
+ {"id":1046,"kind":"idol","n":"까폼(Krap Pom)","cat":"태국음식 (태국) · 신사동","pic":"galbi.jpg","idol":"BLACKPINK 리사","group":"","av":"https://ui-avatars.com/api/?name=BLACKPINK%20%EB%A6%AC%EC%82%AC&background=8B5CF6&color=fff&bold=true&size=64","via":"태국음식 · 신사동","q":"","lk":"","why":"리사가 본인 단골로 소개","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"BLACKPINK 리사","src":"리사가 본인 단골로 소개","strength":"중"}],"mx":81,"my":23},
+ {"id":1047,"kind":"idol","n":"고센(Goshen)","cat":"양식 (서양) · 청담동","pic":"salad.jpg","idol":"소녀시대","group":"","av":"https://ui-avatars.com/api/?name=%EC%86%8C%EB%85%80%EC%8B%9C%EB%8C%80&background=8B5CF6&color=fff&bold=true&size=64","via":"양식 · 청담동","q":"","lk":"","why":"소시 멤버 단골 청담 카페","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"소녀시대","src":"소시 멤버 단골 청담 카페","strength":"중"}],"mx":42,"my":76},
+ {"id":1048,"kind":"idol","n":"SUM 카페·SMT 서울","cat":"양식·카페 (서양) · 청담동","pic":"dessert.jpg","idol":"aespa / Red Velvet","group":"","av":"https://ui-avatars.com/api/?name=aespa%20%2F%20Red%20Velvet&background=8B5CF6&color=fff&bold=true&size=64","via":"양식·카페 · 청담동","q":"","lk":"","why":"SM 청담 사옥 1층 카페·레스토랑","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"aespa / Red Velvet","src":"SM 청담 사옥 1층 카페·레스토랑","strength":"중"}],"mx":79,"my":57},
+ {"id":1049,"kind":"idol","n":"압구정영양센터","cat":"양식 (서양) · 압구정동","pic":"food.jpg","idol":"DAY6 성진","group":"","av":"https://ui-avatars.com/api/?name=DAY6%20%EC%84%B1%EC%A7%84&background=8B5CF6&color=fff&bold=true&size=64","via":"양식 · 압구정동","q":"","lk":"","why":"GQ 인터뷰에서 직접 추천(통닭)","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"DAY6 성진","src":"GQ 인터뷰에서 직접 추천(통닭)","strength":"중"}],"mx":40,"my":38},
+ {"id":1050,"kind":"idol","n":"심풀(SimFull)","cat":"양식·브런치 (서양) · 논현동","pic":"salad.jpg","idol":"THE BOYZ","group":"","av":"https://ui-avatars.com/api/?name=THE%20BOYZ&background=8B5CF6&color=fff&bold=true&size=64","via":"양식·브런치 · 논현동","q":"","lk":"","why":"2020.09 V LIVE 방문","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"THE BOYZ","src":"2020.09 V LIVE 방문","strength":"중"}],"mx":77,"my":19},
+ {"id":1051,"kind":"idol","n":"솔트마인","cat":"양식 (서양) · 논현동","pic":"galbi.jpg","idol":"THE BOYZ","group":"","av":"https://ui-avatars.com/api/?name=THE%20BOYZ&background=8B5CF6&color=fff&bold=true&size=64","via":"양식 · 논현동","q":"","lk":"","why":"2018.08 V LIVE 인증","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"THE BOYZ","src":"2018.08 V LIVE 인증","strength":"중"}],"mx":38,"my":72},
+ {"id":1052,"kind":"idol","n":"맘마미아","cat":"이탈리안 (이탈리아) · 압구정동","pic":"food.jpg","idol":"THE BOYZ","group":"","av":"https://ui-avatars.com/api/?name=THE%20BOYZ&background=8B5CF6&color=fff&bold=true&size=64","via":"이탈리안 · 압구정동","q":"","lk":"","why":"2020.09 공식 트위터 인증","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"THE BOYZ","src":"2020.09 공식 트위터 인증","strength":"중"}],"mx":75,"my":53},
+ {"id":1053,"kind":"idol","n":"도레도레 신사점","cat":"디저트 (한국) · 신사동","pic":"cookie.jpg","idol":"THE BOYZ","group":"","av":"https://ui-avatars.com/api/?name=THE%20BOYZ&background=8B5CF6&color=fff&bold=true&size=64","via":"디저트 · 신사동","q":"","lk":"","why":"2021.04 공식 트위터 인증","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"THE BOYZ","src":"2021.04 공식 트위터 인증","strength":"중"}],"mx":36,"my":34},
+ {"id":1054,"kind":"idol","n":"두넛샵","cat":"디저트 (미국) · 논현동","pic":"tanghulu.jpg","idol":"THE BOYZ 에릭","group":"","av":"https://ui-avatars.com/api/?name=THE%20BOYZ%20%EC%97%90%EB%A6%AD&background=8B5CF6&color=fff&bold=true&size=64","via":"디저트 · 논현동","q":"","lk":"","why":"2021.04 V LIVE 방문","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"THE BOYZ 에릭","src":"2021.04 V LIVE 방문","strength":"중"}],"mx":73,"my":15},
+ {"id":1055,"kind":"idol","n":"카페일칠공","cat":"카페·펍 (한국) · 청담동","pic":"cafe.jpg","idol":"THE BOYZ","group":"","av":"https://ui-avatars.com/api/?name=THE%20BOYZ&background=8B5CF6&color=fff&bold=true&size=64","via":"카페·펍 · 청담동","q":"","lk":"","why":"2021.04 유니버스 FNS 인증","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"THE BOYZ","src":"2021.04 유니버스 FNS 인증","strength":"중"}],"mx":34,"my":68},
+ {"id":1056,"kind":"idol","n":"우돈청","cat":"한식 (한국) · 신사동","pic":"soup.jpg","idol":"ASTRO 차은우","group":"","av":"https://ui-avatars.com/api/?name=ASTRO%20%EC%B0%A8%EC%9D%80%EC%9A%B0&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 신사동","q":"","lk":"","why":"차은우·최시원·이민호 단골 고깃집","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"ASTRO 차은우","src":"차은우·최시원·이민호 단골 고깃집","strength":"중"}],"mx":71,"my":49},
+ {"id":1057,"kind":"idol","n":"피플더테라스","cat":"양식·다이닝바 (서양) · 청담동","pic":"food.jpg","idol":"NCT","group":"","av":"https://ui-avatars.com/api/?name=NCT&background=8B5CF6&color=fff&bold=true&size=64","via":"양식·다이닝바 · 청담동","q":"","lk":"","why":"최정상 연예인 다이닝바, NCT 방문 언급","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"NCT","src":"최정상 연예인 다이닝바, NCT 방문 언급","strength":"중"}],"mx":32,"my":30},
+ {"id":1058,"kind":"idol","n":"청담동 순도리","cat":"한식 (한국) · 청담동","pic":"soup.jpg","idol":"박재범(Jay Park)","group":"","av":"https://ui-avatars.com/api/?name=%EB%B0%95%EC%9E%AC%EB%B2%94&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 청담동","q":"","lk":"","why":"박재범 방문 먹방 극찬(순대국)","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"박재범(Jay Park)","src":"박재범 방문 먹방 극찬(순대국)","strength":"중"}],"mx":69,"my":83},
+ {"id":1059,"kind":"idol","n":"미미미 가든","cat":"양식 (서양) · 청담동","pic":"galbi.jpg","idol":"박재범(Jay Park)","group":"","av":"https://ui-avatars.com/api/?name=%EB%B0%95%EC%9E%AC%EB%B2%94&background=8B5CF6&color=fff&bold=true&size=64","via":"양식 · 청담동","q":"","lk":"","why":"런닝맨·나혼자산다 방송 핫플","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"박재범(Jay Park)","src":"런닝맨·나혼자산다 방송 핫플","strength":"중"}],"mx":30,"my":64},
+ {"id":1060,"kind":"idol","n":"압구정 변강쇠떡볶이","cat":"분식 (한국) · 논현동","pic":"streetfood.jpg","idol":"EXO 수호","group":"","av":"https://ui-avatars.com/api/?name=EXO%20%EC%88%98%ED%98%B8&background=8B5CF6&color=fff&bold=true&size=64","via":"분식 · 논현동","q":"","lk":"","why":"수호 팬스팟 등록 40년 노포","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"EXO 수호","src":"수호 팬스팟 등록 40년 노포","strength":"중"}],"mx":67,"my":45},
+ {"id":1061,"kind":"idol","n":"도시고기","cat":"한식 (한국) · 성내동","pic":"galbi.jpg","idol":"JYP 소속 아이돌","group":"","av":"https://ui-avatars.com/api/?name=JYP%20%EC%86%8C%EC%86%8D%20%EC%95%84%EC%9D%B4%EB%8F%8C&background=8B5CF6&color=fff&bold=true&size=64","via":"한식 · 성내동","q":"","lk":"","why":"JYP 사옥 맞은편 'JYP 맛집' 평판","ctx":"","menu":[],"near":[],"price":"","spice":0,"solo":false,"idols":[{"label":"JYP 소속 아이돌","src":"JYP 사옥 맞은편 'JYP 맛집' 평판","strength":"중"}],"mx":28,"my":26},
+ {id:4,kind:'local',n:"Hongdae Kalguksu",cat:"Knife noodles · 홍대",pic:'noodle.jpg',spice:1,
+  why:"Hand-cut noodles in anchovy broth where the ajummas line up at 11am. The real deal, not a trap.",tip:"Cash only · 11am rush",
+  price:'$$',solo:true,ctx:"Kalguksu — hand-cut knife noodles in warm broth — is Korean comfort food, especially on a rainy day.",
+  menu:[{n:'Kalguksu',ko:'칼국수',p:'₩9,000'},{n:'Mandu (dumplings)',ko:'만두',p:'₩6,000'}],near:[{t:'Hongik Univ. Stn',ko:'홍대입구역',m:5}],mx:42,my:38},
+ {id:5,kind:'local',n:"Mapo Galbi House",cat:"BBQ · 마포",pic:'galbi.jpg',spice:1,
+  why:"The locals' birthday-dinner spot. Marinated galbi, then cold naengmyeon to finish.",tip:"Book for dinner",
+  price:'$$$',solo:false,ctx:"Charcoal-grilled galbi (marinated short rib) is the Korean celebration meal — finish with cold naengmyeon.",
+  menu:[{n:'Marinated galbi',ko:'양념갈비',p:'₩18,000'},{n:'Cold naengmyeon',ko:'물냉면',p:'₩9,000'}],near:[{t:'Mapo Stn',ko:'마포역',m:6}],mx:60,my:50},
+ {id:6,kind:'local',n:"Hangover Haejang",cat:"Soup · 홍대",pic:'soup.jpg',spice:2,
+  why:"What Koreans actually eat at 3am after soju — bean-sprout haejang, open all night.",tip:"Open 24h",
+  price:'$$',solo:true,ctx:"Haejang-guk literally means 'soup to chase a hangover' — what Koreans eat after a night of soju.",
+  menu:[{n:'Bean-sprout haejang',ko:'콩나물해장국',p:'₩9,000'},{n:'Sundae soup',ko:'순대국',p:'₩10,000'}],near:[{t:'Hongik Univ. Stn',ko:'홍대입구역',m:7}],mx:36,my:70},
+ {id:8,kind:'local',n:"Seongsu Bingsu Bar",cat:"Café · 성수",pic:'bingsu.jpg',spice:0,
+  why:"Injeolmi bingsu done right: toasted soybean powder, not too sweet. A local summer ritual.",tip:"Share one",
+  price:'$',solo:false,ctx:"Bingsu — a mountain of shaved ice with toppings — is the Korean summer ritual, made to share.",
+  menu:[{n:'Injeolmi bingsu',ko:'인절미 빙수',p:'₩12,000'},{n:'Iced latte',ko:'아이스 라떼',p:'₩5,500'}],near:[{t:'Seongsu Cafe St.',ko:'성수 카페거리',m:3}],mx:74,my:58}
+];
+var HYPE=[
+ {title:"Tanghulu, still everywhere",sub:"This week's trend",pic:'tanghulu.jpg',spot:1001},
+ {title:"Gwangjang street food buzz",sub:"Going viral",pic:'streetfood.jpg',spot:4}
+];
+
+var state={tab:'discover',filter:'all',lang:'en',idol:"NCT (도영·해찬) 외 3명",selPin:null,lens:false};
+var saved={},loggedIn=false,pendingSave=null;
+function t(k){return T[state.lang][k];}
+function pic(p){return "img/"+p;}
+function byId(id){for(var i=0;i<DATA.length;i++){if(DATA[i].id===id)return DATA[i];}return null;}
+function idols(){return DATA.filter(function(d){return d.kind==='idol';});}
+function locals(){return DATA.filter(function(d){return d.kind==='local';});}
+function savedList(){return DATA.filter(function(d){return saved[d.id];});}
+function spiceStr(n){return t('spice'+n);}
+function spiceDots(n){var f='';for(var i=0;i<3;i++){f+= i<n?'🌶️':'<span class="off">🌶️</span>';}return f;}
+
+function renderTop(){
+ var top=document.getElementById('top');var title='';
+ if(state.tab==='discover'){title='<div class="area"><span class="pin">●</span> Seoul · Hongdae <span class="ch">▾</span></div>';}
+ else if(state.tab==='map'){title='<div class="ptitle">'+t('mapTitle')+'</div>';}
+ else if(state.tab==='idols'){title='<div class="ptitle">'+t('idolsTitle')+'</div>';}
+ else{title='<div class="ptitle">'+t('savedTitle')+'</div>';}
+ top.innerHTML='<div class="tr"><div class="logo">it<span>ko</span></div><div class="tright">'+
+   '<div class="tg" onclick="toggleLang()"><b class="'+(state.lang==='en'?'on':'')+'">EN</b><b class="'+(state.lang==='ko'?'on':'')+'">KO</b></div>'+
+   '<div class="srch">🔍</div></div></div>'+title;
+ var f=document.getElementById('filters');
+ if(state.tab==='discover'){
+  f.style.display='block';
+  if(MODE==='C'){
+   f.innerHTML='<div class="chips"><div class="chip '+(state.filter==='all'?'on':'')+'" onclick="setFilter(\'all\')">'+t('all')+'</div>'+
+    '<div class="chip idol '+(state.filter==='idol'?'on':'')+'" onclick="setFilter(\'idol\')">'+t('kidol')+'</div>'+
+    '<div class="chip '+(state.filter==='local'?'on':'')+'" onclick="setFilter(\'local\')">'+t('local')+'</div></div>';
+  } else {
+   f.innerHTML='<div class="lenstoggle'+(state.lens?' on':'')+'" onclick="toggleLens()"><div class="lt">'+t('lens')+'</div><div class="sw"></div></div>';
+  }
+ } else { f.style.display='none'; }
+}
+function renderDock(){
+ var n=savedList().length;
+ var items=[['discover','🍜'],['map','🗺️'],['idols','💜'],['saved','🔖']];
+ document.getElementById('dock').innerHTML=items.map(function(it){
+  var bdg=(it[0]==='saved'&&n>0)?'<div class="bdg">'+n+'</div>':'';
+  return '<div class="dk '+(state.tab===it[0]?'on':'')+'" onclick="go(\''+it[0]+'\')">'+bdg+'<div class="ic">'+it[1]+'</div>'+t(it[0])+'</div>';
+ }).join('');
+}
 function heart(id,cls){return '<div class="'+cls+(saved[id]?' sv':'')+'" onclick="event.stopPropagation();toggleSave('+id+')">'+(saved[id]?'♥':'♡')+'</div>';}
-function heroCard(s){return '<div class="hcard" onclick="openDetail('+s.id+')"><div class="hph" style="background-image:url('+pic(s.pic)+')">'+
- '<div class="hbadge">💜 '+s.idols[0].label+'</div>'+(s.idols.length>1?'<div class="hcnt">+'+(s.idols.length-1)+'</div>':'')+heart(s.id,'hheart')+'</div>'+
- '<div class="hb"><div class="hn">'+s.n+'</div><div class="hsub">'+s.foodShort+' · '+s.dong+'</div></div></div>';}
-function rowCard(s){var mid;
- if(s.kind==='idol'){mid='<div class="kick idol">💜 '+idolLabel(s)+'</div><div class="ln">'+s.n+'</div><div class="lsub">'+s.foodShort+' · '+s.dong+'</div>';}
- else{mid='<div class="kick local">📍 로컬 맛집</div><div class="ln">'+s.n+'</div><div class="spice"><span>'+spiceDots(s.spice)+'</span> '+spiceWord(s.spice)+' · '+s.tip+'</div><div class="lwhy">'+s.why+'</div>';}
- return '<div class="lcard" onclick="openDetail('+s.id+')"><div class="lph" style="background-image:url('+pic(s.pic)+')">'+heart(s.id,'lheart')+'</div><div class="lb">'+mid+'</div></div>';}
-function hypeBanner(){var s=byId(HYPE_ID);return '<div class="hype" style="background-image:url('+pic(s.pic)+')" onclick="openDetail('+s.id+')"><div class="ov"></div><div class="tag">🔥 HYPE</div><div class="cap"><div class="h">'+s.n+', 요즘 핫</div><div class="s">이번 주 뜨는 로컬 디저트</div></div></div>';}
-function renderFilters(){var f=state.filter;document.getElementById('filters').innerHTML=
- '<div class="chip '+(f==='all'?'on':'')+'" onclick="setF(\'all\')">✨ 전체</div>'+
- '<div class="chip idol '+(f==='idol'?'on':'')+'" onclick="setF(\'idol\')">💜 K-IDOL '+idols().length+'</div>'+
- '<div class="chip '+(f==='local'?'on':'')+'" onclick="setF(\'local\')">📍 로컬</div>';}
-function renderDiscover(){var f=state.filter;var h='';
- var heroList=idols().filter(function(s){return s.idols.length>1;}).slice(0,10);
- if(f==='all'){
-  h+=hypeBanner();
-  h+='<div class="sech"><div class="t"><span class="em">💜</span> 여러 아이돌이 다녀간 곳</div><div class="more">전체 보기 ›</div></div><div class="hero">'+heroList.map(heroCard).join('')+'</div>';
-  h+='<div class="sech"><div class="t">📍 로컬 맛집</div></div><div class="list">'+locals().map(rowCard).join('')+'</div>';
- } else if(f==='idol'){
-  h+='<div class="sech"><div class="t"><span class="em">💜</span> K-IDOL 성지</div><div class="more">'+idols().length+'곳</div></div><div class="hero">'+heroList.map(heroCard).join('')+'</div>';
-  h+='<div class="list" style="margin-top:6px;">'+idols().map(rowCard).join('')+'</div>';
- } else {
-  h+=hypeBanner()+'<div class="sech"><div class="t">📍 로컬 맛집</div></div><div class="list">'+locals().map(rowCard).join('')+'</div>';
+function heroCard(d){return '<div class="hcard" onclick="openDetail('+d.id+')">'+
+ '<div class="hph" style="background-image:url('+pic(d.pic)+')"><div class="hbadge"><span class="av" style="background-image:url('+d.av+')"></span>'+d.idol+'</div>'+heart(d.id,'hheart')+'</div>'+
+ '<div class="hb"><div class="hn">'+d.n+'</div><div class="hsub">'+d.cat+'</div><div class="hsrc">🔗 '+d.via+'</div></div></div>';}
+function rowCard(d){
+ var mid;
+ if(d.kind==='idol'){mid='<div class="kick idol">💜 '+d.group+' '+d.idol+'</div><div class="ln">'+d.n+'</div>'+
+   '<div class="lwhy">'+d.why+'</div><div class="lsrc">🔗 '+d.via+'</div>';}
+ else{mid='<div class="kick">📍 Local fave</div><div class="ln">'+d.n+'</div>'+
+   '<div class="spice"><span class="ch">'+spiceDots(d.spice)+'</span> '+spiceStr(d.spice)+' · '+d.tip+'</div>'+
+   '<div class="lwhy">'+d.why+'</div>';}
+ return '<div class="lcard" onclick="openDetail('+d.id+')"><div class="lph" style="background-image:url('+pic(d.pic)+')">'+heart(d.id,'lheart')+'</div><div class="lb">'+mid+'</div></div>';
+}
+function hypeBanner(){
+ var h=HYPE[0];
+ return '<div class="hype" style="background-image:url('+pic(h.pic)+')" onclick="openDetail('+h.spot+')">'+
+  '<div class="ov"></div><div class="tag">🔥 HYPE</div>'+
+  '<div class="cap"><div class="h">'+h.title+'</div><div class="s">'+h.sub+'</div></div></div>';
+}
+function idolBrowse(){
+ var list=idols();
+ var avs=list.map(function(d){return '<div class="iav '+(state.idol===d.idol?'on':'')+'" onclick="setIdol(\''+d.idol+'\')">'+
+   '<div class="ph" style="background-image:url('+d.av+')"></div><div class="nm">'+d.group+'<br>'+d.idol+'</div></div>';}).join('');
+ var cur=list.filter(function(d){return d.idol===state.idol;});var sel=cur[0]||list[0];
+ var head='<div class="ihead"><div class="big" style="background-image:url('+sel.av+')"></div><div><div class="who">'+sel.idol+'</div><div class="grp">'+sel.group+'</div></div>'+
+   '<div class="cnt"><b>'+cur.length+'</b><span>'+t('spots')+'</span></div></div>';
+ return '<div class="idolrow">'+avs+'</div>'+head+'<div class="list" style="margin-top:12px;">'+cur.map(rowCard).join('')+'</div>';
+}
+
+function renderDiscover(){
+ var h='';
+ if(MODE==='C'){
+  if(state.filter==='all'||state.filter==='idol')h+=hypeBanner();
+  if(state.filter==='all'||state.filter==='idol'){
+   h+='<div class="sech"><div class="t idol"><span class="em">💜</span> '+t('heroTitle')+'</div><div class="more">'+t('seeAll')+'</div></div>';
+   h+='<div class="hero">'+idols().map(heroCard).join('')+'</div>';
+  }
+  var ld;
+  if(state.filter==='all'){ld=locals();h+='<div class="sech"><div class="t">📍 '+t('localTitle')+'</div></div>';}
+  else if(state.filter==='idol'){ld=idols();h+='<div class="sech"><div class="t">'+t('kidol')+'</div></div>';}
+  else{ld=locals();h+=hypeBanner()+'<div class="sech"><div class="t">📍 '+t('local')+'</div></div>';}
+  h+='<div class="list">'+ld.map(rowCard).join('')+'</div>';
+ } else { // MODE B
+  if(!state.lens){
+   h+=hypeBanner();
+   var av=idols().slice(0,3).map(function(d){return '<span style="background-image:url('+d.av+')"></span>';}).join('');
+   h+='<div class="identry" onclick="toggleLens()"><div class="av">'+av+'</div><div class="tx"><div class="h">'+t('idolEntryH')+'</div><div class="s">'+t('idolEntryS')+'</div></div><div class="go">›</div></div>';
+   h+='<div class="sech"><div class="t">📍 '+t('localTitle')+'</div><div class="more">'+t('seeAll')+'</div></div>';
+   h+='<div class="list">'+locals().map(rowCard).join('')+'</div>';
+  } else {
+   h+='<div class="lensnote">'+t('lensOn')+'</div>';
+   h+='<div class="sech"><div class="t idol"><span class="em">💜</span> '+t('whereEat')+'</div></div>';
+   h+=idolBrowse();
+  }
  }
- document.getElementById('pane-discover').innerHTML=h;}
-function renderMap(){var list=state.filter==='idol'?idols():state.filter==='local'?locals():DATA;
- var pins=list.map(function(s){return '<div class="mpin '+s.kind+'" style="left:'+s.mx+'%;top:'+s.my+'%" onclick="openDetail('+s.id+')"><div class="dot"><span>'+(s.kind==='idol'?'💜':'🍜')+'</span></div></div>';}).join('');
- document.getElementById('pane-map').innerHTML='<div class="maparea"><div class="mapnote">📍 좌표 없음 — 검색 기반 데모</div>'+pins+'</div><div class="list" style="margin-top:14px;">'+list.map(rowCard).join('')+'</div>';}
-function renderSaved(){var list=DATA.filter(function(s){return saved[s.id];});
- if(!list.length){document.getElementById('pane-saved').innerHTML='<div class="empty"><div class="ic">🔖</div><div style="margin-top:12px;font-weight:800;color:var(--ink);">저장한 곳이 없어요</div><div style="margin-top:6px;">♡ 를 눌러 리스트를 만들어요.</div></div>';return;}
- document.getElementById('pane-saved').innerHTML='<div style="padding:14px 16px 2px;font-size:12.5px;color:var(--gray);font-weight:700;">'+list.length+'곳 저장됨</div><div class="list" style="margin-top:8px;">'+list.map(rowCard).join('')+'</div>';}
-function mapsLink(s){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s.n+' '+s.dong);}
-function naverLink(s){return 'https://map.naver.com/v5/search/'+encodeURIComponent(s.n+' '+s.dong);}
-function openDetail(id){var s=byId(id);var sv=saved[id];var body;
- if(s.kind==='idol'){
-  var il=s.idols.map(function(it){return '<div class="idolrow"><div class="av" style="background:'+avColor(it.label)+'">'+it.label.charAt(0)+'</div><div><div class="who">💜 '+it.label+'<span class="strong s-'+it.strength+'">근거 '+it.strength+'</span></div><div class="src">'+it.src+'</div></div></div>';}).join('');
-  body='<div class="dmeta">'+s.food+' · '+s.gu+' '+s.dong+'</div><div class="idolsec"><div class="lab">💜 다녀간 아이돌 ('+s.idols.length+')</div>'+il+'</div>';
- } else {
-  var menu=s.menu.map(function(m){return '<div class="mi"><div class="nm">'+m.n+'</div><div class="p">'+m.p+'</div></div>';}).join('');
-  var near=s.near.map(function(n){return '<span class="dpill">🚶 '+n.t+' · '+n.m+'m</span>';}).join('');
-  body='<div class="dmeta">'+s.foodShort+' · '+s.dong+'</div>'+
-   '<div class="dpills"><span class="dtag" style="background:var(--pri50);color:var(--prid)">'+spiceDots(s.spice)+' '+spiceWord(s.spice)+'</span><span class="dtag" style="background:#EEEDF6;color:#555">'+s.price+'</span>'+(s.solo?'<span class="dtag" style="background:#E1F2ED;color:#0f6e56">🧑 혼밥 가능</span>':'')+'</div>'+
-   '<div class="dsec dwhy"><div class="lab">WHY GO</div><p>'+s.why+'</p></div>'+
-   '<div class="dsec"><div class="lab">한국식 맥락</div><div class="dctx">'+s.ctx+'</div></div>'+
-   '<div class="dsec"><div class="lab">추천 메뉴</div><div class="dmenu">'+menu+'</div></div>'+
-   '<div class="dsec"><div class="lab">주변</div><div class="dnear">'+near+'</div></div>'+
-   '<div class="dtip">💡 '+s.tip+'</div>';
- }
- var noteTag=s.kind==='idol'?'<div class="note">※ 사진은 임시 (음식 종류 예시)</div>':'';
- document.getElementById('sheet').innerHTML='<div class="dph" style="background-image:url('+pic(s.pic)+')"><div class="dclose" onclick="closeAll()">✕</div>'+noteTag+'</div>'+
-  '<div class="dbody"><div class="dname">'+s.n+'</div>'+body+
-  '<div class="dcta"><button class="b-save'+(sv?' sv':'')+'" onclick="toggleSave('+id+',true)">'+(sv?'♥ 저장됨':'♡ 저장')+'</button><a class="b-map" href="'+mapsLink(s)+'" target="_blank">📍 Google 지도</a></div>'+
-  '<a class="b-naver" href="'+naverLink(s)+'" target="_blank">🟢 네이버맵 길찾기</a></div>';
- document.getElementById('scrim').classList.add('on');document.getElementById('sheet').classList.add('on');}
-function toggleSave(id,d){if(saved[id])delete saved[id];else saved[id]=true;toast(saved[id]?'저장됨':'삭제됨');refresh();if(d)openDetail(id);}
-function closeAll(){document.getElementById('scrim').classList.remove('on');document.getElementById('sheet').classList.remove('on');}
-var tt;function toast(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('on');clearTimeout(tt);tt=setTimeout(function(){e.classList.remove('on');},1400);}
-function renderDock(){var n=Object.keys(saved).length;var it=[['discover','🍜','탐색'],['map','🗺️','지도'],['saved','🔖','저장']];
- document.getElementById('dock').innerHTML=it.map(function(x){var b=(x[0]==='saved'&&n)?'<div class="bdg">'+n+'</div>':'';return '<div class="dk '+(state.tab===x[0]?'on':'')+'" onclick="go(\''+x[0]+'\')">'+b+'<div class="ic">'+x[1]+'</div>'+x[2]+'</div>';}).join('');}
-function go(t){state.tab=t;document.querySelectorAll('.tabpane').forEach(function(p){p.classList.remove('on');});document.getElementById('pane-'+t).classList.add('on');if(t==='map')renderMap();if(t==='saved')renderSaved();renderDock();document.querySelector('.body').scrollTop=0;}
-function setF(f){state.filter=f;renderFilters();renderDiscover();if(state.tab==='map')renderMap();document.querySelector('.body').scrollTop=0;}
-function refresh(){renderFilters();renderDiscover();renderDock();if(state.tab==='map')renderMap();if(state.tab==='saved')renderSaved();}
-renderFilters();renderDiscover();renderDock();
+ document.getElementById('pane-discover').innerHTML=h;
+}
+
+function renderMap(){
+ var pins=DATA.map(function(d){var sel=(state.selPin===d.id)?' sel':'';
+  return '<div class="mpin '+d.kind+sel+'" style="left:'+d.mx+'%;top:'+d.my+'%" onclick="selPin('+d.id+')"><div class="dot"><span>'+(d.kind==='idol'?'💜':'🍜')+'</span></div></div>';}).join('');
+ var cards=DATA.map(function(d){var sel=(state.selPin===d.id)?' sel':'';
+  return '<div class="mcard'+sel+'" id="mc'+d.id+'" onclick="openDetail('+d.id+')"><div class="mph" style="background-image:url('+pic(d.pic)+')"></div>'+
+   '<div class="mb"><div class="mk '+d.kind+'">'+(d.kind==='idol'?'💜 '+d.idol:'📍 Local')+'</div><div class="mn">'+d.n+'</div><div class="mmeta">'+d.cat+'</div></div></div>';}).join('');
+ document.getElementById('pane-map').innerHTML='<div class="maparea"><div class="river"></div><div class="road r1"></div><div class="road r2"></div>'+
+  '<div class="mapbar"><div class="mappill"><span class="pin">●</span> Hongdae ▾</div><div class="maplegend"><div class="li"><span class="sw" style="background:var(--idol)"></span>K-IDOL</div><div class="li"><span class="sw" style="background:var(--pri)"></span>Local</div></div></div>'+pins+'</div>'+
+  '<div class="mapcards" id="mapcards">'+cards+'</div>';
+}
+function selPin(id){state.selPin=id;renderMap();var el=document.getElementById('mc'+id);if(el)el.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});}
+
+function renderIdols(){
+ document.getElementById('pane-idols').innerHTML='<div class="savedhead">'+t('browseIdol')+'</div>'+idolBrowse();
+}
+function setIdol(n){state.idol=n;if(state.tab==='idols')renderIdols();else renderDiscover();}
+
+function renderSaved(){
+ var list=savedList();var h;
+ if(list.length===0){h='<div class="empty"><div class="ic">🔖</div><h3>'+t('emptyH')+'</h3><p>'+t('emptyP')+'</p><button onclick="go(\'discover\')">'+t('explore')+'</button></div>';}
+ else{h='<div class="savedhead">'+list.length+' '+t('savedCount')+'</div><div class="list" style="margin-top:8px;">'+list.map(rowCard).join('')+'</div>';}
+ document.getElementById('pane-saved').innerHTML=h;
+}
+
+function openDetail(id){
+ var d=byId(id);if(!d)return;var sv=saved[id];
+ var pills='<div class="dpills">'+
+   '<span class="dtag dspice" style="background:var(--pri50);color:var(--prid)">'+spiceDots(d.spice)+' '+spiceStr(d.spice)+'</span>'+
+   '<span class="dtag" style="background:#EEEDF6;color:#555">'+d.price+'</span>'+
+   (d.solo?'<span class="dtag" style="background:#E1F2ED;color:#0f6e56">🧑 '+t('solo')+'</span>':'')+'</div>';
+ if(d.kind==='idol')pills='';
+ var prov=d.kind==='idol'?'<div class="dsrc"><div class="h">💜 '+(state.lang==='ko'?'다녀간 아이돌':'Idols who came')+' ('+d.idols.length+')</div>'+d.idols.map(function(it){var sc=it.strength==='강'?'background:#fff;color:#6D40D9':'background:#EFEDE6;color:#8a8676';return '<div style="margin-top:9px;padding-top:9px;border-top:1px solid rgba(139,92,246,.16)"><div style="font-size:12.5px;font-weight:800;color:var(--idold)">'+it.label+' <span style="font-size:9px;font-weight:800;padding:1px 6px;border-radius:9px;'+sc+'">근거 '+it.strength+'</span></div><div class="q" style="margin-top:4px">'+it.src+'</div></div>';}).join('')+'</div>':'';
+ var menu='<div class="dsec"><div class="lab">'+t('menuLab')+'</div><div class="dmenu">'+
+   d.menu.map(function(mi){var a=state.lang==='ko'?mi.ko:mi.n,b=state.lang==='ko'?mi.n:mi.ko;
+     return '<div class="mi"><div><div class="nm">'+a+'</div><div class="ko">'+b+'</div></div><div class="p">'+mi.p+'</div></div>';}).join('')+'</div></div>';
+ var near='<div class="dsec"><div class="lab">'+t('nearLab')+'</div><div class="dnear">'+
+   d.near.map(function(n){return '<span class="dpill">🚶 '+(state.lang==='ko'?n.ko:n.t)+' · '+n.m+'m</span>';}).join('')+'</div></div>';
+ var ctx='<div class="dsec"><div class="lab">'+t('ctxLab')+'</div><div class="dctx">'+d.ctx+'</div></div>';
+ var tip=d.kind==='local'?'<div class="dtip">💡 '+d.tip+'</div>':'';
+ document.getElementById('sheet').innerHTML='<div class="dph" style="background-image:url('+pic(d.pic)+')"><div class="dclose" onclick="closeAll()">✕</div></div>'+
+  '<div class="dbody"><div class="dname">'+d.n+'</div><div class="dmeta"><span>'+d.cat+'</span></div>'+pills+prov+
+  (d.kind==='local'?('<div class="dwhy"><div class="lab">'+t('whyGo')+'</div><p>'+d.why+'</p></div>'+ctx+menu+near):'')+tip+
+  '<div class="dcta"><button class="b-save'+(sv?' sv':'')+'" onclick="toggleSave('+id+',true)">'+(sv?'♥ '+t('saved2'):'♡ '+t('save'))+'</button><button class="b-map">📍 '+t('gmaps')+'</button></div>'+
+  '<button class="b-naver">🟢 '+t('naver')+'</button></div>';
+ document.getElementById('scrim').classList.add('on');document.getElementById('sheet').classList.add('on');
+}
+
+function toggleSave(id,fromDetail){
+ if(!saved[id]){if(!loggedIn){pendingSave=id;openLogin();return;}saved[id]=true;toast(t('savedToast'));}
+ else{delete saved[id];toast(t('removedToast'));}
+ refreshAll();if(fromDetail)openDetail(id);
+}
+function openLogin(){
+ document.getElementById('login').innerHTML='<div class="grip"></div><h3>'+t('loginH')+'</h3><p>'+t('loginP')+'</p>'+
+  '<button class="lbtn" onclick="doLogin()">🟦 '+t('google')+'</button><button class="lbtn apple" onclick="doLogin()"> '+t('apple')+'</button>'+
+  '<button class="skip" onclick="closeLogin()">'+t('later')+'</button>';
+ document.getElementById('scrim').classList.add('on');document.getElementById('login').classList.add('on');
+}
+function doLogin(){loggedIn=true;document.getElementById('login').classList.remove('on');
+ if(pendingSave){saved[pendingSave]=true;toast(t('savedToast'));var id=pendingSave;pendingSave=null;refreshAll();
+   if(document.getElementById('sheet').classList.contains('on'))openDetail(id);}
+ setTimeout(function(){if(!document.getElementById('sheet').classList.contains('on'))document.getElementById('scrim').classList.remove('on');},50);}
+function closeLogin(){pendingSave=null;document.getElementById('login').classList.remove('on');if(!document.getElementById('sheet').classList.contains('on'))document.getElementById('scrim').classList.remove('on');}
+function closeAll(){document.getElementById('scrim').classList.remove('on');document.getElementById('sheet').classList.remove('on');document.getElementById('login').classList.remove('on');pendingSave=null;}
+var toastTimer;function toast(m){var el=document.getElementById('toast');el.textContent=m;el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove('on');},1500);}
+
+function go(tab){state.tab=tab;document.querySelectorAll('.tabpane').forEach(function(p){p.classList.remove('on');});
+ document.getElementById('pane-'+tab).classList.add('on');
+ if(tab==='map')renderMap();if(tab==='idols')renderIdols();if(tab==='saved')renderSaved();
+ renderTop();renderDock();document.querySelector('.body').scrollTop=0;}
+function setFilter(f){state.filter=f;renderTop();renderDiscover();document.querySelector('.body').scrollTop=0;}
+function toggleLens(){state.lens=!state.lens;renderTop();renderDiscover();document.querySelector('.body').scrollTop=0;}
+function toggleLang(){state.lang=state.lang==='en'?'ko':'en';refreshAll();}
+function refreshAll(){renderTop();renderDock();renderDiscover();if(state.tab==='map')renderMap();if(state.tab==='idols')renderIdols();if(state.tab==='saved')renderSaved();}
+
+document.getElementById('cbadge').textContent=(MODE==='C'?'시안 2 · Blend':'시안 1 · Local + K-POP lens');
+renderTop();renderDock();renderDiscover();
 </script>
 </body>
 </html>
