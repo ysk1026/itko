@@ -326,8 +326,8 @@ var DATA=[
   menu:[{n:'Injeolmi bingsu',ko:'인절미 빙수',p:'₩12,000'},{n:'Iced latte',ko:'아이스 라떼',p:'₩5,500'}],near:[{t:'Seongsu Cafe St.',ko:'성수 카페거리',m:3}],mx:74,my:58}
 ];
 var HYPE=[
- {title:"Tanghulu, still everywhere",sub:"This week's trend",pic:'tanghulu.jpg',spot:1001},
- {title:"Gwangjang street food buzz",sub:"Going viral",pic:'streetfood.jpg',spot:4}
+ {title:"영천영화 청담점",sub:"🔥 4명의 아이돌이 다녀간 성지",pic:'galbi.jpg',spot:1001},
+ {title:"영동교집 청담직영점",sub:"",pic:'soup.jpg',spot:1002}
 ];
 
 var state={tab:'discover',filter:'all',lang:'en',idol:"NCT (도영·해찬) 외 3명",selPin:null,lens:false};
@@ -440,9 +440,26 @@ function renderMap(){
 }
 function selPin(id){state.selPin=id;renderMap();var el=document.getElementById('mc'+id);if(el)el.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});}
 
-function renderIdols(){
- document.getElementById('pane-idols').innerHTML='<div class="savedhead">'+t('browseIdol')+'</div>'+idolBrowse();
-}
+function idolFilterList(){var q=(state.idolQ||'').trim().toLowerCase();var f=state.idolF||'all';
+ return idols().filter(function(s){
+  if(f==='strong'&&!s.idols.some(function(i){return i.strength==='강';}))return false;
+  if(f==='multi'&&s.idols.length<2)return false;
+  if(q){var hay=(s.n+' '+s.cat+' '+s.idols.map(function(i){return i.label;}).join(' ')).toLowerCase();if(hay.indexOf(q)<0)return false;}
+  return true;});}
+function updateIdolList(){var list=idolFilterList();
+ document.getElementById('idolList').innerHTML=list.length?('<div class="sech"><div class="t idol"><span class="em">💜</span> '+list.length+'곳</div></div><div class="list">'+list.map(rowCard).join('')+'</div>'):'<div style="text-align:center;color:var(--gray);font-size:13px;padding:60px 20px">검색 결과가 없어요</div>';}
+function renderIdols(){var f=state.idolF||'all';
+ var ph=state.lang==='ko'?'아이돌·그룹·식당 검색':'Search idol, group, place';
+ var search='<div style="padding:12px 16px 2px"><input id="idolSearch" oninput="setIdolQ(this.value)" placeholder="'+ph+'" style="width:100%;border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;font-size:13.5px;font-family:inherit;outline:none;background:var(--paper)"></div>';
+ var chips='<div class="filters" style="padding:9px 16px 2px">'+
+  '<div class="chip idol '+(f==='all'?'on':'')+'" onclick="setIdolF(\'all\')">✨ 전체 '+idols().length+'</div>'+
+  '<div class="chip idol '+(f==='strong'?'on':'')+'" onclick="setIdolF(\'strong\')">🔥 근거 강함</div>'+
+  '<div class="chip idol '+(f==='multi'?'on':'')+'" onclick="setIdolF(\'multi\')">👥 여러 명</div></div>';
+ document.getElementById('pane-idols').innerHTML=search+chips+'<div id="idolList"></div>';
+ var inp=document.getElementById('idolSearch');if(inp)inp.value=state.idolQ||'';
+ updateIdolList();}
+function setIdolQ(v){state.idolQ=v;updateIdolList();}
+function setIdolF(v){state.idolF=v;renderIdols();var inp=document.getElementById('idolSearch');if(inp)inp.focus();}
 function setIdol(n){state.idol=n;if(state.tab==='idols')renderIdols();else renderDiscover();}
 
 function renderSaved(){
